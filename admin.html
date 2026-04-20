@@ -5,27 +5,41 @@
     <title>Admin - Approval Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-200">
-    <nav class="bg-gray-800 p-4 text-white font-bold text-center">ADMIN PANEL - MANAGEMENT</nav>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-gray-800 p-4 text-white font-bold text-center shadow-md">
+        ADMIN PANEL - MANAGEMENT
+    </nav>
 
     <div class="max-w-5xl mx-auto p-6">
-        <div class="bg-white p-6 rounded-lg shadow mb-8">
-            <h2 class="text-xl font-bold mb-4 border-b">নতুন কাজ পোস্ট করুন</h2>
-            <div class="flex gap-4">
-                <input id="adm-title" type="text" placeholder="কাজের নাম" class="border p-2 flex-1">
-                <input id="adm-budget" type="number" placeholder="৳" class="border p-2 w-24">
-                <button id="adm-post-btn" class="bg-blue-600 text-white px-6 py-2 rounded">পাবলিশ</button>
+        <div class="bg-white p-6 rounded-xl shadow-sm mb-8 border border-gray-200">
+            <h2 class="text-xl font-bold mb-4 border-b pb-2 text-blue-800">নতুন কাজ পোস্ট করুন</h2>
+            <div class="grid grid-cols-1 gap-4">
+                <input id="adm-title" type="text" placeholder="কাজের নাম (টাইটেল)" class="border p-3 rounded-lg w-full outline-none focus:ring-2 focus:ring-blue-400">
+                
+                <textarea id="adm-desc" placeholder="কাজের বিস্তারিত নিয়মাবলী (ডেসক্রিপশন) এখানে লিখুন..." class="border p-3 rounded-lg h-28 w-full outline-none focus:ring-2 focus:ring-blue-400"></textarea>
+                
+                <div class="flex gap-4">
+                    <input id="adm-budget" type="number" placeholder="বাজেট (৳)" class="border p-3 rounded-lg w-32 outline-none focus:ring-2 focus:ring-blue-400">
+                    <button id="adm-post-btn" class="bg-blue-600 text-white px-8 py-2 rounded-lg font-bold hover:bg-blue-700 transition flex-1">পাবলিশ করুন</button>
+                </div>
             </div>
         </div>
 
         <div class="grid md:grid-cols-2 gap-8">
-            <div>
-                <h2 class="font-bold text-lg mb-4 text-red-600">পেন্ডিং প্রুফ (Pending Proofs)</h2>
-                <div id="pending-proofs" class="space-y-4"></div>
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="font-bold text-lg mb-4 text-red-600 border-b pb-2 flex items-center gap-2">
+                    <span class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span> পেন্ডিং প্রুফ (Pending Proofs)
+                </h2>
+                <div id="pending-proofs" class="space-y-4">
+                    <p class="text-gray-400 italic text-sm">লোড হচ্ছে...</p>
+                </div>
             </div>
-            <div>
-                <h2 class="font-bold text-lg mb-4 text-green-600">উইথড্র রিকোয়েস্ট (Withdrawal)</h2>
-                <div id="pending-withdraws" class="space-y-4"></div>
+
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                <h2 class="font-bold text-lg mb-5 text-green-600 border-b pb-2">উইথড্র রিকোয়েস্ট (Withdrawal)</h2>
+                <div id="pending-withdraws" class="space-y-4">
+                    <p class="text-gray-400 italic text-sm">লোড হচ্ছে...</p>
+                </div>
             </div>
         </div>
     </div>
