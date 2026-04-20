@@ -15,7 +15,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Global UI Logic
+// Global Navigation
 window.toggleMenu = () => {
     const menu = document.getElementById('side-menu');
     const overlay = document.getElementById('menu-overlay');
@@ -33,53 +33,57 @@ window.switchTab = (tab) => {
     if (document.getElementById('side-menu').style.transform === 'translateX(0px)') window.toggleMenu();
 };
 
-window.copyReferLink = () => {
-    const link = document.getElementById('refer-link').innerText;
-    navigator.clipboard.writeText(link).then(() => alert("রেফারেল লিঙ্ক কপি হয়েছে!"));
+// উইথড্র করার লজিক
+document.getElementById('withdraw-btn').onclick = async () => {
+    const amount = Number(document.getElementById('w-amount').value);
+    const number = document.getElementById('w-number').value;
+    const method = document.getElementById('w-method').value;
+
+    if (amount < 50) return alert("ন্যূনতম উইথড্র ৫০ টাকা!");
+    if (!number) return alert("নম্বর দিন!");
+
+    const userRef = doc(db, "users", auth.currentUser.uid);
+    const userSnap = await getDoc(userRef);
+    const balance = userSnap.data().balance;
+
+    if (balance >= amount) {
+        await addDoc(collection(db, "withdraws"), {
+            uid: auth.currentUser.uid,
+            email: auth.currentUser.email,
+            amount: amount,
+            number: number,
+            method: method,
+            status: "pending",
+            createdAt: serverTimestamp()
+        });
+        await updateDoc(userRef, { balance: increment(-amount) });
+        alert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!");
+    } else {
+        alert("অপর্যাপ্ত ব্যালেন্স!");
+    }
 };
 
+// এক্টিভেশন সিস্টেম
 window.activateAccount = async () => {
     const userRef = doc(db, "users", auth.currentUser.uid);
     const userSnap = await getDoc(userRef);
     if (userSnap.data().isActive) return alert("ইতিমধ্যেই এক্টিভেট আছে!");
     if (userSnap.data().balance >= 100) {
-        if (confirm("একাউন্ট এক্টিভেট করতে ১০০ টাকা কাটা হবে। নিশ্চিত?")) {
-            await updateDoc(userRef, { balance: increment(-100), isActive: true });
-            alert("সফলভাবে এক্টিভেট হয়েছে!");
-        }
+        await updateDoc(userRef, { balance: increment(-100), isActive: true });
+        alert("সফলভাবে এক্টিভেট হয়েছে!");
     } else {
         alert("ব্যালেন্স নেই! ১০০ টাকা ডিপোজিট করুন।");
         window.switchTab('wallet');
     }
 };
 
-// Auth Actions
-document.getElementById('login-btn').onclick = () => {
-    const e = document.getElementById('email').value;
-    const p = document.getElementById('password').value;
-    signInWithEmailAndPassword(auth, e, p).catch(err => alert(err.message));
-};
-
-document.getElementById('signup-btn').onclick = () => {
-    const e = document.getElementById('email').value;
-    const p = document.getElementById('password').value;
-    createUserWithEmailAndPassword(auth, e, p).then(async (cred) => {
-        await setDoc(doc(db, "users", cred.user.uid), {
-            email: e, balance: 0, isActive: false, createdAt: serverTimestamp()
-        });
-    }).catch(err => alert(err.message));
-};
-
-document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
-
-// Data Listener
+// Auth Observer
 onAuthStateChanged(auth, (user) => {
     if (user) {
         document.getElementById('auth-view').classList.add('hidden');
         document.getElementById('main-view').classList.remove('hidden');
         document.getElementById('bottom-nav').classList.remove('hidden');
         document.getElementById('user-email-display').innerText = user.email;
-        document.getElementById('refer-link').innerText = `https://bslofficial.github.io/?ref=${user.uid}`;
 
         onSnapshot(doc(db, "users", user.uid), (docSnap) => {
             if (docSnap.exists()) {
@@ -101,3 +105,9 @@ onAuthStateChanged(auth, (user) => {
         });
     }
 });
+
+// Login/Logout
+document.getElementById('login-btn').onclick = () => {
+    signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(err => alert(err.message));
+};
+document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
