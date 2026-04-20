@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, where, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, doc, updateDoc, increment, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// আপনার Firebase Config
 const firebaseConfig = {
     apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
     authDomain: "microjobs-b9d90.firebaseapp.com",
@@ -13,86 +14,82 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- ১. নতুন কাজ পাবলিশ করা ---
+// --- ১. কাজ পাবলিশ করার লজিক ---
 document.getElementById('adm-post-btn').onclick = async () => {
     const title = document.getElementById('adm-title').value;
+    const category = document.getElementById('adm-category').value;
+    const desc = document.getElementById('adm-desc').value;
     const budget = document.getElementById('adm-budget').value;
+    const btn = document.getElementById('adm-post-btn');
 
-    if (!title || !budget) return alert("সব ঘর পূরণ করুন!");
+    if (!title || !category || !desc || !budget) {
+        return alert("সবগুলো ঘর সঠিকভাবে পূরণ করুন!");
+    }
+
+    btn.disabled = true;
+    btn.innerText = "পাবলিশ হচ্ছে...";
 
     try {
         await addDoc(collection(db, "jobs"), {
-            title: title,
+            // টাইটেল এবং ক্যাটাগরি একসাথে সেভ করছি যাতে ফিল্টারিং সহজ হয়
+            title: `${category} - ${title}`, 
+            description: desc,
             budget: Number(budget),
-            createdAt: new Date()
+            category: category,
+            createdAt: serverTimestamp()
         });
-        alert("কাজটি সফলভাবে পাবলিশ হয়েছে!");
+
+        alert("কাজটি সফলভাবে লাইভ করা হয়েছে!");
         location.reload();
-    } catch (e) { alert("Error: " + e.message); }
+    } catch (e) {
+        alert("এরর: " + e.message);
+        btn.disabled = false;
+        btn.innerText = "পাবলিশ করুন";
+    }
 };
 
-// --- ২. পেন্ডিং প্রুফ লোড ও অ্যাপ্রুভ করা ---
-async function loadPendingSubmissions() {
+// --- ২. পেন্ডিং প্রুফ লোড করা ---
+async function loadPendingProofs() {
     const container = document.getElementById('pending-proofs');
     const q = query(collection(db, "submissions"), where("status", "==", "pending"));
-    const snapshot = await getDocs(q);
+    const snap = await getDocs(q);
 
-    container.innerHTML = snapshot.empty ? '<p class="text-gray-500">কোনো পেন্ডিং প্রুফ নেই।</p>' : '';
+    container.innerHTML = snap.empty ? '<p class="text-gray-400 text-sm">কোনো পেন্ডিং আবেদন নেই।</p>' : '';
 
-    snapshot.forEach(res => {
-        const data = res.data();
-        const card = `
-            <div class="bg-white p-4 rounded shadow border">
-                <p class="font-bold">${data.jobTitle} (৳${data.reward})</p>
-                <p class="text-xs text-gray-600">ইউজার: ${data.userEmail}</p>
-                <a href="${data.imageUrl}" target="_blank" class="text-blue-600 underline text-sm block my-2">স্ক্রিনশট দেখুন</a>
-                <button onclick="approveWork('${res.id}', '${data.userId}', ${data.reward})" class="bg-green-600 text-white px-3 py-1 rounded text-xs">Approve</button>
+    snap.forEach(d => {
+        const data = d.data();
+        container.innerHTML += `
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm">
+                <p class="font-bold text-gray-800">${data.jobTitle}</p>
+                <p class="text-xs text-blue-600 mb-2">${data.userEmail}</p>
+                <a href="${data.imageUrl}" target="_blank" class="block bg-white text-blue-600 border border-blue-200 text-center py-1.5 rounded-lg text-xs font-bold mb-3 hover:bg-blue-50">স্ক্রিনশট দেখুন</a>
+                <div class="flex gap-2">
+                    <button onclick="approveWork('${d.id}', '${data.userId}', ${data.reward})" class="flex-1 bg-green-600 text-white py-2 rounded-lg font-bold text-xs hover:bg-green-700 transition">Approve (৳${data.reward})</button>
+                    <button onclick="rejectWork('${d.id}')" class="bg-red-100 text-red-600 px-3 py-2 rounded-lg font-bold text-xs hover:bg-red-200 transition">Reject</button>
+                </div>
             </div>
         `;
-        container.innerHTML += card;
     });
 }
 
-// --- ৩. কাজ অ্যাপ্রুভ করার লজিক (টাকা ইউজারের অ্যাকাউন্টে যাবে) ---
+// --- ৩. কাজ অ্যাপ্রুভ (টাকা পাঠানো) ---
 window.approveWork = async (subId, uid, amount) => {
+    if(!confirm("আপনি কি নিশ্চিত যে এটি অ্যাপ্রুভ করবেন?")) return;
     try {
-        // সাবমিশন স্ট্যাটাস পরিবর্তন
         await updateDoc(doc(db, "submissions", subId), { status: "approved" });
-        // ইউজারের ব্যালেন্স বাড়ানো
         await updateDoc(doc(db, "users", uid), { balance: increment(amount) });
-        alert("অ্যাপ্রুভ হয়েছে এবং টাকা ইউজারের ব্যালেন্স যোগ হয়েছে!");
+        alert("অ্যাপ্রুভড! ইউজারের ব্যালেন্সে টাকা যোগ হয়েছে।");
         location.reload();
     } catch (e) { alert(e.message); }
 };
 
-// --- ৪. উইথড্র রিকোয়েস্ট লোড করা ---
-async function loadWithdrawRequests() {
-    const container = document.getElementById('pending-withdraws');
-    const q = query(collection(db, "withdraws"), where("status", "==", "pending"));
-    const snapshot = await getDocs(q);
-
-    container.innerHTML = snapshot.empty ? '<p class="text-gray-500">কোনো রিকোয়েস্ট নেই।</p>' : '';
-
-    snapshot.forEach(res => {
-        const data = res.data();
-        const card = `
-            <div class="bg-white p-4 rounded shadow border border-green-200">
-                <p class="font-bold text-green-700">Amount: ৳${data.amount}</p>
-                <p class="text-sm">Number: ${data.phone}</p>
-                <p class="text-xs text-gray-500">User: ${data.email}</p>
-                <button onclick="markAsPaid('${res.id}')" class="mt-2 bg-blue-600 text-white px-3 py-1 rounded text-xs">Mark Paid</button>
-            </div>
-        `;
-        container.innerHTML += card;
-    });
-}
-
-window.markAsPaid = async (id) => {
-    await updateDoc(doc(db, "withdraws", id), { status: "paid" });
-    alert("Paid হিসেবে মার্ক করা হয়েছে!");
+// --- ৪. কাজ রিজেক্ট করা ---
+window.rejectWork = async (subId) => {
+    if(!confirm("কাজটি কি রিজেক্ট করতে চান?")) return;
+    await updateDoc(doc(db, "submissions", subId), { status: "rejected" });
+    alert("রিজেক্ট করা হয়েছে।");
     location.reload();
 };
 
 // ডাটা লোড কল
-loadPendingSubmissions();
-loadWithdrawRequests();
+loadPendingProofs();
