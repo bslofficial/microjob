@@ -38,7 +38,6 @@
             <button onclick="window.switchTab('post-job')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-plus-circle w-5"></i> Post Job</button>
             <button onclick="window.switchTab('wallet')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-wallet w-5"></i> Wallet</button>
             <hr class="my-2">
-            <button onclick="window.switchTab('team')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-users w-5"></i> My Team</button>
             <button onclick="window.switchTab('refer')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm text-blue-600 font-bold"><i class="fas fa-gift w-5"></i> Refer & Earn</button>
             <button onclick="window.activateAccount()" class="w-full text-left p-3 text-blue-600 font-bold hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-check-circle w-5"></i> Activate (৳১০০)</button>
             <hr class="my-2">
@@ -48,72 +47,75 @@
     <div id="menu-overlay" onclick="window.toggleMenu()" class="fixed inset-0 bg-black/50 hidden z-[55]"></div>
 
     <main class="max-w-md mx-auto p-4">
+        
         <div id="auth-view" class="bg-white p-8 rounded-3xl shadow-xl mt-10">
             <h2 class="text-xl font-bold mb-6 text-center text-blue-600">Login / Signup</h2>
             <input id="email" type="email" placeholder="ইমেইল" class="w-full border p-4 rounded-2xl mb-3 outline-none bg-gray-50 focus:border-blue-500 text-sm">
             <input id="password" type="password" placeholder="পাসওয়ার্ড" class="w-full border p-4 rounded-2xl mb-5 outline-none bg-gray-50 focus:border-blue-500 text-sm">
-            <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700">Login</button>
-            <div class="text-center mt-4">
-                <button id="signup-btn" class="text-blue-600 text-sm font-semibold">Create Account / Sign Up</button>
-            </div>
+            <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold">Login</button>
+            <button id="signup-btn" class="w-full text-blue-600 font-bold py-3 mt-2 text-sm">Create Account / Sign Up</button>
         </div>
 
         <div id="main-view" class="hidden">
+            
             <div id="home-tab" class="tab-content active">
                 <div class="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-3xl text-white shadow-xl mb-6">
-                    <p class="opacity-80 text-[10px] font-bold">আপনার ব্যালেন্স</p>
+                    <p class="opacity-80 text-[10px] font-bold uppercase">আপনার ব্যালেন্স</p>
                     <h2 class="text-4xl font-extrabold mt-1">৳<span id="balance">0.00</span></h2>
                 </div>
                 <div id="job-list" class="space-y-4">
-                    <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase">YouTube</span>
-                            <span class="text-green-600 font-bold text-lg">৳২</span>
-                        </div>
-                        <h3 class="font-bold text-gray-800">YouTube Subscribe</h3>
-                        <p class="text-gray-500 text-[11px] mt-1">bonarjidawakhana সাবস্ক্রাইব করতে হবে।</p>
-                        <button class="w-full bg-blue-50 text-blue-600 py-3 rounded-2xl mt-4 font-bold text-sm">কাজটি শুরু করুন</button>
+                    </div>
+            </div>
+
+            <div id="refer-tab" class="tab-content">
+                <div class="bg-white p-6 rounded-3xl shadow-md text-center border">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">রেফার করুন ও আয় করুন!</h2>
+                    <p class="text-gray-500 text-[11px] mt-2 italic">বন্ধু এক্টিভেট করলে আপনি পাবেন বোনাস।</p>
+                    <div class="mt-6 p-4 bg-gray-50 rounded-2xl border-2 border-dashed border-blue-100">
+                        <p id="refer-link" class="text-blue-600 font-bold text-xs truncate">লোড হচ্ছে...</p>
+                    </div>
+                    <button onclick="window.copyReferLink()" class="w-full bg-blue-600 text-white py-3 rounded-2xl mt-4 font-bold">লিঙ্ক কপি করুন</button>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <div class="bg-white p-4 rounded-2xl text-center border shadow-sm">
+                        <p class="text-[9px] font-bold text-blue-400">মোট রেফার</p>
+                        <h4 id="total-refers" class="text-lg font-black text-blue-700">0</h4>
+                    </div>
+                    <div class="text-center p-4 bg-white rounded-2xl border shadow-sm">
+                        <p class="text-[9px] font-bold text-green-400">রেফার আয়</p>
+                        <h4 id="refer-earnings" class="text-lg font-black text-green-700">৳0</h4>
                     </div>
                 </div>
             </div>
 
-            <div id="refer-tab" class="tab-content">
-                <div class="bg-white p-8 rounded-3xl shadow-md text-center">
-                    <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-6">
-                        <i class="fas fa-gift"></i>
-                    </div>
-                    <h2 class="text-xl font-black text-gray-800">রেফার করুন ও আয় করুন!</h2>
-                    <p class="text-gray-500 text-[11px] mt-2 px-4 italic">আপনার রেফারেল লিঙ্ক ব্যবহার করে কেউ একাউন্ট এক্টিভেট করলে আপনি পাবেন আকর্ষণীয় বোনাস।</p>
-                    <div class="mt-8 p-5 bg-gray-50 rounded-2xl border-2 border-dashed border-blue-100">
-                        <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">আপনার রেফারেল লিঙ্ক</p>
-                        <p id="refer-link" class="text-blue-600 font-bold text-sm truncate">লোড হচ্ছে...</p>
-                    </div>
-                    <button onclick="window.copyReferLink()" class="w-full bg-blue-600 text-white py-4 rounded-2xl mt-6 font-bold shadow-lg">লিঙ্ক কপি করুন</button>
+            <div id="wallet-tab" class="tab-content space-y-4">
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-green-100">
+                    <h2 class="font-bold text-green-600 text-sm mb-3">ডিপোজিট (01913932587)</h2>
+                    <input id="d-amount" type="number" placeholder="পরিমাণ" class="w-full p-3 bg-gray-50 rounded-xl mb-2 text-sm outline-none">
+                    <input id="d-trx" type="text" placeholder="Transaction ID" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none">
+                    <button id="deposit-btn" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold text-sm">জমা রিকোয়েস্ট</button>
                 </div>
-                <div class="mt-6 bg-white p-5 rounded-3xl shadow-sm grid grid-cols-2 gap-4 border border-gray-50">
-                    <div class="text-center p-3 bg-blue-50 rounded-2xl">
-                        <p class="text-[9px] font-bold text-blue-400 uppercase">মোট রেফার</p>
-                        <h4 id="total-refers" class="text-xl font-black text-blue-700">0</h4>
-                    </div>
-                    <div class="text-center p-3 bg-green-50 rounded-2xl">
-                        <p class="text-[9px] font-bold text-green-400 uppercase">রেফার আয়</p>
-                        <h4 id="refer-earnings" class="text-xl font-black text-green-700">৳0</h4>
-                    </div>
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-orange-100">
+                    <h2 class="font-bold text-orange-600 text-sm mb-3">উইথড্র রিকোয়েস্ট</h2>
+                    <input id="w-amount" type="number" placeholder="পরিমাণ (৳৫০+)" class="w-full p-3 bg-gray-50 rounded-xl mb-2 text-sm outline-none">
+                    <input id="w-number" type="text" placeholder="বিকাশ/নগদ নম্বর" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none">
+                    <button id="withdraw-btn" class="w-full bg-orange-600 text-white py-3 rounded-xl font-bold text-sm">উইথড্র দিন</button>
                 </div>
             </div>
 
             <div id="post-job-tab" class="tab-content">
-                <div id="post-job-form" class="bg-white p-6 rounded-3xl shadow-md hidden">
-                    <h2 class="text-lg font-bold mb-5 text-blue-700 text-center">পোস্ট জব (Admin Approval)</h2>
-                    <input type="text" placeholder="কাজের নাম (যেমন: Facebook Follow)" class="w-full p-4 bg-gray-50 rounded-2xl mb-3 outline-none border focus:border-blue-400">
-                    <input type="url" placeholder="লিঙ্ক দিন" class="w-full p-4 bg-gray-50 rounded-2xl mb-3 outline-none border focus:border-blue-400">
-                    <textarea placeholder="নির্দেশনা এবং স্ক্রিনশট রিকোয়েস্ট..." class="w-full p-4 bg-gray-50 rounded-2xl mb-3 h-24 outline-none border focus:border-blue-400"></textarea>
-                    <input type="number" placeholder="ইউজার প্রতি পেমেন্ট (৳)" class="w-full p-4 bg-gray-50 rounded-2xl mb-5 outline-none border focus:border-blue-400">
-                    <button class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg">জমা দিন</button>
+                <div id="post-job-form" class="bg-white p-6 rounded-3xl shadow-sm border hidden">
+                    <h2 class="font-bold text-blue-700 mb-4">পোস্ট জব (Admin Approval)</h2>
+                    <input id="u-job-title" type="text" placeholder="টাইটেল" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none">
+                    <input id="u-job-url" type="url" placeholder="লিঙ্ক" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none">
+                    <button id="u-post-btn" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">সাবমিট</button>
                 </div>
-                <div id="activation-warning" class="text-center py-24 px-10">
-                    <i class="fas fa-lock text-6xl text-gray-200 mb-6"></i>
-                    <p class="text-gray-400 text-sm">জব পোস্ট করতে আপনার অ্যাকাউন্ট এক্টিভেট করুন।</p>
+                <div id="activation-warning" class="text-center py-20 text-gray-400">
+                    <i class="fas fa-lock text-5xl mb-4"></i>
+                    <p class="text-sm">জব পোস্ট করতে অ্যাকাউন্ট এক্টিভেট করুন।</p>
                 </div>
             </div>
         </div>
@@ -121,19 +123,101 @@
 
     <nav id="bottom-nav" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3 z-50">
         <button onclick="window.switchTab('home')" id="btn-home" class="flex flex-col items-center active-tab">
-            <i class="fas fa-home text-lg"></i>
-            <span class="text-[10px] mt-1">Home</span>
+            <i class="fas fa-home"></i><span class="text-[9px] mt-1">Home</span>
         </button>
         <button onclick="window.switchTab('post-job')" id="btn-post-job" class="flex flex-col items-center text-gray-300">
-            <i class="fas fa-plus-circle text-lg"></i>
-            <span class="text-[10px] mt-1">Post Job</span>
+            <i class="fas fa-plus-circle"></i><span class="text-[9px] mt-1">Post Job</span>
         </button>
         <button onclick="window.switchTab('wallet')" id="btn-wallet" class="flex flex-col items-center text-gray-300">
-            <i class="fas fa-wallet text-lg"></i>
-            <span class="text-[10px] mt-1">Wallet</span>
+            <i class="fas fa-wallet"></i><span class="text-[9px] mt-1">Wallet</span>
         </button>
     </nav>
 
-    <script type="module" src="app.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, updateDoc, increment, addDoc, collection, onSnapshot, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
+            authDomain: "microjobs-b9d90.firebaseapp.com",
+            projectId: "microjobs-b9d90",
+            storageBucket: "microjobs-b9d90.firebasestorage.app",
+            messagingSenderId: "1006928193385",
+            appId: "1:1006928193385:web:d4b5cc1911abda6ff53ff8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // --- UI কন্ট্রোল ---
+        window.toggleMenu = () => {
+            const menu = document.getElementById('side-menu');
+            const overlay = document.getElementById('menu-overlay');
+            const isOpen = menu.style.transform === 'translateX(0px)';
+            menu.style.transform = isOpen ? 'translateX(-100%)' : 'translateX(0px)';
+            overlay.classList.toggle('hidden');
+        };
+
+        window.switchTab = (tab) => {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+            document.querySelectorAll('#bottom-nav button').forEach(el => el.classList.replace('active-tab', 'text-gray-300'));
+            document.getElementById('btn-' + tab).classList.replace('text-gray-300', 'active-tab');
+            if(document.getElementById('side-menu').style.transform === 'translateX(0px)') window.toggleMenu();
+        };
+
+        // --- ডিপোজিট লজিক ---
+        document.getElementById('deposit-btn').onclick = async () => {
+            const amt = document.getElementById('d-amount').value;
+            const trx = document.getElementById('d-trx').value;
+            if(!amt || !trx) return alert("তথ্য দিন");
+            await addDoc(collection(db, "deposits"), {
+                uid: auth.currentUser.uid, email: auth.currentUser.email,
+                amount: Number(amt), trxId: trx, status: "pending", createdAt: serverTimestamp()
+            });
+            alert("রিকোয়েস্ট পাঠানো হয়েছে!");
+        };
+
+        // --- একাউন্ট এক্টিভেশন ---
+        window.activateAccount = async () => {
+            const userRef = doc(db, "users", auth.currentUser.uid);
+            const userSnap = await getDoc(userRef);
+            if(userSnap.data().balance >= 100) {
+                await updateDoc(userRef, { balance: increment(-100), isActive: true });
+                alert("একাউন্ট এক্টিভ হয়েছে!");
+            } else { alert("ব্যালেন্স নেই (৳১০০ লাগবে)"); }
+        };
+
+        // --- অথেন্টিকেশন ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('auth-view').classList.add('hidden');
+                document.getElementById('main-view').classList.remove('hidden');
+                document.getElementById('bottom-nav').classList.remove('hidden');
+                document.getElementById('user-email-display').innerText = user.email;
+                document.getElementById('refer-link').innerText = `${window.location.origin}?ref=${user.uid}`;
+                
+                onSnapshot(doc(db, "users", user.uid), (s) => {
+                    if(s.exists()) {
+                        const d = s.data();
+                        document.getElementById('balance').innerText = d.balance.toFixed(2);
+                        document.getElementById('total-refers').innerText = d.totalRefers || 0;
+                        document.getElementById('account-status').innerText = d.isActive ? "Active" : "Not Active";
+                        if(d.isActive) {
+                            document.getElementById('post-job-form').classList.remove('hidden');
+                            document.getElementById('activation-warning').classList.add('hidden');
+                        }
+                    }
+                });
+            } else { document.getElementById('auth-view').classList.remove('hidden'); }
+        });
+
+        document.getElementById('login-btn').onclick = () => {
+            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value);
+        };
+        document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
+    </script>
 </body>
 </html>
