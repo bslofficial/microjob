@@ -2,35 +2,33 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Post New Job</title>
+    <title>Admin - Approval Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-200">
+    <nav class="bg-gray-800 p-4 text-white font-bold text-center">ADMIN PANEL - MANAGEMENT</nav>
 
-    <nav class="bg-gray-800 p-4 text-white">
-        <div class="max-w-4xl mx-auto flex justify-between">
-            <h1 class="font-bold">Admin Control</h1>
-            <a href="index.html" class="text-gray-300 hover:text-white">← Back to Dashboard</a>
+    <div class="max-w-5xl mx-auto p-6">
+        <div class="bg-white p-6 rounded-lg shadow mb-8">
+            <h2 class="text-xl font-bold mb-4 border-b">নতুন কাজ পোস্ট করুন</h2>
+            <div class="flex gap-4">
+                <input id="adm-title" type="text" placeholder="কাজের নাম" class="border p-2 flex-1">
+                <input id="adm-budget" type="number" placeholder="৳" class="border p-2 w-24">
+                <button id="adm-post-btn" class="bg-blue-600 text-white px-6 py-2 rounded">পাবলিশ</button>
+            </div>
         </div>
-    </nav>
 
-    <main class="p-10">
-        <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg">
-            <h2 class="text-2xl font-bold mb-6 text-red-600 border-b pb-2">Post a New Job</h2>
-            <form id="job-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold mb-1">Job Title</label>
-                    <input id="job-title" type="text" placeholder="e.g. Subscribe to YouTube" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-red-500" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold mb-1">Budget (BDT)</label>
-                    <input id="job-budget" type="number" placeholder="৳ 10" class="w-full border p-2.5 rounded-lg outline-none focus:ring-2 focus:ring-red-500" required>
-                </div>
-                <button type="submit" id="submit-btn" class="bg-green-600 text-white w-full py-3 rounded-lg font-bold hover:bg-green-700 transition">Publish Job</button>
-            </form>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div>
+                <h2 class="font-bold text-lg mb-4 text-red-600">পেন্ডিং প্রুফ (Pending Proofs)</h2>
+                <div id="pending-proofs" class="space-y-4"></div>
+            </div>
+            <div>
+                <h2 class="font-bold text-lg mb-4 text-green-600">উইথড্র রিকোয়েস্ট (Withdrawal)</h2>
+                <div id="pending-withdraws" class="space-y-4"></div>
+            </div>
         </div>
-    </main>
+    </div>
 
     <script type="module" src="admin.js"></script>
 </body>
