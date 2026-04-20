@@ -15,7 +15,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Global UI Functions
+// Global UI Logic
 window.toggleMenu = () => {
     const menu = document.getElementById('side-menu');
     const overlay = document.getElementById('menu-overlay');
@@ -35,17 +35,15 @@ window.switchTab = (tab) => {
 
 window.copyReferLink = () => {
     const link = document.getElementById('refer-link').innerText;
-    navigator.clipboard.writeText(link).then(() => alert("লিঙ্ক কপি হয়েছে!"));
+    navigator.clipboard.writeText(link).then(() => alert("রেফারেল লিঙ্ক কপি হয়েছে!"));
 };
 
-// অ্যাকাউন্ট এক্টিভেট সিস্টেম (৳১০০)
 window.activateAccount = async () => {
     const userRef = doc(db, "users", auth.currentUser.uid);
     const userSnap = await getDoc(userRef);
     if (userSnap.data().isActive) return alert("ইতিমধ্যেই এক্টিভেট আছে!");
-    
     if (userSnap.data().balance >= 100) {
-        if (confirm("১০০ টাকা দিয়ে এক্টিভেট করতে চান?")) {
+        if (confirm("একাউন্ট এক্টিভেট করতে ১০০ টাকা কাটা হবে। নিশ্চিত?")) {
             await updateDoc(userRef, { balance: increment(-100), isActive: true });
             alert("সফলভাবে এক্টিভেট হয়েছে!");
         }
@@ -55,7 +53,7 @@ window.activateAccount = async () => {
     }
 };
 
-// Login/Signup Logic
+// Auth Actions
 document.getElementById('login-btn').onclick = () => {
     const e = document.getElementById('email').value;
     const p = document.getElementById('password').value;
@@ -74,7 +72,7 @@ document.getElementById('signup-btn').onclick = () => {
 
 document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
 
-// Auth & Data Observer
+// Data Listener
 onAuthStateChanged(auth, (user) => {
     if (user) {
         document.getElementById('auth-view').classList.add('hidden');
