@@ -3,101 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>MicroJobs BD - Earn & Post</title>
+    <title>MicroJobs BD</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .active-tab { color: #2563eb !important; font-weight: 800; }
+        .active-tab { color: #2563eb !important; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        /* Side Menu Drawer */
+        #side-menu { transition: transform 0.3s ease-in-out; }
     </style>
 </head>
-<body class="bg-slate-50 pb-24">
+<body class="bg-slate-50 pb-20 overflow-x-hidden">
 
-    <header class="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-40">
-        <div class="max-w-md mx-auto flex justify-between items-center">
+    <header class="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-50 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <button onclick="toggleMenu()" class="text-xl"><i class="fas fa-bars"></i></button>
             <h1 class="font-bold text-lg">MicroJobs BD</h1>
-            <button id="logout-btn" class="hidden bg-red-500 px-3 py-1 rounded text-xs font-bold">Logout</button>
         </div>
+        <button onclick="toggleMenu()" class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center border-2 border-blue-400">
+            <i class="fas fa-user"></i>
+        </button>
     </header>
+
+    <div id="side-menu" class="fixed inset-y-0 left-0 w-64 bg-white shadow-2xl z-[60] transform -translate-x-full">
+        <div class="p-6 bg-blue-600 text-white">
+            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl mb-3">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <p id="user-email-display" class="text-xs opacity-80">স্বাগতম!</p>
+            <p id="account-status" class="text-[10px] font-bold mt-1 px-2 py-0.5 bg-red-500 rounded-full inline-block">Not Active</p>
+        </div>
+        <nav class="p-4 space-y-1">
+            <button onclick="switchTab('home')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm text-gray-700"><i class="fas fa-home w-5"></i> Home</button>
+            <button onclick="switchTab('post-job')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm text-gray-700"><i class="fas fa-plus-circle w-5"></i> Post Job</button>
+            <button onclick="switchTab('wallet')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm text-gray-700"><i class="fas fa-wallet w-5"></i> Wallet</button>
+            <hr class="my-2">
+            <button class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm text-gray-700"><i class="fas fa-users w-5"></i> My Team</button>
+            <button class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm text-gray-700"><i class="fas fa-user-plus w-5"></i> Refer & Earn</button>
+            <button onclick="activateAccount()" class="w-full text-left p-3 text-blue-600 font-bold hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-check-circle w-5"></i> Activate (৳১০০)</button>
+            <hr class="my-2">
+            <button id="logout-btn" class="w-full text-left p-3 text-red-500 font-bold hover:bg-red-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-sign-out-alt w-5"></i> Logout</button>
+        </nav>
+    </div>
+    <div id="menu-overlay" onclick="toggleMenu()" class="fixed inset-0 bg-black/50 hidden z-[55]"></div>
 
     <main class="max-w-md mx-auto p-4">
         <div id="auth-view" class="bg-white p-8 rounded-3xl shadow-xl mt-10">
-            <h2 class="text-xl font-bold mb-6 text-center">লগইন / সাইন-আপ</h2>
+            <h2 class="text-xl font-bold mb-6 text-center">Login / Signup</h2>
             <input id="email" type="email" placeholder="ইমেইল" class="w-full border p-4 rounded-2xl mb-3 outline-none bg-gray-50">
             <input id="password" type="password" placeholder="পাসওয়ার্ড" class="w-full border p-4 rounded-2xl mb-5 outline-none bg-gray-50">
             <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold">Login</button>
-            <button id="signup-btn" class="w-full text-blue-600 font-bold py-3 mt-2">Create Account</button>
+            <button id="signup-btn" class="w-full text-blue-600 font-bold py-3 mt-2">Sign Up</button>
         </div>
 
         <div id="main-view" class="hidden">
             <div id="home-tab" class="tab-content active">
-                <div class="bg-gradient-to-r from-blue-600 to-blue-500 p-6 rounded-3xl text-white shadow-xl mb-6 text-center">
-                    <p class="opacity-80 text-xs">আপনার ব্যালেন্স</p>
-                    <h2 class="text-4xl font-extrabold mt-1">৳<span id="balance">0.00</span></h2>
+                <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-6 rounded-3xl text-white shadow-xl mb-6 flex justify-between items-center">
+                    <div>
+                        <p class="opacity-80 text-[10px] uppercase tracking-wider font-bold">Total Balance</p>
+                        <h2 class="text-3xl font-extrabold">৳<span id="balance">0.00</span></h2>
+                    </div>
+                    <button onclick="switchTab('wallet')" class="bg-white/20 p-3 rounded-2xl"><i class="fas fa-plus"></i></button>
                 </div>
-                <div id="job-list" class="grid gap-4"></div>
+                <div id="job-list" class="space-y-4"></div>
             </div>
 
             <div id="post-job-tab" class="tab-content">
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold mb-4 text-blue-700">নতুন কাজ দিন</h2>
+                <div id="post-job-form" class="bg-white p-6 rounded-3xl shadow-sm border">
+                    <h2 class="text-lg font-bold mb-4 text-blue-700">পোস্ট জব (Admin Approval)</h2>
                     <div class="space-y-3">
                         <input id="u-job-title" type="text" placeholder="কাজের নাম" class="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none">
                         <input id="u-job-url" type="url" placeholder="কাজের লিঙ্ক (URL)" class="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none">
-                        <textarea id="u-job-desc" placeholder="কাজের নিয়ম..." class="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none h-24"></textarea>
+                        <textarea id="u-job-desc" placeholder="নিয়মাবলী..." class="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none h-24"></textarea>
                         <input id="u-job-budget" type="number" placeholder="বাজেট (৳)" class="w-full p-4 bg-gray-50 rounded-2xl border-none outline-none">
-                        <button id="u-post-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg">পোস্ট করুন (ব্যালেন্স থেকে কাটবে)</button>
+                        <button id="u-post-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold">জমা দিন</button>
                     </div>
+                </div>
+                <div id="activation-warning" class="hidden text-center py-10">
+                    <i class="fas fa-lock text-4xl text-gray-300 mb-3"></i>
+                    <p class="text-gray-500 text-sm">কাজ পোস্ট করতে একাউন্ট এক্টিভেট করুন।</p>
                 </div>
             </div>
 
-            <div id="wallet-tab" class="tab-content">
-                <div class="bg-white p-6 rounded-3xl shadow-sm mb-4 border">
-                    <h2 class="font-bold text-orange-600 mb-4 tracking-tight">ডিপোজিট করুন</h2>
-                    <p class="text-[10px] text-gray-400 mb-4">বিকাশ/নগদ (Personal): 017XXXXXXXX</p>
-                    <input id="d-amount" type="number" placeholder="পরিমাণ" class="w-full p-3 bg-gray-50 rounded-xl mb-2 outline-none">
-                    <input id="d-trx" type="text" placeholder="TrxID (লেনদেন আইডি)" class="w-full p-3 bg-gray-50 rounded-xl mb-4 outline-none">
-                    <button id="deposit-btn" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">ডিপোজিট রিকোয়েস্ট</button>
-                </div>
-
+            <div id="wallet-tab" class="tab-content space-y-4">
                 <div class="bg-white p-6 rounded-3xl shadow-sm border">
-                    <h2 class="font-bold text-blue-600 mb-4">উইথড্র করুন</h2>
+                    <h2 class="font-bold text-green-600 mb-4 flex items-center gap-2"><i class="fas fa-money-bill-wave"></i> ডিপোজিট করুন</h2>
+                    <p class="text-[10px] text-gray-400 mb-4">আমাদের বিকাশ/নগদ (Personal): 017XXXXXXXX</p>
+                    <input id="d-amount" type="number" placeholder="পরিমাণ" class="w-full p-3 bg-gray-50 rounded-xl mb-2 outline-none">
+                    <input id="d-trx" type="text" placeholder="Transaction ID" class="w-full p-3 bg-gray-50 rounded-xl mb-4 outline-none">
+                    <button id="deposit-btn" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">রিকোয়েস্ট পাঠান</button>
+                </div>
+                <div class="bg-white p-6 rounded-3xl shadow-sm border">
+                    <h2 class="font-bold text-orange-600 mb-4 flex items-center gap-2"><i class="fas fa-hand-holding-usd"></i> উইথড্র করুন</h2>
                     <input id="w-amount" type="number" placeholder="পরিমাণ" class="w-full p-3 bg-gray-50 rounded-xl mb-2 outline-none">
-                    <input id="w-number" type="text" placeholder="নম্বর" class="w-full p-3 bg-gray-50 rounded-xl mb-4 outline-none">
-                    <button id="withdraw-btn" class="w-full bg-orange-500 text-white py-3 rounded-xl font-bold">উইথড্র রিকোয়েস্ট</button>
+                    <input id="w-number" type="text" placeholder="বিকাশ/নগদ নম্বর" class="w-full p-3 bg-gray-50 rounded-xl mb-4 outline-none">
+                    <button id="withdraw-btn" class="w-full bg-orange-600 text-white py-3 rounded-xl font-bold">উইথড্র রিকোয়েস্ট</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="bottom-nav" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-4 z-50">
-        <button onclick="switchTab('home')" id="btn-home" class="flex flex-col items-center active-tab">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
-            <span class="text-[10px]">Home</span>
+    <nav id="bottom-nav" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3 z-50">
+        <button onclick="switchTab('home')" id="btn-home" class="flex flex-col items-center active-tab text-gray-400">
+            <i class="fas fa-home text-lg"></i>
+            <span class="text-[10px] mt-1">Home</span>
         </button>
-        <button onclick="switchTab('post-job')" id="btn-post-job" class="flex flex-col items-center text-gray-300">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            <span class="text-[10px]">Post Job</span>
+        <button onclick="switchTab('post-job')" id="btn-post-job" class="flex flex-col items-center text-gray-400">
+            <i class="fas fa-plus-circle text-lg"></i>
+            <span class="text-[10px] mt-1">Post Job</span>
         </button>
-        <button onclick="switchTab('wallet')" id="btn-wallet" class="flex flex-col items-center text-gray-300">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>
-            <span class="text-[10px]">Wallet</span>
+        <button onclick="switchTab('wallet')" id="btn-wallet" class="flex flex-col items-center text-gray-400">
+            <i class="fas fa-wallet text-lg"></i>
+            <span class="text-[10px] mt-1">Wallet</span>
         </button>
-    </div>
-
-    <div id="proof-modal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-6 z-[60] backdrop-blur-sm">
-        <div class="bg-white p-6 rounded-3xl max-w-sm w-full">
-            <h3 class="font-bold mb-1">কাজের প্রমাণ দিন</h3>
-            <p id="modal-job-title" class="text-xs text-blue-600 mb-4"></p>
-            <a id="modal-job-url" href="#" target="_blank" class="block bg-blue-50 text-blue-700 text-center py-2 rounded-xl text-xs font-bold mb-4 tracking-tight">লিঙ্কে গিয়ে কাজ করুন</a>
-            <input type="file" id="imageInput" accept="image/*" class="w-full text-xs mb-6">
-            <div class="flex gap-2">
-                <button onclick="document.getElementById('proof-modal').classList.add('hidden')" class="flex-1 bg-gray-100 py-3 rounded-2xl font-bold">বাতিল</button>
-                <button id="submit-proof-btn" class="flex-1 bg-blue-600 text-white py-3 rounded-2xl font-bold shadow-lg">জমা দিন</button>
-            </div>
-        </div>
-    </div>
+    </nav>
 
     <script type="module" src="app.js"></script>
+    <script>
+        // UI Helpers for side menu and tab switching
+        function toggleMenu() {
+            const menu = document.getElementById('side-menu');
+            const overlay = document.getElementById('menu-overlay');
+            const isOpen = menu.style.transform === 'translateX(0px)';
+            menu.style.transform = isOpen ? 'translateX(-100%)' : 'translateX(0px)';
+            overlay.classList.toggle('hidden');
+        }
+
+        window.switchTab = (tab) => {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+            
+            document.querySelectorAll('#bottom-nav button').forEach(el => el.classList.remove('active-tab'));
+            document.getElementById('btn-' + tab).classList.add('active-tab');
+            
+            if (!document.getElementById('side-menu').classList.contains('-translate-x-full')) toggleMenu();
+        };
+    </script>
 </body>
 </html>
