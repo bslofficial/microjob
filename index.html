@@ -34,30 +34,26 @@
             <p id="account-status" class="text-[10px] font-bold mt-1 px-2 py-0.5 bg-red-500 rounded-full inline-block">Not Active</p>
         </div>
         <nav class="p-4 space-y-1">
-            <button onclick="window.switchTab('home')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-home"></i> Home</button>
-            <button onclick="window.switchTab('post-job')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-plus-circle"></i> Post Job</button>
-            <button onclick="window.switchTab('wallet')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-wallet"></i> Wallet</button>
+            <button onclick="window.switchTab('home')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm text-gray-700"><i class="fas fa-home w-5"></i> Home</button>
+            <button onclick="window.switchTab('post-job')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm text-gray-700"><i class="fas fa-plus-circle w-5"></i> Post Job</button>
+            <button onclick="window.switchTab('wallet')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm text-gray-700"><i class="fas fa-wallet w-5"></i> Wallet</button>
             <hr class="my-2">
-            <button onclick="window.switchTab('refer')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-user-plus"></i> Refer & Earn</button>
-            <button class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-users"></i> My Team</button>
-            <button onclick="window.activateAccount()" class="w-full text-left p-3 text-blue-600 font-bold hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm">
-                <i class="fas fa-check-circle"></i> Activate (৳১০০)
-            </button>
+            <button onclick="window.switchTab('refer')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm text-gray-700"><i class="fas fa-user-plus w-5"></i> Refer & Earn</button>
+            <button class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm text-gray-700"><i class="fas fa-users w-5"></i> My Team</button>
+            <button onclick="window.activateAccount()" class="w-full text-left p-3 text-blue-600 font-bold hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-check-circle w-5"></i> Activate (৳১০০)</button>
             <hr class="my-2">
-            <button id="logout-btn" class="w-full text-left p-3 text-red-500 font-bold hover:bg-red-50 rounded-xl flex items-center gap-3 text-sm">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
+            <button id="logout-btn" class="w-full text-left p-3 text-red-500 font-bold hover:bg-red-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-sign-out-alt w-5"></i> Logout</button>
         </nav>
     </div>
     <div id="menu-overlay" onclick="window.toggleMenu()" class="fixed inset-0 bg-black/50 hidden z-[55]"></div>
 
     <main class="max-w-md mx-auto p-4">
         <div id="auth-view" class="bg-white p-8 rounded-3xl shadow-xl mt-10">
-            <h2 class="text-xl font-bold mb-6 text-center text-blue-600">Login / Signup</h2>
+            <h2 class="text-xl font-bold mb-6 text-center text-blue-600">লগইন / সাইন-আপ</h2>
             <input id="email" type="email" placeholder="ইমেইল" class="w-full border p-4 rounded-2xl mb-3 outline-none bg-gray-50 focus:border-blue-500">
             <input id="password" type="password" placeholder="পাসওয়ার্ড" class="w-full border p-4 rounded-2xl mb-5 outline-none bg-gray-50 focus:border-blue-500">
-            <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold">Login</button>
-            <button id="signup-btn" class="w-full text-blue-600 font-bold py-3 mt-2">Sign Up</button>
+            <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition">Login</button>
+            <button id="signup-btn" class="w-full text-blue-600 font-bold py-3 mt-2">Create Account</button>
         </div>
 
         <div id="main-view" class="hidden">
@@ -71,12 +67,14 @@
 
             <div id="post-job-tab" class="tab-content">
                 <div id="post-job-form" class="bg-white p-6 rounded-3xl shadow-md border hidden">
-                    <h2 class="text-lg font-bold mb-4 text-blue-700">পোস্ট জব (Admin Approval)</h2>
-                    <input id="u-job-title" type="text" placeholder="কাজের নাম" class="w-full p-4 bg-gray-50 rounded-2xl mb-3 outline-none">
-                    <input id="u-job-url" type="url" placeholder="কাজের লিঙ্ক" class="w-full p-4 bg-gray-50 rounded-2xl mb-3 outline-none">
-                    <textarea id="u-job-desc" placeholder="নিয়মাবলী..." class="w-full p-4 bg-gray-50 rounded-2xl mb-3 outline-none h-24"></textarea>
-                    <input id="u-job-budget" type="number" placeholder="বাজেট (৳)" class="w-full p-4 bg-gray-50 rounded-2xl mb-4 outline-none">
-                    <button id="u-post-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold">জমা দিন</button>
+                    <h2 class="text-lg font-bold mb-4 text-blue-700">জব পোস্ট করুন</h2>
+                    <div class="space-y-3">
+                        <input id="u-job-title" type="text" placeholder="টাইটেল" class="w-full p-4 bg-gray-50 rounded-2xl outline-none">
+                        <input id="u-job-url" type="url" placeholder="লিঙ্ক" class="w-full p-4 bg-gray-50 rounded-2xl outline-none">
+                        <textarea id="u-job-desc" placeholder="নির্দেশনা..." class="w-full p-4 bg-gray-50 rounded-2xl outline-none h-24"></textarea>
+                        <input id="u-job-budget" type="number" placeholder="বাজেট (৳)" class="w-full p-4 bg-gray-50 rounded-2xl outline-none">
+                        <button id="u-post-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg">জমা দিন</button>
+                    </div>
                 </div>
                 <div id="activation-warning" class="text-center py-20">
                     <i class="fas fa-lock text-5xl text-gray-200 mb-4"></i>
@@ -85,8 +83,12 @@
             </div>
 
             <div id="wallet-tab" class="tab-content space-y-4">
-                <div class="bg-white p-6 rounded-3xl shadow-md border">
-                    <h2 class="font-bold text-green-600 mb-4">ডিপোজিট করুন</h2>
+                <div class="bg-white p-6 rounded-3xl shadow-md border border-green-50">
+                    <h2 class="font-bold text-green-600 mb-2"><i class="fas fa-money-bill-wave"></i> ডিপোজিট করুন</h2>
+                    <div class="bg-blue-50 p-3 rounded-xl mb-4 text-center">
+                        <p class="text-[10px] text-blue-400 font-bold uppercase">আমাদের বিকাশ/নগদ (Personal)</p>
+                        <p class="text-lg font-black text-blue-700 select-all">01913932587</p>
+                    </div>
                     <input id="d-amount" type="number" placeholder="পরিমাণ" class="w-full p-3 bg-gray-50 rounded-xl mb-2 outline-none">
                     <input id="d-trx" type="text" placeholder="Transaction ID" class="w-full p-3 bg-gray-50 rounded-xl mb-4 outline-none">
                     <button id="deposit-btn" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">ডিপোজিট রিকোয়েস্ট</button>
@@ -95,9 +97,10 @@
 
             <div id="refer-tab" class="tab-content">
                 <div class="bg-white p-6 rounded-3xl shadow-md text-center">
+                    <i class="fas fa-gift text-4xl text-blue-600 mb-3"></i>
                     <h2 class="text-lg font-bold">রেফার করুন ও আয় করুন</h2>
-                    <p id="refer-link" class="text-blue-600 font-mono text-xs mt-4 p-3 bg-gray-50 rounded-xl border-2 border-dashed"></p>
-                    <button onclick="window.copyReferLink()" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-xl">লিঙ্ক কপি করুন</button>
+                    <p id="refer-link" class="text-blue-600 font-mono text-[10px] mt-4 p-3 bg-gray-50 rounded-xl border-2 border-dashed truncate"></p>
+                    <button onclick="window.copyReferLink()" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-xl font-bold">লিঙ্ক কপি করুন</button>
                 </div>
             </div>
         </div>
