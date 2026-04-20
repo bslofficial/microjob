@@ -16,43 +16,63 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Auth Handler
+// Tab Navigation Logic
+window.changeTab = (tab) => {
+    document.getElementById('home-section').classList.add('hidden');
+    document.getElementById('profile-section').classList.add('hidden');
+    document.getElementById('wallet-section').classList.add('hidden');
+
+    if (tab === 'home') {
+        document.getElementById('home-section').classList.remove('hidden');
+    } else if (tab === 'profile') {
+        document.getElementById('profile-section').classList.remove('hidden');
+        document.getElementById('user-email-text').innerText = auth.currentUser.email;
+        document.getElementById('profile-balance').innerText = document.getElementById('balance').innerText;
+    } else if (tab === 'wallet') {
+        document.getElementById('wallet-section').classList.remove('hidden');
+    }
+};
+
+// Auth State
 onAuthStateChanged(auth, async (user) => {
     const authView = document.getElementById('auth-view');
     const mainView = document.getElementById('main-view');
-    const authInfo = document.getElementById('auth-info');
     const bottomBar = document.getElementById('bottom-bar');
+    const authInfo = document.getElementById('auth-info');
 
     if (user) {
         authView.classList.add('hidden');
         mainView.classList.remove('hidden');
-        authInfo.classList.remove('hidden');
         bottomBar.classList.remove('hidden');
+        authInfo.classList.remove('hidden');
         loadUserBalance(user.uid);
-        filterJobs('all'); // প্রথমে সব কাজ লোড হবে
+        filterJobs('all');
     } else {
         authView.classList.remove('hidden');
         mainView.classList.add('hidden');
-        authInfo.classList.add('hidden');
         bottomBar.classList.add('hidden');
+        authInfo.classList.add('hidden');
     }
 });
 
-// Category Filter
+// Load Balance
+async function loadUserBalance(uid) {
+    const snap = await getDoc(doc(db, "users", uid));
+    if (snap.exists()) document.getElementById('balance').innerText = snap.data().balance.toFixed(2);
+}
+
+// Category Filtering
 window.filterJobs = async (category) => {
     const container = document.getElementById('job-list');
-    container.innerHTML = '<p class="text-center text-gray-400 py-10 italic">কাজ লোড হচ্ছে...</p>';
+    container.innerHTML = '<p class="text-center py-10 text-gray-400">লোডিং...</p>';
     
-    let q;
-    if (category === 'all') {
-        q = query(collection(db, "jobs"), orderBy("createdAt", "desc"));
-    } else {
-        // টাইটেলে ক্যাটাগরির নাম থাকলে ফিল্টার করবে
-        q = query(collection(db, "jobs"), where("title", ">=", category), where("title", "<=", category + '\uf8ff'));
+    let q = query(collection(db, "jobs"), orderBy("createdAt", "desc"));
+    if (category !== 'all') {
+        q = query(collection(db, "jobs"), where("category", "==", category));
     }
 
     const snap = await getDocs(q);
-    container.innerHTML = snap.empty ? '<p class="text-center text-gray-400 py-10">এই ক্যাটাগরিতে কোনো কাজ নেই।</p>' : '';
+    container.innerHTML = snap.empty ? '<p class="text-center py-10">কোনো কাজ নেই।</p>' : '';
     
     snap.forEach(d => {
         const job = d.data();
@@ -62,25 +82,17 @@ window.filterJobs = async (category) => {
                     <h3 class="font-bold text-lg">${job.title}</h3>
                     <span class="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full text-xs">৳${job.budget}</span>
                 </div>
-                <p class="text-gray-500 text-xs mb-4 bg-gray-50 p-3 rounded-lg border-l-4 border-blue-400">
+                <p class="text-gray-500 text-xs mb-4 bg-gray-50 p-3 rounded-lg border-l-4 border-blue-400 leading-relaxed">
                     ${job.description || 'নিয়ম অনুযায়ী কাজটি করুন।'}
                 </p>
-                <button onclick="window.openProof('${d.id}', '${job.title}', ${job.budget})" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl transition shadow-md">কাজটি করুন</button>
+                <button onclick="window.openProof('${d.id}', '${job.title}', ${job.budget})" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl transition shadow-md hover:bg-blue-700">কাজটি করুন</button>
             </div>
         `;
     });
 };
 
-// --- বাকি সব ফাংশন (Login, Signup, Withdraw) আগের মতোই থাকবে ---
-// (পূর্বের দেওয়া app.js এর অন্যান্য লজিকগুলো এখানে থাকবে)
-
-async function loadUserBalance(uid) {
-    const snap = await getDoc(doc(db, "users", uid));
-    if (snap.exists()) document.getElementById('balance').innerText = snap.data().balance.toFixed(2);
-}
-
-document.getElementById('logout-btn').onclick = () => signOut(auth);
-
+// --- Proof Submission, Login, Signup & Others (আগের মতোই থাকবে) ---
+// (আপনার আগের ফাইলে থাকা ওপেন প্রুফ এবং জমা দেওয়ার ফাংশনগুলো এখানে থাকবে)
 let currentJob = null;
 window.openProof = (id, title, budget) => {
     currentJob = { id, title, budget };
@@ -113,6 +125,12 @@ document.getElementById('submit-proof-btn').onclick = async () => {
     } catch (e) { alert(e.message); btn.disabled = false; btn.innerText = "জমা দিন"; }
 };
 
+document.getElementById('login-btn').onclick = () => {
+    const email = document.getElementById('email').value;
+    const pass = document.getElementById('password').value;
+    signInWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message));
+};
+
 document.getElementById('signup-btn').onclick = async () => {
     const email = document.getElementById('email').value;
     const pass = document.getElementById('password').value;
@@ -123,8 +141,4 @@ document.getElementById('signup-btn').onclick = async () => {
     } catch (e) { alert(e.message); }
 };
 
-document.getElementById('login-btn').onclick = () => {
-    const email = document.getElementById('email').value;
-    const pass = document.getElementById('password').value;
-    signInWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message));
-};
+document.getElementById('logout-btn').onclick = () => signOut(auth);
