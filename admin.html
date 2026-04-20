@@ -3,64 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - MicroJobs BD Management</title>
+    <title>Admin Panel - MicroJobs</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen">
-
-    <nav class="bg-gray-900 p-4 text-white font-bold text-center shadow-lg sticky top-0 z-50">
-        ADMIN CONTROL PANEL - MANAGEMENT
-    </nav>
-
-    <div class="max-w-5xl mx-auto p-4 md:p-8">
-        
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-10">
-            <h2 class="text-xl font-bold mb-6 text-blue-800 border-b pb-2 flex items-center gap-2">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                নতুন কাজ পাবলিশ করুন
+<body class="bg-slate-50 p-4">
+    <div class="max-w-md mx-auto">
+        <div class="bg-white p-6 rounded-3xl shadow-xl border border-gray-100">
+            <h2 class="text-xl font-bold text-blue-700 mb-6 flex items-center gap-2">
+                <span class="bg-blue-100 p-2 rounded-lg">🚀</span> নতুন কাজ পাবলিশ করুন
             </h2>
             
-            <div class="grid grid-cols-1 gap-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input id="adm-title" type="text" placeholder="কাজের টাইটেল (যেমন: Subscribe My Channel)" class="border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-400">
-                    
-                    <select id="adm-category" class="border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-400 bg-white">
-                        <option value="">ক্যাটাগরি সিলেক্ট করুন</option>
+            <div class="space-y-4">
+                <input id="title" type="text" placeholder="কাজের নাম (যেমন: Facebook Follow)" class="w-full p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 focus:ring-blue-400 border-none">
+                
+                <textarea id="desc" placeholder="কাজের নিয়মাবলি..." class="w-full p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 focus:ring-blue-400 border-none h-24"></textarea>
+                
+                <div class="flex gap-2">
+                    <input id="budget" type="number" placeholder="টাকা (৳)" class="w-1/2 p-4 bg-gray-50 rounded-2xl outline-none border-none">
+                    <select id="cat" class="w-1/2 p-4 bg-gray-50 rounded-2xl outline-none border-none text-gray-500">
                         <option value="Youtube">YouTube</option>
                         <option value="Facebook">Facebook</option>
-                        <option value="App">App Install</option>
-                        <option value="Others">অন্যান্য</option>
+                        <option value="Others">Others</option>
                     </select>
                 </div>
-
-                <textarea id="adm-desc" placeholder="কাজের নিয়মাবলী বা ডেসক্রিপশন এখানে লিখুন..." class="border p-3 rounded-xl h-32 outline-none focus:ring-2 focus:ring-blue-400 w-full"></textarea>
                 
-                <div class="flex gap-4">
-                    <input id="adm-budget" type="number" placeholder="বাজেট (৳)" class="border p-3 rounded-xl w-32 outline-none focus:ring-2 focus:ring-blue-400 font-bold text-blue-600">
-                    <button id="adm-post-btn" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-md active:scale-95">পাবলিশ করুন</button>
-                </div>
+                <button id="add-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 active:scale-95 transition-all">পাবলিশ করুন</button>
             </div>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-8">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                <h2 class="font-bold text-lg mb-5 text-red-600 flex items-center gap-2 border-b pb-2">
-                    <span class="w-3 h-3 bg-red-600 rounded-full animate-pulse"></span> পেন্ডিং প্রুফ
-                </h2>
-                <div id="pending-proofs" class="space-y-4">
-                    <p class="text-gray-400 italic text-sm">লোড হচ্ছে...</p>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                <h2 class="font-bold text-lg mb-5 text-green-600 border-b pb-2">উইথড্র রিকোয়েস্ট</h2>
-                <div id="pending-withdraws" class="space-y-4">
-                    <p class="text-gray-400 italic text-sm">লোড হচ্ছে...</p>
-                </div>
+        <div class="mt-8">
+            <h3 class="font-bold text-gray-700 mb-4 flex items-center gap-2">
+                <span class="w-2 h-2 bg-red-500 rounded-full"></span> পেন্ডিং আবেদনসমূহ
+            </h3>
+            <div id="admin-pending-list" class="space-y-3">
+                <p class="text-center text-gray-400 text-sm py-10 bg-white rounded-3xl">কোনো আবেদন নেই</p>
             </div>
         </div>
     </div>
 
-    <script type="module" src="admin.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
+            authDomain: "microjobs-b9d90.firebaseapp.com",
+            projectId: "microjobs-b9d90",
+            storageBucket: "microjobs-b9d90.firebasestorage.app",
+            messagingSenderId: "1006928193385",
+            appId: "1:1006928193385:web:d4b5cc1911abda6ff53ff8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        document.getElementById('add-btn').onclick = async () => {
+            const title = document.getElementById('title').value;
+            const desc = document.getElementById('desc').value;
+            const budget = parseFloat(document.getElementById('budget').value);
+            const category = document.getElementById('cat').value;
+
+            if(!title || !budget) return alert("তথ্য অসম্পূর্ণ!");
+
+            try {
+                await addDoc(collection(db, "jobs"), {
+                    title, description: desc, budget, category, createdAt: serverTimestamp()
+                });
+                alert("কাজটি সফলভাবে লাইভ হয়েছে!");
+                location.reload();
+            } catch (e) {
+                alert("এরর: " + e.message);
+            }
+        };
+    </script>
 </body>
 </html>
