@@ -3,138 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MicroJobs BD - Earn Money Online</title>
+    <title>MicroJobs - User Dashboard</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        // আপনার ফায়ারবেস কনফিগারেশন
-        const firebaseConfig = {
-            apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
-            authDomain: "microjobs-b9d90.firebaseapp.com",
-            projectId: "microjobs-b9d90",
-            storageBucket: "microjobs-b9d90.firebasestorage.app",
-            messagingSenderId: "1006928193385",
-            appId: "1:1006928193385:web:d4b5cc1911abda6ff53ff8",
-            measurementId: "G-74NJW2SE9F"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // --- ফাংশন: পেজ পরিবর্তন করা ---
-        window.showView = (view) => {
-            if (view === 'admin') {
-                document.getElementById('user-view').classList.add('hidden');
-                document.getElementById('admin-view').classList.remove('hidden');
-            } else {
-                document.getElementById('admin-view').classList.add('hidden');
-                document.getElementById('user-view').classList.remove('hidden');
-                fetchJobs();
-            }
-        };
-
-        // --- ফাংশন: জব পোস্ট করা (Admin) ---
-        document.getElementById('job-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const title = document.getElementById('job-title').value;
-            const budget = document.getElementById('job-budget').value;
-
-            try {
-                await addDoc(collection(db, "jobs"), {
-                    title: title,
-                    budget: Number(budget),
-                    createdAt: new Date()
-                });
-                alert("জবটি সফলভাবে পাবলিশ হয়েছে!");
-                document.getElementById('job-form').reset();
-                showView('user');
-            } catch (error) {
-                alert("এরর: " + error.message);
-            }
-        });
-
-        // --- ফাংশন: জব লিস্ট দেখানো (User) ---
-        async function fetchJobs() {
-            const jobListContainer = document.getElementById('job-list');
-            jobListContainer.innerHTML = '<p class="text-center text-gray-500">লোড হচ্ছে...</p>';
-
-            try {
-                const q = query(collection(db, "jobs"), orderBy("createdAt", "desc"));
-                const querySnapshot = await getDocs(q);
-                jobListContainer.innerHTML = '';
-
-                if (querySnapshot.empty) {
-                    jobListContainer.innerHTML = '<p class="text-center text-gray-500">কোনো কাজ পাওয়া যায়নি।</p>';
-                    return;
-                }
-
-                querySnapshot.forEach((doc) => {
-                    const job = doc.data();
-                    const jobHtml = `
-                        <div class="bg-white p-5 rounded-xl shadow-sm flex justify-between items-center border border-gray-100 hover:shadow-md transition">
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-800">${job.title}</h3>
-                                <p class="text-blue-600 font-bold mt-1">৳${job.budget}</p>
-                            </div>
-                            <button class="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">কাজটি করুন</button>
-                        </div>
-                    `;
-                    jobListContainer.innerHTML += jobHtml;
-                });
-            } catch (error) {
-                console.error("Error fetching jobs: ", error);
-            }
-        }
-
-        // শুরুতে জব লোড করা
-        fetchJobs();
-    </script>
 </head>
-<body class="bg-gray-50 font-sans">
+<body class="bg-gray-50">
 
     <nav class="bg-blue-700 p-4 text-white flex justify-between items-center shadow-md">
         <h1 class="text-xl font-bold">MicroJobs BD</h1>
-        <div class="space-x-2">
-            <button onclick="showView('user')" class="bg-blue-600 px-4 py-1.5 rounded-lg hover:bg-blue-800 transition">ইউজার</button>
-            <button onclick="showView('admin')" class="bg-red-600 px-4 py-1.5 rounded-lg hover:bg-red-800 transition">এডমিন</button>
+        <div class="space-x-4">
+            <a href="index.html" class="hover:underline">Home</a>
+            <a href="admin.html" class="bg-red-600 px-4 py-2 rounded-lg text-sm">Admin Panel</a>
         </div>
     </nav>
 
     <main class="p-6 max-w-4xl mx-auto">
-        
-        <section id="user-view">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-800">সহজ কাজ করে ইনকাম</h2>
-                <div class="bg-blue-100 px-6 py-2 rounded-full font-bold text-blue-800 shadow-sm border border-blue-200">
-                    ব্যালেন্স: ৳০০.০০
-                </div>
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-bold text-gray-800">Available Jobs</h2>
+            <div class="bg-blue-100 px-6 py-2 rounded-full font-bold text-blue-800 border border-blue-200">
+                Balance: ৳০০.০০
             </div>
-            <div id="job-list" class="grid grid-cols-1 gap-4">
-                </div>
-        </section>
+        </div>
 
-        <section id="admin-view" class="hidden">
-            <div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-                <h2 class="text-2xl font-bold mb-6 text-red-600 border-b pb-2">নতুন কাজ যোগ করুন</h2>
-                <form id="job-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-600 mb-1">কাজের টাইটেল</label>
-                        <input id="job-title" type="text" placeholder="উদা: ফেসবুক ফলো" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-600 mb-1">বাজেট (টাকা)</label>
-                        <input id="job-budget" type="number" placeholder="৳১০" class="w-full border border-gray-300 p-2.5 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required>
-                    </div>
-                    <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 w-full font-bold transition-all">পাবলিশ করুন</button>
-                </form>
-                <button onclick="showView('user')" class="w-full mt-4 text-gray-500 text-sm hover:underline">পিছনে ফিরে যান</button>
-            </div>
-        </section>
-
+        <div id="job-list" class="grid gap-4">
+            <p class="text-center text-gray-500">Loading jobs...</p>
+        </div>
     </main>
 
+    <script type="module" src="app.js"></script>
 </body>
 </html>
