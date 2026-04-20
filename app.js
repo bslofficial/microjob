@@ -1,8 +1,9 @@
+// 'Import' এর জায়গায় 'import' (ছোট হাতের i) হবে
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, doc, getDoc, updateDoc, increment, addDoc, collection, onSnapshot, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-// আপনার ফায়ারবেস কনফিগ (আগেরটিই থাকবে)
+// ফায়ারবেস কনফিগ (আপনার কনফিগটি এখানে থাকবে)
 const firebaseConfig = {
     apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
     authDomain: "microjobs-b9d90.firebaseapp.com",
@@ -16,9 +17,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// --- ১. গ্লোবাল ইউজার ইন্টারফেস ফাংশনস ---
-
-// ড্রয়ার মেনু টগল করা
+// --- ১. UI ফাংশনস ---
 window.toggleMenu = () => {
     const menu = document.getElementById('side-menu');
     const overlay = document.getElementById('menu-overlay');
@@ -27,34 +26,26 @@ window.toggleMenu = () => {
     overlay.classList.toggle('hidden');
 };
 
-// ট্যাব সুইচিং লজিক
 window.switchTab = (tab) => {
-    // সব কন্টেন্ট হাইড করা
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    // নির্দিষ্ট ট্যাব দেখানো
     const activeTab = document.getElementById(tab + '-tab');
     if (activeTab) activeTab.classList.add('active');
 
-    // বটম নেভিগেশন কালার পরিবর্তন
     document.querySelectorAll('#bottom-nav button').forEach(el => el.classList.remove('active-tab'));
     const btn = document.getElementById('btn-' + tab);
     if (btn) btn.classList.add('active-tab');
 
-    // মেনু খোলা থাকলে বন্ধ করা
     if (document.getElementById('side-menu').style.transform === 'translateX(0px)') window.toggleMenu();
 };
 
-// রেফারেল লিঙ্ক কপি করা
 window.copyReferLink = () => {
     const link = document.getElementById('refer-link').innerText;
     if (link && link !== "লোড হচ্ছে...") {
-        navigator.clipboard.writeText(link).then(() => {
-            alert("রেফারেল লিঙ্ক কপি হয়েছে!");
-        });
+        navigator.clipboard.writeText(link).then(() => alert("রেফারেল লিঙ্ক কপি হয়েছে!"));
     }
 };
 
-// অ্যাকাউন্ট এক্টিভেশন (৳১০০)
+// --- ২. এক্টিভেশন লজিক ---
 window.activateAccount = async () => {
     const user = auth.currentUser;
     if (!user) return alert("দয়া করে লগইন করুন");
@@ -63,38 +54,30 @@ window.activateAccount = async () => {
     const userSnap = await getDoc(userRef);
     const userData = userSnap.data();
 
-    if (userData.isActive) return alert("আপনার অ্যাকাউন্ট অলরেডি এক্টিভ!");
+    if (userData.isActive) return alert("ইতিমধ্যেই এক্টিভ আছে!");
 
     if (userData.balance >= 100) {
-        if (confirm("এক্টিভেশন ফি ১০০ টাকা কাটা হবে। আপনি কি নিশ্চিত?")) {
-            await updateDoc(userRef, { 
-                balance: increment(-100), 
-                isActive: true 
-            });
-            alert("অভিনন্দন! আপনার অ্যাকাউন্ট এখন এক্টিভ।");
+        if (confirm("১০০ টাকা এক্টিভেশন ফি নেওয়া হবে। নিশ্চিত?")) {
+            await updateDoc(userRef, { balance: increment(-100), isActive: true });
+            alert("সফলভাবে এক্টিভেট হয়েছে!");
         }
     } else {
-        alert("আপনার ব্যালেন্স নেই। দয়া করে ১০০ টাকা ডিপোজিট করুন।");
+        alert("ব্যালেন্স নেই। দয়া করে রিচার্জ করুন।");
         window.switchTab('wallet');
     }
 };
 
-// --- ২. অথেন্টিকেশন লজিক (Login/Signup) ---
-
-// লগইন
+// --- ৩. অথেন্টিকেশন ---
 document.getElementById('login-btn').onclick = () => {
     const email = document.getElementById('email').value;
     const pass = document.getElementById('password').value;
     if(!email || !pass) return alert("সব ঘর পূরণ করুন");
-    signInWithEmailAndPassword(auth, email, pass).catch(err => alert(err.message));
+    signInWithEmailAndPassword(auth, email, pass).catch(err => alert("লগইন ব্যর্থ: " + err.message));
 };
 
-// সাইন-আপ (রেফারেল ট্র্যাকিং সহ)
 document.getElementById('signup-btn').onclick = () => {
     const email = document.getElementById('email').value;
     const pass = document.getElementById('password').value;
-    
-    // URL থেকে রেফার কোড নেওয়া
     const urlParams = new URLSearchParams(window.location.search);
     const refBy = urlParams.get('ref');
 
@@ -102,61 +85,48 @@ document.getElementById('signup-btn').onclick = () => {
 
     createUserWithEmailAndPassword(auth, email, pass).then(async (cred) => {
         await setDoc(doc(db, "users", cred.user.uid), {
-            email: email,
-            balance: 0,
-            isActive: false,
-            referredBy: refBy || null,
-            totalRefers: 0,
-            referEarnings: 0,
-            createdAt: serverTimestamp()
+            email: email, balance: 0, isActive: false, referredBy: refBy || null,
+            totalRefers: 0, referEarnings: 0, createdAt: serverTimestamp()
         });
-    }).catch(err => alert(err.message));
+    }).catch(err => alert("সাইন-আপ ব্যর্থ: " + err.message));
 };
 
-// লগআউট
-document.getElementById('logout-btn').onclick = () => {
-    signOut(auth).then(() => location.reload());
-};
+document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
 
-// --- ৩. রিয়েল-টাইম ডাটা লজিক ---
-
+// --- ৪. রিয়েল-টাইম ডাটা ট্র্যাকিং ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        // UI পরিবর্তন
         document.getElementById('auth-view').classList.add('hidden');
         document.getElementById('main-view').classList.remove('hidden');
         document.getElementById('bottom-nav').classList.remove('hidden');
         document.getElementById('user-email-display').innerText = user.email;
 
-        // রেফারেল লিঙ্ক সেট করা
-        const currentUrl = window.location.origin + window.location.pathname;
-        document.getElementById('refer-link').innerText = `${currentUrl}?ref=${user.uid}`;
+        // ক্লিন রেফার লিঙ্ক জেনারেশন
+        const cleanUrl = window.location.origin + window.location.pathname;
+        document.getElementById('refer-link').innerText = `${cleanUrl}?ref=${user.uid}`;
 
-        // ইউজারের ডাটাবেস পর্যবেক্ষণ
         onSnapshot(doc(db, "users", user.uid), (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                
-                // ব্যালেন্স ও স্ট্যাটাস আপডেট
-                document.getElementById('balance').innerText = data.balance.toFixed(2);
+                document.getElementById('balance').innerText = (data.balance || 0).toFixed(2);
                 document.getElementById('total-refers').innerText = data.totalRefers || 0;
                 document.getElementById('refer-earnings').innerText = "৳" + (data.referEarnings || 0);
 
                 const statusEl = document.getElementById('account-status');
                 if (data.isActive) {
                     statusEl.innerText = "Active";
-                    statusEl.classList.replace('bg-red-500', 'bg-green-500');
+                    statusEl.className = "text-[10px] font-bold mt-1 px-2 py-0.5 bg-green-500 rounded-full inline-block";
                     document.getElementById('post-job-form').classList.remove('hidden');
                     document.getElementById('activation-warning').classList.add('hidden');
                 } else {
                     statusEl.innerText = "Not Active";
-                    statusEl.classList.replace('bg-green-500', 'bg-red-500');
+                    statusEl.className = "text-[10px] font-bold mt-1 px-2 py-0.5 bg-red-500 rounded-full inline-block";
                 }
             }
         });
     } else {
-        // লগআউট থাকলে ভিউ রিসেট
         document.getElementById('auth-view').classList.remove('hidden');
         document.getElementById('main-view').classList.add('hidden');
+        document.getElementById('bottom-nav').classList.add('hidden');
     }
 });
