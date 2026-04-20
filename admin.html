@@ -2,39 +2,23 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 p-4 pb-10">
-    <div class="max-w-md mx-auto space-y-6">
-        <div class="bg-white p-6 rounded-3xl shadow-lg border border-blue-50">
-            <h2 class="font-bold text-blue-800 mb-4">📢 নতুন কাজ পোস্ট করুন (এডমিন)</h2>
-            <div class="space-y-3">
-                <input id="adm-title" type="text" placeholder="টাইটেল" class="w-full p-3 bg-gray-50 rounded-xl outline-none">
-                <input id="adm-url" type="url" placeholder="লিঙ্ক (URL)" class="w-full p-3 bg-gray-50 rounded-xl outline-none">
-                <textarea id="adm-desc" placeholder="নিয়ম..." class="w-full p-3 bg-gray-50 rounded-xl outline-none h-20"></textarea>
-                <input id="adm-budget" type="number" placeholder="টাকা" class="w-full p-3 bg-gray-50 rounded-xl outline-none">
-                <button id="adm-post-btn" class="w-full bg-blue-700 text-white py-3 rounded-xl font-bold">পাবলিশ করুন</button>
-            </div>
+<body class="bg-gray-100 p-5">
+    <div class="max-w-md mx-auto">
+        <h1 class="text-xl font-bold mb-5 text-center text-red-600">Admin Control Panel</h1>
+        <div class="bg-white p-5 rounded-2xl shadow-md mb-5">
+            <h2 class="font-bold mb-3">নতুন কাজ পাবলিশ করুন</h2>
+            <input id="adm-title" type="text" placeholder="Title" class="w-full border p-2 rounded mb-2">
+            <input id="adm-url" type="url" placeholder="URL" class="w-full border p-2 rounded mb-2">
+            <input id="adm-budget" type="number" placeholder="Budget" class="w-full border p-2 rounded mb-4">
+            <button id="adm-post-btn" class="w-full bg-red-600 text-white py-2 rounded font-bold">পাবলিশ করুন</button>
         </div>
-
-        <div class="bg-white p-6 rounded-3xl shadow-md">
-            <h3 class="font-bold text-green-600 mb-4">💰 পেন্ডিং ডিপোজিট</h3>
-            <div id="pending-deposits" class="space-y-3"></div>
-        </div>
-
-        <div class="bg-white p-6 rounded-3xl shadow-md">
-            <h3 class="font-bold text-orange-600 mb-4">🛠️ ইউজার জব রিকোয়েস্ট</h3>
-            <div id="user-job-requests" class="space-y-3"></div>
-        </div>
-
-        <div class="bg-white p-6 rounded-3xl shadow-md">
-            <h3 class="font-bold text-blue-600 mb-4">✅ প্রুফ রিভিউ</h3>
-            <div id="pending-proofs" class="space-y-3"></div>
+        <div id="pending-proofs" class="space-y-3">
+            <h3 class="font-bold text-gray-500">পেন্ডিং প্রুফ চেক করুন</h3>
         </div>
     </div>
-
     <script type="module" src="admin.js"></script>
 </body>
 </html>
