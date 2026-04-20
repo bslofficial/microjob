@@ -2,45 +2,45 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MicroJobs BD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .active-tab { color: #1e40af; font-weight: bold; }
+        .active-tab { color: #1e40af !important; font-weight: 800 !important; }
+        body { -webkit-tap-highlight-color: transparent; }
     </style>
 </head>
-<body class="bg-gray-100 pb-20">
-
-    <nav class="bg-blue-800 text-white p-4 shadow-md sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <h1 class="font-bold text-lg">MicroJobs BD</h1>
-            <div id="auth-info" class="hidden flex items-center gap-3">
-                <button id="logout-btn" class="bg-red-500 px-3 py-1 rounded text-xs font-bold">Logout</button>
-            </div>
+<body class="bg-gray-50 pb-24"> <nav class="bg-blue-700 text-white p-4 shadow-md sticky top-0 z-40">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <h1 class="font-bold text-lg tracking-tight">MicroJobs BD</h1>
+            <button id="logout-btn" class="hidden bg-red-500 px-3 py-1 rounded-lg text-xs font-bold shadow-sm">Logout</button>
         </div>
     </nav>
 
-    <main class="max-w-4xl mx-auto p-4">
-        <div id="auth-view" class="bg-white p-6 rounded-2xl shadow-lg mt-10 max-w-sm mx-auto">
-            <h2 class="text-xl font-bold mb-4 text-center">লগইন করুন</h2>
-            <input id="email" type="email" placeholder="ইমেইল" class="w-full border p-3 rounded-xl mb-3 outline-none focus:ring-2 focus:ring-blue-500">
-            <input id="password" type="password" placeholder="পাসওয়ার্ড" class="w-full border p-3 rounded-xl mb-4 outline-none focus:ring-2 focus:ring-blue-500">
-            <button id="login-btn" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold mb-2">Login</button>
-            <button id="signup-btn" class="w-full text-blue-600 font-bold py-2">Sign Up</button>
+    <main class="max-w-md mx-auto p-4">
+        
+        <div id="auth-view" class="bg-white p-8 rounded-3xl shadow-xl mt-10 border border-gray-100">
+            <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">লগইন করুন</h2>
+            <div class="space-y-4">
+                <input id="email" type="email" placeholder="ইমেইল" class="w-full border-2 border-gray-100 p-3 rounded-2xl outline-none focus:border-blue-500 transition-all">
+                <input id="password" type="password" placeholder="পাসওয়ার্ড" class="w-full border-2 border-gray-100 p-3 rounded-2xl outline-none focus:border-blue-500 transition-all">
+                <button id="login-btn" class="w-full bg-blue-600 text-white py-3.5 rounded-2xl font-bold shadow-lg hover:bg-blue-700 active:scale-95 transition-all">Login</button>
+                <button id="signup-btn" class="w-full text-blue-600 font-bold py-2">Create New Account</button>
+            </div>
         </div>
 
-        <div id="main-view" class="hidden">
+        <div id="main-view" class="hidden animate-fade-in">
             
             <div id="home-tab">
-                <div class="bg-gradient-to-r from-blue-700 to-blue-500 p-6 rounded-2xl text-white shadow-lg mb-6">
-                    <p class="opacity-80 text-sm">বর্তমান ব্যালেন্স</p>
-                    <h2 class="text-4xl font-bold mt-1">৳<span id="balance">0.00</span></h2>
+                <div class="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-3xl text-white shadow-xl mb-6">
+                    <p class="opacity-80 text-xs font-medium">বর্তমান ব্যালেন্স</p>
+                    <h2 class="text-4xl font-extrabold mt-1">৳<span id="balance">0.00</span></h2>
                 </div>
 
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="font-bold text-gray-800">উপলব্ধ কাজসমূহ</h2>
-                    <select onchange="filterJobs(this.value)" class="text-xs border p-1 rounded bg-white">
-                        <option value="all">সব ক্যাটাগরি</option>
+                <div class="flex justify-between items-center mb-5">
+                    <h2 class="font-bold text-gray-800 text-lg">উপলব্ধ কাজসমূহ</h2>
+                    <select onchange="filterJobs(this.value)" class="text-xs border-none bg-white shadow-sm p-2 rounded-xl font-bold text-blue-600 outline-none">
+                        <option value="all">সব কাজ</option>
                         <option value="Youtube">YouTube</option>
                         <option value="Facebook">Facebook</option>
                         <option value="App">App Install</option>
@@ -49,50 +49,70 @@
                 <div id="job-list" class="grid gap-4"></div>
             </div>
 
-            <div id="profile-tab" class="hidden space-y-4">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                    <h2 class="text-xl font-bold mb-4 text-blue-800">আপনার প্রোফাইল</h2>
-                    <p class="text-gray-600">ইমেইল: <span id="user-email" class="font-bold"></span></p>
-                    <p class="text-gray-600 mt-2">মোট আয়: <span class="text-green-600 font-bold">৳<span id="p-balance">0.00</span></span></p>
+            <div id="profile-tab" class="hidden animate-slide-up">
+                <div class="bg-white p-6 rounded-3xl shadow-md border border-gray-50">
+                    <h2 class="text-xl font-bold mb-5 text-blue-800 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        প্রোফাইল তথ্য
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 p-4 rounded-2xl">
+                            <p class="text-xs text-gray-400">আপনার ইমেইল</p>
+                            <p id="user-email" class="font-bold text-gray-700"></p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-2xl">
+                            <p class="text-xs text-green-400">মোট আর্নিং</p>
+                            <p class="font-bold text-green-700 text-xl">৳<span id="p-balance">0.00</span></p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div id="wallet-tab" class="hidden space-y-4">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                    <h2 class="text-xl font-bold mb-4 text-green-700">টাকা উত্তোলন (Withdraw)</h2>
-                    <input id="w-amount" type="number" placeholder="পরিমাণ (৳)" class="w-full border p-3 rounded-xl mb-3 outline-none">
-                    <input id="w-number" type="text" placeholder="বিকাশ/নগদ নম্বর" class="w-full border p-3 rounded-xl mb-4 outline-none">
-                    <button id="withdraw-btn" class="w-full bg-orange-500 text-white py-3 rounded-xl font-bold">রিকোয়েস্ট পাঠান</button>
-                    <p class="text-[10px] text-gray-400 mt-3 text-center">* নূন্যতম উইথড্র ৫০ টাকা।</p>
+            <div id="wallet-tab" class="hidden animate-slide-up">
+                <div class="bg-white p-6 rounded-3xl shadow-md border border-gray-50">
+                    <h2 class="text-xl font-bold mb-2 text-orange-600">উইথড্র রিকোয়েস্ট</h2>
+                    <p class="text-gray-400 text-xs mb-6">আপনার জমানো টাকা উত্তোলন করুন</p>
+                    
+                    <div class="space-y-4">
+                        <input id="w-amount" type="number" placeholder="টাকার পরিমাণ (৳)" class="w-full border-2 border-gray-50 p-4 rounded-2xl outline-none focus:border-orange-400 bg-gray-50">
+                        <input id="w-number" type="text" placeholder="বিকাশ/নগদ নম্বর" class="w-full border-2 border-gray-50 p-4 rounded-2xl outline-none focus:border-orange-400 bg-gray-50">
+                        <button id="withdraw-btn" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-orange-100 hover:bg-orange-600 active:scale-95 transition-all">টাকা উত্তোলন করুন</button>
+                    </div>
+                    <div class="mt-6 p-4 bg-orange-50 rounded-2xl border border-orange-100">
+                        <p class="text-[10px] text-orange-700 leading-tight">বিঃদ্রঃ নূন্যতম উইথড্র ৫০ টাকা। পেমেন্ট রিকোয়েস্ট পাঠানোর ২৪ ঘণ্টার মধ্যে পেমেন্ট সম্পন্ন করা হয়।</p>
+                    </div>
                 </div>
             </div>
 
         </div>
     </main>
 
-    <div id="bottom-nav" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3 shadow-lg z-50">
-        <button onclick="switchTab('home')" id="btn-home" class="flex flex-col items-center active-tab">
+    <div id="bottom-nav" class="hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-100 flex justify-around py-4 shadow-[0_-5px_20px_rgba(0,0,0,0.05)] z-50">
+        <button onclick="switchTab('home')" id="btn-home" class="flex flex-col items-center transition-all active-tab">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
-            <span class="text-[10px]">Home</span>
+            <span class="text-[10px] mt-1">Home</span>
         </button>
-        <button onclick="switchTab('profile')" id="btn-profile" class="flex flex-col items-center text-gray-400">
+        <button onclick="switchTab('profile')" id="btn-profile" class="flex flex-col items-center text-gray-300 transition-all">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-            <span class="text-[10px]">Profile</span>
+            <span class="text-[10px] mt-1">Profile</span>
         </button>
-        <button onclick="switchTab('wallet')" id="btn-wallet" class="flex flex-col items-center text-gray-400">
+        <button onclick="switchTab('wallet')" id="btn-wallet" class="flex flex-col items-center text-gray-300 transition-all">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-            <span class="text-[10px]">Wallet</span>
+            <span class="text-[10px] mt-1">Wallet</span>
         </button>
     </div>
 
-    <div id="proof-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center p-4 z-[60]">
-        <div class="bg-white p-6 rounded-2xl max-w-sm w-full">
-            <h3 class="font-bold mb-2">কাজের প্রমাণ জমা দিন</h3>
-            <p id="modal-job-title" class="text-xs text-blue-600 mb-4 font-semibold"></p>
-            <input type="file" id="imageInput" accept="image/*" class="w-full text-xs border p-2 rounded mb-4">
-            <div class="flex gap-2">
-                <button onclick="document.getElementById('proof-modal').classList.add('hidden')" class="flex-1 bg-gray-100 py-2 rounded-lg font-bold">বাতিল</button>
-                <button id="submit-proof-btn" class="flex-1 bg-green-600 text-white py-2 rounded-lg font-bold">জমা দিন</button>
+    <div id="proof-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-6 z-[60]">
+        <div class="bg-white p-6 rounded-3xl max-w-sm w-full shadow-2xl animate-scale-in">
+            <h3 class="font-bold text-gray-800 text-lg mb-1">প্রমাণ জমা দিন</h3>
+            <p id="modal-job-title" class="text-xs text-blue-600 mb-5 font-bold"></p>
+            <label class="block mb-4">
+                <span class="text-xs text-gray-400 ml-1">স্ক্রিনশট আপলোড করুন</span>
+                <input type="file" id="imageInput" accept="image/*" class="mt-1 block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+            </label>
+            <div class="flex gap-3">
+                <button onclick="document.getElementById('proof-modal').classList.add('hidden')" class="flex-1 bg-gray-100 py-3 rounded-2xl font-bold text-gray-500">বাতিল</button>
+                <button id="submit-proof-btn" class="flex-1 bg-blue-600 text-white py-3 rounded-2xl font-bold shadow-lg shadow-blue-100">জমা দিন</button>
             </div>
         </div>
     </div>
