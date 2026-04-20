@@ -1,7 +1,9 @@
+// ১. ফায়ারবেস মডিউল ইম্পোর্ট
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, where, doc, updateDoc, increment, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, doc, updateDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-// আপনার Firebase Config
+// ২. আপনার ফায়ারবেস কনফিগারেশন (এটি আপনার ফায়ারবেস কনসোল থেকে নিতে হবে)
 const firebaseConfig = {
     apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
     authDomain: "microjobs-b9d90.firebaseapp.com",
@@ -11,10 +13,21 @@ const firebaseConfig = {
     appId: "1:1006928193385:web:d4b5cc1911abda6ff53ff8"
 };
 
+// ৩. ইনিশিয়েলাইজ করা
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-// --- ১. কাজ পাবলিশ করার লজিক ---
+// ৪. এডমিন চেক (নিশ্চিত করা যে আপনি লগইন আছেন)
+onAuthStateChanged(auth, (user) => {
+    if (!user || user.email !== "bslgaimerofficial@gmail.com") {
+        console.warn("আপনি এডমিন হিসেবে লগইন নেই!");
+    } else {
+        console.log("এডমিন লগইন সফল!");
+    }
+});
+
+// ৫. কাজ পাবলিশ করার লজিক
 document.getElementById('adm-post-btn').onclick = async () => {
     const title = document.getElementById('adm-title').value;
     const category = document.getElementById('adm-category').value;
@@ -31,65 +44,61 @@ document.getElementById('adm-post-btn').onclick = async () => {
 
     try {
         await addDoc(collection(db, "jobs"), {
-            // টাইটেল এবং ক্যাটাগরি একসাথে সেভ করছি যাতে ফিল্টারিং সহজ হয়
             title: `${category} - ${title}`, 
             description: desc,
             budget: Number(budget),
             category: category,
             createdAt: serverTimestamp()
         });
-
         alert("কাজটি সফলভাবে লাইভ করা হয়েছে!");
         location.reload();
     } catch (e) {
-        alert("এরর: " + e.message);
+        alert("এরর: " + e.message); // এরর এখানে দেখাবে
         btn.disabled = false;
         btn.innerText = "পাবলিশ করুন";
     }
 };
 
-// --- ২. পেন্ডিং প্রুফ লোড করা ---
+// ৬. পেন্ডিং প্রুফ লোড করা
 async function loadPendingProofs() {
     const container = document.getElementById('pending-proofs');
     const q = query(collection(db, "submissions"), where("status", "==", "pending"));
     const snap = await getDocs(q);
 
-    container.innerHTML = snap.empty ? '<p class="text-gray-400 text-sm">কোনো পেন্ডিং আবেদন নেই।</p>' : '';
+    container.innerHTML = snap.empty ? '<p class="text-gray-400 text-sm text-center py-5">কোনো আবেদন নেই।</p>' : '';
 
     snap.forEach(d => {
         const data = d.data();
         container.innerHTML += `
-            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm">
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm mb-3">
                 <p class="font-bold text-gray-800">${data.jobTitle}</p>
                 <p class="text-xs text-blue-600 mb-2">${data.userEmail}</p>
-                <a href="${data.imageUrl}" target="_blank" class="block bg-white text-blue-600 border border-blue-200 text-center py-1.5 rounded-lg text-xs font-bold mb-3 hover:bg-blue-50">স্ক্রিনশট দেখুন</a>
+                <a href="${data.imageUrl}" target="_blank" class="block bg-white text-blue-600 border border-blue-200 text-center py-1.5 rounded-lg text-xs font-bold mb-3">স্ক্রিনশট দেখুন</a>
                 <div class="flex gap-2">
-                    <button onclick="approveWork('${d.id}', '${data.userId}', ${data.reward})" class="flex-1 bg-green-600 text-white py-2 rounded-lg font-bold text-xs hover:bg-green-700 transition">Approve (৳${data.reward})</button>
-                    <button onclick="rejectWork('${d.id}')" class="bg-red-100 text-red-600 px-3 py-2 rounded-lg font-bold text-xs hover:bg-red-200 transition">Reject</button>
+                    <button onclick="approveWork('${d.id}', '${data.userId}', ${data.reward})" class="flex-1 bg-green-600 text-white py-2 rounded-lg font-bold text-xs">Approve (৳${data.reward})</button>
+                    <button onclick="rejectWork('${d.id}')" class="bg-red-100 text-red-600 px-3 py-2 rounded-lg font-bold text-xs">Reject</button>
                 </div>
             </div>
         `;
     });
 }
 
-// --- ৩. কাজ অ্যাপ্রুভ (টাকা পাঠানো) ---
+// ৭. অ্যাপ্রুভ এবং রিজেক্ট ফাংশন (উইন্ডো অবজেক্টে রাখা হয়েছে)
 window.approveWork = async (subId, uid, amount) => {
-    if(!confirm("আপনি কি নিশ্চিত যে এটি অ্যাপ্রুভ করবেন?")) return;
+    if(!confirm("আপনি কি নিশ্চিত?")) return;
     try {
         await updateDoc(doc(db, "submissions", subId), { status: "approved" });
         await updateDoc(doc(db, "users", uid), { balance: increment(amount) });
-        alert("অ্যাপ্রুভড! ইউজারের ব্যালেন্সে টাকা যোগ হয়েছে।");
+        alert("সফলভাবে ব্যালেন্স যোগ হয়েছে।");
         location.reload();
     } catch (e) { alert(e.message); }
 };
 
-// --- ৪. কাজ রিজেক্ট করা ---
 window.rejectWork = async (subId) => {
-    if(!confirm("কাজটি কি রিজেক্ট করতে চান?")) return;
+    if(!confirm("রিজেক্ট করতে চান?")) return;
     await updateDoc(doc(db, "submissions", subId), { status: "rejected" });
     alert("রিজেক্ট করা হয়েছে।");
     location.reload();
 };
 
-// ডাটা লোড কল
 loadPendingProofs();
