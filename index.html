@@ -3,32 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MicroJobs - User Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <title>MicroJobs BD - Earn & Withdraw</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50">
-
-    <nav class="bg-blue-700 p-4 text-white flex justify-between items-center shadow-md">
-        <h1 class="text-xl font-bold">MicroJobs BD</h1>
-        <div class="space-x-4">
-            <a href="index.html" class="hover:underline">Home</a>
-            <a href="admin.html" class="bg-red-600 px-4 py-2 rounded-lg text-sm">Admin Panel</a>
+<body class="bg-gray-100">
+    <nav class="bg-blue-800 p-4 text-white flex justify-between items-center">
+        <h1 class="font-bold text-xl">MicroJobs BD</h1>
+        <div id="auth-info" class="hidden flex items-center gap-4">
+            <span id="user-display-email" class="text-sm"></span>
+            <button id="logout-btn" class="bg-red-500 px-3 py-1 rounded text-xs">Logout</button>
         </div>
     </nav>
 
-    <main class="p-6 max-w-4xl mx-auto">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="text-2xl font-bold text-gray-800">Available Jobs</h2>
-            <div class="bg-blue-100 px-6 py-2 rounded-full font-bold text-blue-800 border border-blue-200">
-                Balance: ৳০০.০০
-            </div>
+    <main class="max-w-4xl mx-auto p-4">
+        <div id="auth-view" class="bg-white p-8 rounded-lg shadow-md mt-10 max-w-sm mx-auto">
+            <h2 class="text-2xl font-bold mb-4 text-center">স্বাগতম!</h2>
+            <input id="email" type="email" placeholder="ইমেইল" class="w-full border p-2 mb-3 rounded">
+            <input id="password" type="password" placeholder="পাসওয়ার্ড" class="w-full border p-2 mb-4 rounded">
+            <button id="login-btn" class="w-full bg-blue-600 text-white py-2 rounded mb-2">Login</button>
+            <button id="signup-btn" class="w-full border border-blue-600 text-blue-600 py-2 rounded">Sign Up</button>
         </div>
 
-        <div id="job-list" class="grid gap-4">
-            <p class="text-center text-gray-500">Loading jobs...</p>
+        <div id="main-view" class="hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-gradient-to-r from-blue-600 to-blue-400 p-6 rounded-xl text-white shadow-lg">
+                    <p class="text-lg">বর্তমান ব্যালেন্স</p>
+                    <h2 class="text-4xl font-bold">৳<span id="balance">0.00</span></h2>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-orange-500">
+                    <h3 class="font-bold text-gray-700 mb-2 font-xl">টাকা উত্তোলন (Withdraw)</h3>
+                    <input id="withdraw-amount" type="number" placeholder="পরিমাণ" class="border p-2 rounded w-full mb-2">
+                    <input id="bkash-number" type="text" placeholder="বিকাশ/নগদ নম্বর" class="border p-2 rounded w-full mb-2">
+                    <button id="withdraw-btn" class="w-full bg-orange-500 text-white py-2 rounded font-bold">রিকোয়েস্ট পাঠান</button>
+                </div>
+            </div>
+
+            <h2 class="text-xl font-bold mb-4 text-gray-800">উপলব্ধ কাজসমূহ</h2>
+            <div id="job-list" class="grid gap-4">
+                </div>
         </div>
     </main>
+
+    <div id="proof-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4">
+        <div class="bg-white p-6 rounded-lg max-w-md w-full">
+            <h3 class="text-xl font-bold mb-2">কাজের প্রমাণ জমা দিন</h3>
+            <p id="modal-job-title" class="text-blue-600 font-semibold mb-4"></p>
+            <label class="block mb-2 text-sm font-medium">স্ক্রিনশট আপলোড করুন:</label>
+            <input type="file" id="imageInput" accept="image/*" class="mb-4 w-full border p-1">
+            <textarea id="proof-note" placeholder="অতিরিক্ত কোনো তথ্য (ঐচ্ছিক)" class="w-full border p-2 mb-4 rounded"></textarea>
+            <div class="flex justify-end gap-2">
+                <button onclick="document.getElementById('proof-modal').classList.add('hidden')" class="px-4 py-2 bg-gray-200 rounded">বাতিল</button>
+                <button id="submit-proof-btn" class="px-4 py-2 bg-green-600 text-white rounded font-bold">জমা দিন</button>
+            </div>
+        </div>
+    </div>
 
     <script type="module" src="app.js"></script>
 </body>
