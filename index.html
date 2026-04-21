@@ -2,229 +2,66 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>MicroJobs BD - Pro Plus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroJobs BD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .active-tab { color: #2563eb !important; font-weight: bold; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        #side-menu { transition: transform 0.3s ease-in-out; }
-    </style>
 </head>
-<body class="bg-slate-50 pb-24 overflow-x-hidden">
+<body class="bg-gray-50 pb-20">
 
-    <header class="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-50 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <button onclick="window.toggleMenu()" class="text-xl"><i class="fas fa-bars"></i></button>
-            <h1 class="font-bold text-lg">MicroJobs BD</h1>
-        </div>
-        <div class="flex items-center gap-2">
-            <span class="text-[10px] bg-blue-500 px-2 py-1 rounded-lg">৳<span id="nav-balance">0.00</span></span>
-        </div>
+    <header class="bg-blue-600 p-4 text-white flex justify-between items-center sticky top-0 z-50">
+        <button onclick="document.getElementById('side-menu').classList.toggle('-translate-x-full')"><i class="fas fa-bars"></i></button>
+        <h1 class="font-bold">MicroJobs BD</h1>
+        <div class="bg-blue-500 px-3 py-1 rounded-full text-xs">৳<span id="nav-balance">0.00</span></div>
     </header>
 
-    <div id="side-menu" class="fixed inset-y-0 left-0 w-64 bg-white shadow-2xl z-[60] transform -translate-x-full">
-        <div class="p-4 border-b">
-            <h2 class="text-sm font-bold text-gray-800">মেনু বার</h2>
-        </div>
-        <nav class="p-4 space-y-1 text-gray-700">
-            <button onclick="window.switchTab('home')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-home w-5"></i> Home</button>
-            <button onclick="window.dailyBonus()" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm text-orange-600 font-bold"><i class="fas fa-coins w-5"></i> Daily Bonus</button>
-            <button onclick="window.switchTab('leaderboard')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-trophy w-5 text-yellow-500"></i> Leaderboard</button>
-            <button onclick="window.switchTab('wallet')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-wallet w-5"></i> Wallet</button>
-            <button onclick="window.switchTab('refer')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-gift w-5"></i> Refer & Earn</button>
-            <hr class="my-2">
-            <button id="logout-btn" class="w-full text-left p-3 text-red-500 font-bold hover:bg-red-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-sign-out-alt w-5"></i> Logout</button>
+    <div id="side-menu" class="fixed inset-y-0 left-0 w-64 bg-white shadow-2xl z-[60] transform -translate-x-full transition-transform">
+        <div class="p-6 bg-blue-600 text-white font-bold">মেনু বার</div>
+        <nav class="p-4 space-y-2">
+            <button onclick="showTab('home')" class="w-full text-left p-3 hover:bg-gray-100 rounded-lg"><i class="fas fa-home mr-2"></i> Home</button>
+            <button onclick="showTab('leaderboard')" class="w-full text-left p-3 hover:bg-gray-100 rounded-lg"><i class="fas fa-trophy mr-2 text-yellow-500"></i> Leaderboard</button>
+            <button onclick="showTab('wallet')" class="w-full text-left p-3 hover:bg-gray-100 rounded-lg"><i class="fas fa-wallet mr-2"></i> Wallet</button>
+            <button onclick="showTab('refer')" class="w-full text-left p-3 hover:bg-gray-100 rounded-lg"><i class="fas fa-gift mr-2"></i> Refer & Earn</button>
         </nav>
     </div>
-    <div id="menu-overlay" onclick="window.toggleMenu()" class="fixed inset-0 bg-black/50 hidden z-[55]"></div>
 
-    <main class="max-w-md mx-auto p-4">
-        <div id="auth-view" class="bg-white p-8 rounded-3xl shadow-xl mt-10">
-            <h2 class="text-xl font-bold mb-6 text-center text-blue-600">Login / Signup</h2>
-            <input id="email" type="email" placeholder="ইমেইল" class="w-full border p-4 rounded-2xl mb-3 outline-none text-sm">
-            <input id="password" type="password" placeholder="পাসওয়ার্ড" class="w-full border p-4 rounded-2xl mb-5 outline-none text-sm">
-            <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold mb-3">Login</button>
-            <button id="signup-btn" class="w-full text-blue-600 font-bold py-2 text-sm">Create Account</button>
+    <main class="p-4 max-w-md mx-auto">
+        <div id="home-tab" class="tab-content">
+            <div class="bg-blue-600 rounded-3xl p-8 text-white mb-6">
+                <p class="text-xs opacity-80">বর্তমান ব্যালেন্স</p>
+                <h2 class="text-4xl font-bold">৳<span id="main-balance">0.00</span></h2>
+            </div>
+            <div id="job-list" class="space-y-4">
+                </div>
         </div>
 
-        <div id="main-view" class="hidden">
-            <div id="home-tab" class="tab-content active">
-                <div class="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-3xl text-white shadow-xl mb-6">
-                    <p class="opacity-80 text-[10px] font-bold uppercase">বর্তমান ব্যালেন্স</p>
-                    <h2 class="text-4xl font-extrabold mt-1">৳<span id="balance">0.00</span></h2>
-                </div>
-                
-                <div id="proof-box" class="bg-white p-5 rounded-3xl border-2 border-blue-500 shadow-md mb-6 hidden">
-                    <h3 class="font-bold text-sm text-blue-600 mb-2">কাজের প্রমাণ জমা দিন</h3>
-                    <input id="proof-text" type="text" placeholder="আপনার ইউজারনেম বা আইডি লিখুন" class="w-full p-3 bg-gray-50 border rounded-xl mb-3 text-xs outline-none">
-                    <div class="flex gap-2">
-                        <button onclick="window.submitProof()" class="flex-1 bg-blue-600 text-white py-2 rounded-xl text-xs font-bold">জমা দিন</button>
-                        <button onclick="document.getElementById('proof-box').classList.add('hidden')" class="bg-gray-200 px-4 py-2 rounded-xl text-xs">বাতিল</button>
-                    </div>
-                </div>
+        <div id="leaderboard-tab" class="tab-content hidden">
+            <h2 class="font-bold mb-4"><i class="fas fa-trophy text-yellow-500"></i> সেরা উপার্জনকারী (Top 10)</h2>
+            <div id="leader-list" class="bg-white rounded-2xl border overflow-hidden"></div>
+        </div>
 
-                <div id="job-list" class="space-y-4"></div>
-            </div>
-
-            <div id="leaderboard-tab" class="tab-content">
-                <h2 class="text-lg font-bold mb-4 flex items-center gap-2"><i class="fas fa-trophy text-yellow-500"></i> সেরা উপার্জনকারী</h2>
-                <div id="leader-list" class="bg-white rounded-3xl shadow-sm border overflow-hidden">
-                    </div>
-            </div>
-
-            <div id="wallet-tab" class="tab-content space-y-6">
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-green-100">
-                    <h2 class="font-bold text-green-600 text-sm mb-3">উইথড্র রিকোয়েস্ট</h2>
-                    <input id="w-amount" type="number" placeholder="৳৫০+" class="w-full p-3 bg-gray-50 rounded-xl mb-2 text-sm border outline-none">
-                    <input id="w-number" type="text" placeholder="বিকাশ/নগদ নম্বর" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm border outline-none">
-                    <button id="withdraw-btn" class="w-full bg-orange-600 text-white py-3 rounded-xl font-bold">উইথড্র দিন</button>
-                </div>
-                
-                <div>
-                    <h3 class="font-bold text-gray-700 text-sm mb-3 ml-1">পেমেন্ট হিস্ট্রি</h3>
-                    <div id="history-list" class="space-y-3">
-                        <p class="text-center text-xs text-gray-400 py-4">কোনো রেকর্ড পাওয়া যায়নি</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="profile-tab" class="tab-content space-y-4">
-                <div class="bg-white p-6 rounded-3xl shadow-sm text-center border">
-                    <h2 class="font-bold text-gray-800 text-sm" id="prof-email-display">User Email</h2>
-                    <p id="prof-status" class="text-[9px] font-bold mt-1 px-2 py-0.5 bg-red-500 text-white rounded-full inline-block">Not Active</p>
-                    <button onclick="window.activateAccount()" id="activate-btn-prof" class="block w-full mt-4 py-2 bg-blue-600 text-white text-[11px] font-bold rounded-xl uppercase">Activate (৳১০০)</button>
-                </div>
-            </div>
-
-            <div id="refer-tab" class="tab-content">
-                <div class="bg-white p-6 rounded-3xl shadow-md text-center border">
-                    <h2 class="text-xl font-bold">রেফার লিঙ্ক</h2>
-                    <p id="refer-link" class="text-blue-600 font-bold text-xs truncate mt-4 p-4 bg-gray-50 rounded-2xl">Loading...</p>
-                    <button onclick="window.copyReferLink()" class="w-full bg-blue-600 text-white py-3 rounded-2xl mt-4 font-bold">কপি লিঙ্ক</button>
-                </div>
+        <div id="wallet-tab" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-2xl border shadow-sm">
+                <h3 class="font-bold text-green-600 mb-4">উইথড্র রিকোয়েস্ট</h3>
+                <input id="w-amount" type="number" placeholder="৳৫০+" class="w-full p-3 border rounded-xl mb-3 outline-none">
+                <input id="w-number" type="text" placeholder="বিকাশ/নগদ নম্বর" class="w-full p-3 border rounded-xl mb-4 outline-none">
+                <button onclick="requestWithdraw()" class="w-full bg-orange-600 text-white py-3 rounded-xl font-bold">উইথড্র দিন</button>
             </div>
         </div>
     </main>
 
-    <nav id="bottom-nav" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3 z-50">
-        <button onclick="window.switchTab('home')" id="btn-home" class="flex flex-col items-center active-tab"><i class="fas fa-home"></i><span class="text-[9px] mt-1">Home</span></button>
-        <button onclick="window.switchTab('leaderboard')" id="btn-leaderboard" class="flex flex-col items-center text-gray-400"><i class="fas fa-trophy"></i><span class="text-[9px] mt-1">Top 10</span></button>
-        <button onclick="window.switchTab('wallet')" id="btn-wallet" class="flex flex-col items-center text-gray-400"><i class="fas fa-wallet"></i><span class="text-[9px] mt-1">Wallet</span></button>
-        <button onclick="window.switchTab('profile')" id="btn-profile" class="flex flex-col items-center text-gray-400"><i class="fas fa-user"></i><span class="text-[9px] mt-1">Profile</span></button>
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3 text-gray-400">
+        <button onclick="showTab('home')" class="flex flex-col items-center text-blue-600"><i class="fas fa-home"></i><span class="text-[10px]">Home</span></button>
+        <button onclick="showTab('leaderboard')" class="flex flex-col items-center"><i class="fas fa-trophy"></i><span class="text-[10px]">Top 10</span></button>
+        <button onclick="showTab('wallet')" class="flex flex-col items-center"><i class="fas fa-wallet"></i><span class="text-[10px]">Wallet</span></button>
     </nav>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc, increment, addDoc, collection, onSnapshot, query, orderBy, limit, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
-            authDomain: "microjobs-b9d90.firebaseapp.com",
-            projectId: "microjobs-b9d90",
-            storageBucket: "microjobs-b9d90.firebasestorage.app",
-            messagingSenderId: "1006928193385",
-            appId: "1:1006928193385:web:d4b5cc1911abda6ff53ff8"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        window.toggleMenu = () => {
-            const menu = document.getElementById('side-menu');
-            const overlay = document.getElementById('menu-overlay');
-            const isOpen = menu.style.transform === 'translateX(0px)';
-            menu.style.transform = isOpen ? 'translateX(-100%)' : 'translateX(0px)';
-            overlay.classList.toggle('hidden');
-        };
-
-        window.switchTab = (tab) => {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.getElementById(tab + '-tab').classList.add('active');
-            document.querySelectorAll('#bottom-nav button').forEach(el => { el.classList.remove('active-tab'); el.classList.add('text-gray-400'); });
-            const btn = document.getElementById('btn-' + tab); if(btn) btn.classList.add('active-tab');
-            if(document.getElementById('side-menu').style.transform === 'translateX(0px)') window.toggleMenu();
-            if(tab === 'leaderboard') loadLeaderboard();
-            if(tab === 'wallet') loadPaymentHistory();
-        };
-
-        // --- NEW FEATURE: Leaderboard ---
-        const loadLeaderboard = () => {
-            const q = query(collection(db, "users"), orderBy("balance", "desc"), limit(10));
-            onSnapshot(q, (snap) => {
-                const list = document.getElementById('leader-list');
-                list.innerHTML = "";
-                let rank = 1;
-                snap.forEach(doc => {
-                    const u = doc.data();
-                    list.innerHTML += `
-                        <div class="flex items-center justify-between p-4 border-b last:border-0">
-                            <div class="flex items-center gap-3">
-                                <span class="w-6 h-6 flex items-center justify-center rounded-full ${rank<=3 ? 'bg-yellow-100 text-yellow-600 font-bold' : 'bg-gray-100 text-gray-500'} text-xs">${rank}</span>
-                                <p class="text-xs font-bold text-gray-700">${u.email.split('@')[0]}</p>
-                            </div>
-                            <p class="text-xs font-bold text-blue-600">৳${u.balance.toFixed(2)}</p>
-                        </div>`;
-                    rank++;
-                });
-            });
-        };
-
-        // --- NEW FEATURE: Payment History ---
-        const loadPaymentHistory = () => {
-            const q = query(collection(db, "withdraws"), orderBy("createdAt", "desc"));
-            onSnapshot(q, (snap) => {
-                const list = document.getElementById('history-list');
-                list.innerHTML = "";
-                snap.forEach(d => {
-                    const data = d.data();
-                    if(data.uid === auth.currentUser.uid) {
-                        list.innerHTML += `
-                            <div class="bg-white p-3 rounded-2xl border flex justify-between items-center">
-                                <div>
-                                    <p class="text-[10px] font-bold text-gray-800">৳${data.amount}</p>
-                                    <p class="text-[8px] text-gray-400">${data.number}</p>
-                                </div>
-                                <span class="text-[8px] px-2 py-0.5 rounded-full font-bold uppercase ${data.status==='approved' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}">${data.status}</span>
-                            </div>`;
-                    }
-                });
-            });
-        };
-
-        window.dailyBonus = async () => {
-            const userRef = doc(db, "users", auth.currentUser.uid);
-            const userSnap = await getDoc(userRef);
-            const today = new Date().toDateString();
-            if (userSnap.data().lastBonusDate === today) return alert("আজকের বোনাস নেওয়া শেষ!");
-            await updateDoc(userRef, { balance: increment(1.00), lastBonusDate: today });
-            alert("৳১ বোনাস যোগ হয়েছে!");
-        };
-
-        // Existing auth and job logic...
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('auth-view').classList.add('hidden');
-                document.getElementById('main-view').classList.remove('hidden');
-                document.getElementById('bottom-nav').classList.remove('hidden');
-                document.getElementById('prof-email-display').innerText = user.email;
-                onSnapshot(doc(db, "users", user.uid), (s) => {
-                    const d = s.data();
-                    document.getElementById('balance').innerText = d.balance.toFixed(2);
-                    document.getElementById('nav-balance').innerText = d.balance.toFixed(2);
-                    document.getElementById('prof-status').innerText = d.isActive ? "Active" : "Not Active";
-                });
-            } else {
-                document.getElementById('auth-view').classList.remove('hidden');
-            }
-        });
-
-        document.getElementById('login-btn').onclick = () => signInWithEmailAndPassword(auth, document.getElementById('email').value.trim(), document.getElementById('password').value).catch(e => alert(e.message));
-        document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
+    <script src="app.js" type="module"></script>
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.getElementById(tabId + '-tab').classList.remove('hidden');
+        }
     </script>
 </body>
 </html>
