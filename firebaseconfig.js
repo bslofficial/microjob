@@ -1,7 +1,7 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-// আপনার ফায়ারবেস কনফিগারেশন
 const firebaseConfig = {
   apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
   authDomain: "microjobs-b9d90.firebaseapp.com",
@@ -12,7 +12,6 @@ const firebaseConfig = {
   measurementId: "G-74NJW2SE9F"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-// Export Firestore database for use in other files
 export const db = getFirestore(app);
+export const auth = getAuth(app);
