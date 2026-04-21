@@ -37,7 +37,7 @@
                 <i class="fas fa-trophy w-5 text-yellow-500"></i> Leaderboard
             </button>
             <button onclick="window.switchTab('wallet')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm font-medium">
-                <i class="fas fa-wallet w-5 text-green-600"></i> Wallet / Deposit
+                <i class="fas fa-wallet w-5 text-blue-600"></i> Wallet / Deposit
             </button>
             <button onclick="window.switchTab('refer')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm font-medium">
                 <i class="fas fa-gift w-5 text-purple-600"></i> Refer & Earn
@@ -77,24 +77,25 @@
             </div>
 
             <div id="wallet-tab" class="tab-content space-y-4">
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-green-100">
-                    <h2 class="font-bold text-green-600 text-sm mb-3"><i class="fas fa-plus-circle"></i> টাকা জমা দিন (Deposit)</h2>
-                    <div class="bg-green-50 p-3 rounded-xl mb-3 text-[10px] text-green-700">
-                        <p>বিকাশ/নগদ (Personal): <b>017XXXXXXXX</b></p>
-                        <p class="mt-1">* টাকা পাঠানোর পর নিচের ফর্মে ট্রানজেকশন আইডি দিন।</p>
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-blue-100">
+                    <h2 class="font-bold text-blue-600 text-sm mb-3 uppercase flex items-center gap-2"><i class="fas fa-plus-circle"></i> Deposit (টাকা জমা দিন)</h2>
+                    <div class="bg-blue-50 p-4 rounded-2xl mb-4 text-[11px] text-blue-700 leading-relaxed border border-blue-100">
+                        <p class="flex justify-between items-center"><span>বিকাশ/নগদ (Personal):</span> <b class="text-sm">01913932587</b></p>
+                        <p class="mt-2 text-gray-500 italic">* উক্ত নাম্বারে টাকা পাঠিয়ে নিচে তথ্য প্রদান করুন।</p>
                     </div>
-                    <input id="d-amount" type="number" placeholder="টাকার পরিমাণ" class="w-full p-3 bg-gray-50 rounded-xl mb-2 text-sm outline-none border">
-                    <input id="d-trx" type="text" placeholder="Transaction ID লিখুন" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border">
-                    <button id="deposit-btn" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold text-sm">ডিপোজিট রিকোয়েস্ট পাঠান</button>
+                    <input id="d-amount" type="number" placeholder="টাকার পরিমাণ (৳)" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border focus:border-blue-500">
+                    <input id="d-trx" type="text" placeholder="Transaction ID (TrxID)" class="w-full p-3 bg-gray-50 rounded-xl mb-4 text-sm outline-none border focus:border-blue-500">
+                    <button id="deposit-btn" class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-md active:scale-95 transition-transform">ডিপোজিট রিকোয়েস্ট পাঠান</button>
                 </div>
 
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-orange-100">
-                    <h2 class="font-bold text-orange-600 text-sm mb-3"><i class="fas fa-minus-circle"></i> টাকা উত্তোলন (Withdraw)</h2>
-                    <input id="w-amount" type="number" placeholder="৳৫০+" class="w-full p-3 bg-gray-50 rounded-xl mb-2 text-sm outline-none border">
-                    <input id="w-number" type="text" placeholder="নম্বর লিখুন" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border">
-                    <button id="withdraw-btn" class="w-full bg-orange-600 text-white py-3 rounded-xl font-bold text-sm">উইথড্র দিন</button>
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-blue-100">
+                    <h2 class="font-bold text-blue-600 text-sm mb-3 uppercase flex items-center gap-2"><i class="fas fa-minus-circle"></i> Withdraw (টাকা উত্তোলন)</h2>
+                    <input id="w-amount" type="number" placeholder="৳৫০+" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border focus:border-blue-500">
+                    <input id="w-number" type="text" placeholder="নম্বর লিখুন (বিকাশ/নগদ)" class="w-full p-3 bg-gray-50 rounded-xl mb-4 text-sm outline-none border focus:border-blue-500">
+                    <button id="withdraw-btn" class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-md active:scale-95 transition-transform">উইথড্র দিন</button>
                 </div>
-                <h3 class="font-bold text-sm px-1">পেমেন্ট হিস্ট্রি</h3>
+
+                <h3 class="font-bold text-sm px-1 text-gray-600 mt-4">পেমেন্ট হিস্ট্রি</h3>
                 <div id="history-list" class="space-y-2"></div>
             </div>
 
@@ -125,7 +126,7 @@
                     </div>
                     <div class="bg-white p-4 rounded-2xl border text-center shadow-sm">
                         <p class="text-[9px] text-gray-400 uppercase">উইথড্র</p>
-                        <h4 id="stat-withdraws" class="text-xl font-bold text-orange-600">৳০</h4>
+                        <h4 id="stat-withdraws" class="text-xl font-bold text-blue-600">৳০</h4>
                     </div>
                 </div>
                 <button id="logout-btn-2" class="w-full p-4 bg-white rounded-2xl border text-red-500 font-bold text-sm shadow-sm flex items-center justify-center gap-2"><i class="fas fa-sign-out-alt"></i> লগআউট</button>
@@ -284,7 +285,7 @@
                 status: "pending", 
                 createdAt: serverTimestamp() 
             });
-            alert("সফলভাবে রিকোয়েস্ট পাঠানো হয়েছে! অ্যাডমিন চেক করে ব্যালেন্স অ্যাড করে দিবে।");
+            alert("সফলভাবে রিকোয়েস্ট পাঠানো হয়েছে!");
             document.getElementById('d-amount').value = "";
             document.getElementById('d-trx').value = "";
         };
@@ -313,7 +314,7 @@
             if(userSnap.data().balance >= 100) {
                 await updateDoc(userRef, { balance: increment(-100), isActive: true });
                 alert("অ্যাকাউন্ট এক্টিভ হয়েছে!");
-            } else { alert("ব্যালেন্স কমপক্ষে ১০০ টাকা হতে হবে। আগে ডিপোজিট করুন।"); }
+            } else { alert("ব্যালেন্স কমপক্ষে ১০০ টাকা হতে হবে"); }
         };
 
         document.getElementById('login-btn').onclick = () => {
