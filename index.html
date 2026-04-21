@@ -36,6 +36,7 @@
         </div>
         <nav class="p-4 space-y-1 text-gray-700">
             <button onclick="window.switchTab('home')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-home w-5"></i> Home</button>
+            <button onclick="window.switchTab('leaderboard')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-trophy w-5 text-yellow-500"></i> Leaderboard</button>
             <button onclick="window.switchTab('wallet')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-wallet w-5"></i> Wallet</button>
             <button onclick="window.switchTab('refer')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-gift w-5"></i> Refer & Earn</button>
             <hr class="my-2">
@@ -49,7 +50,7 @@
             <h2 class="text-xl font-bold mb-6 text-center text-blue-600">Login / Signup</h2>
             <input id="email" type="email" placeholder="ইমেইল" class="w-full border p-4 rounded-2xl mb-3 outline-none bg-gray-50 focus:border-blue-500 text-sm">
             <input id="password" type="password" placeholder="পাসওয়ার্ড" class="w-full border p-4 rounded-2xl mb-5 outline-none bg-gray-50 focus:border-blue-500 text-sm">
-            <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold mb-3">Login</button>
+            <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold mb-3 text-sm">Login</button>
             <button id="signup-btn" class="w-full text-blue-600 font-bold py-2 text-sm">Create Account</button>
         </div>
 
@@ -62,33 +63,20 @@
                 <div id="job-list" class="space-y-4"></div>
             </div>
 
-            <div id="wallet-tab" class="tab-content space-y-4">
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-green-100">
-                    <h2 class="font-bold text-green-600 text-sm mb-3">ডিপোজিট (বিকাশ: 01913932587)</h2>
-                    <input id="d-amount" type="number" placeholder="পরিমাণ" class="w-full p-3 bg-gray-50 rounded-xl mb-2 text-sm outline-none border">
-                    <input id="d-trx" type="text" placeholder="Transaction ID" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border">
-                    <button id="deposit-btn" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold text-sm">জমা রিকোয়েস্ট</button>
-                </div>
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-orange-100">
-                    <h2 class="font-bold text-orange-600 text-sm mb-3">উইথড্র রিকোয়েস্ট</h2>
-                    <input id="w-amount" type="number" placeholder="৳৫০+" class="w-full p-3 bg-gray-50 rounded-xl mb-2 text-sm outline-none border">
-                    <input id="w-number" type="text" placeholder="বিকাশ/নগদ নম্বর" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border">
-                    <button id="withdraw-btn" class="w-full bg-orange-600 text-white py-3 rounded-xl font-bold text-sm">উইথড্র দিন</button>
-                </div>
+            <div id="leaderboard-tab" class="tab-content">
+                <h2 class="text-lg font-bold mb-4 flex items-center gap-2"><i class="fas fa-trophy text-yellow-500"></i> সেরা ১০ উপার্জনকারী</h2>
+                <div id="leader-list" class="bg-white rounded-3xl shadow-sm border overflow-hidden divide-y"></div>
             </div>
 
-            <div id="post-job-tab" class="tab-content">
-                <div id="post-job-form" class="bg-white p-6 rounded-3xl shadow-sm border hidden">
-                    <h2 class="font-bold text-blue-700 mb-4">নতুন কাজ দিন</h2>
-                    <input id="u-job-title" type="text" placeholder="টাইটেল" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border">
-                    <textarea id="u-job-desc" rows="3" placeholder="নিয়মাবলী..." class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border"></textarea>
-                    <input id="u-job-url" type="url" placeholder="লিঙ্ক" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border">
-                    <button id="u-post-btn" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">সাবমিট</button>
+            <div id="wallet-tab" class="tab-content space-y-4">
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-orange-100">
+                    <h2 class="font-bold text-orange-600 text-sm mb-3">উইথড্র রিকোয়েস্ট (বিকাশ/নগদ)</h2>
+                    <input id="w-amount" type="number" placeholder="৳৫০+" class="w-full p-3 bg-gray-50 rounded-xl mb-2 text-sm outline-none border">
+                    <input id="w-number" type="text" placeholder="নম্বর লিখুন" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border">
+                    <button id="withdraw-btn" class="w-full bg-orange-600 text-white py-3 rounded-xl font-bold text-sm">উইথড্র দিন</button>
                 </div>
-                <div id="activation-warning" class="text-center py-20 text-gray-400">
-                    <i class="fas fa-lock text-5xl mb-4"></i>
-                    <p class="text-sm">জব পোস্ট করতে অ্যাকাউন্ট এক্টিভেট করুন।</p>
-                </div>
+                <h3 class="font-bold text-sm px-1">পেমেন্ট হিস্ট্রি</h3>
+                <div id="history-list" class="space-y-2"></div>
             </div>
 
             <div id="refer-tab" class="tab-content">
@@ -121,13 +109,8 @@
                         <h4 id="stat-withdraws" class="text-xl font-bold text-orange-600">৳০</h4>
                     </div>
                 </div>
-                <div class="bg-white rounded-2xl border shadow-sm overflow-hidden text-sm">
-                    <button onclick="window.switchTab('wallet')" class="w-full p-4 flex items-center gap-3 border-b hover:bg-gray-50"><i class="fas fa-history text-blue-500"></i> পেমেন্ট হিস্ট্রি</button>
-                    <button onclick="window.switchTab('refer')" class="w-full p-4 flex items-center gap-3 border-b hover:bg-gray-50"><i class="fas fa-users text-green-500"></i> রেফারেল লিস্ট</button>
-                    <button id="logout-btn-2" class="w-full p-4 flex items-center gap-3 text-red-500 hover:bg-red-50"><i class="fas fa-sign-out-alt"></i> লগআউট</button>
-                </div>
+                <button id="logout-btn-2" class="w-full p-4 bg-white rounded-2xl border text-red-500 font-bold text-sm shadow-sm flex items-center justify-center gap-2"><i class="fas fa-sign-out-alt"></i> লগআউট</button>
             </div>
-
         </div>
     </main>
 
@@ -135,8 +118,8 @@
         <button onclick="window.switchTab('home')" id="btn-home" class="flex flex-col items-center active-tab">
             <i class="fas fa-home"></i><span class="text-[9px] mt-1">Home</span>
         </button>
-        <button onclick="window.switchTab('post-job')" id="btn-post-job" class="flex flex-col items-center text-gray-400">
-            <i class="fas fa-plus-circle"></i><span class="text-[9px] mt-1">Post Job</span>
+        <button onclick="window.switchTab('leaderboard')" id="btn-leaderboard" class="flex flex-col items-center text-gray-400">
+            <i class="fas fa-trophy"></i><span class="text-[9px] mt-1">Top 10</span>
         </button>
         <button onclick="window.switchTab('wallet')" id="btn-wallet" class="flex flex-col items-center text-gray-400">
             <i class="fas fa-wallet"></i><span class="text-[9px] mt-1">Wallet</span>
@@ -148,7 +131,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc, increment, addDoc, collection, onSnapshot, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, collection, query, orderBy, limit, setDoc, getDoc, updateDoc, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -164,7 +147,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // --- UI Logic ---
+        // --- UI Functions ---
         window.toggleMenu = () => {
             const menu = document.getElementById('side-menu');
             const overlay = document.getElementById('menu-overlay');
@@ -182,15 +165,11 @@
             });
             const btn = document.getElementById('btn-' + tab);
             if(btn) { btn.classList.add('active-tab'); btn.classList.remove('text-gray-400'); }
+            if(tab === 'leaderboard') loadLeaderboard();
             if(document.getElementById('side-menu').style.transform === 'translateX(0px)') window.toggleMenu();
         };
 
-        window.copyReferLink = () => {
-            const link = document.getElementById('refer-link').innerText;
-            navigator.clipboard.writeText(link).then(() => alert("Refer link copied!"));
-        };
-
-        // --- Task/Job Loading ---
+        // --- Data Loading ---
         const loadJobs = () => {
             onSnapshot(collection(db, "jobs"), (snap) => {
                 const container = document.getElementById('job-list');
@@ -201,10 +180,9 @@
                         container.innerHTML += `
                             <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 mb-3">
                                 <h3 class="font-bold text-sm text-gray-800">${job.title}</h3>
-                                <p class="text-[10px] text-gray-500 mt-1">${job.description || ''}</p>
                                 <div class="flex justify-between items-center mt-3">
-                                    <p class="text-[11px] text-blue-600 font-bold">বাজেট: ৳${job.budget}</p>
-                                    <a href="${job.url}" target="_blank" class="bg-blue-600 text-white px-4 py-1.5 rounded-xl text-[10px] font-bold">কাজটি করুন</a>
+                                    <p class="text-[11px] text-blue-600 font-bold">পুরস্কার: ৳${job.budget}</p>
+                                    <a href="${job.url}" target="_blank" class="bg-blue-600 text-white px-4 py-1.5 rounded-xl text-[10px] font-bold">কাজ শুরু করুন</a>
                                 </div>
                             </div>`;
                     }
@@ -212,8 +190,43 @@
             });
         };
 
-        // --- Auth & Profile ---
-        onAuthStateChanged(auth, async (user) => {
+        const loadLeaderboard = () => {
+            const q = query(collection(db, "users"), orderBy("balance", "desc"), limit(10));
+            onSnapshot(q, (snap) => {
+                const list = document.getElementById('leader-list');
+                list.innerHTML = "";
+                let i = 1;
+                snap.forEach(d => {
+                    const u = d.data();
+                    list.innerHTML += `
+                        <div class="p-4 flex justify-between items-center text-xs">
+                            <span class="font-medium text-gray-500">${i++}. ${u.email.split('@')[0]}</span>
+                            <span class="font-bold text-blue-600">৳${u.balance.toFixed(2)}</span>
+                        </div>`;
+                });
+            });
+        };
+
+        const loadHistory = (uid) => {
+            const q = query(collection(db, "withdraws"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (snap) => {
+                const list = document.getElementById('history-list');
+                list.innerHTML = "";
+                snap.forEach(d => {
+                    const w = d.data();
+                    if(w.uid === uid) {
+                        list.innerHTML += `
+                            <div class="bg-white p-3 rounded-2xl border flex justify-between items-center text-[10px]">
+                                <div><p class="font-bold">৳${w.amount}</p><p class="text-gray-400">${w.number}</p></div>
+                                <span class="px-2 py-1 rounded bg-blue-50 text-blue-600 font-bold uppercase">${w.status}</span>
+                            </div>`;
+                    }
+                });
+            });
+        };
+
+        // --- Auth Listener ---
+        onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('auth-view').classList.add('hidden');
                 document.getElementById('main-view').classList.remove('hidden');
@@ -223,6 +236,7 @@
                 document.getElementById('refer-link').innerText = `${window.location.origin}${window.location.pathname}?ref=${user.uid}`;
                 
                 loadJobs();
+                loadHistory(user.uid);
 
                 onSnapshot(doc(db, "users", user.uid), (s) => {
                     if(s.exists()){
@@ -232,28 +246,20 @@
                         document.getElementById('stat-refers').innerText = d.totalRefers || 0;
                         document.getElementById('account-status').innerText = d.isActive ? "Active" : "Not Active";
                         document.getElementById('account-status').className = d.isActive ? "text-[9px] font-bold mt-1 px-2 py-0.5 bg-green-500 rounded-full inline-block" : "text-[9px] font-bold mt-1 px-2 py-0.5 bg-red-500 rounded-full inline-block";
-                        
-                        const actBtn = document.getElementById('activate-btn-prof');
-                        if(d.isActive) {
-                            actBtn.innerText = "Verified Account";
-                            actBtn.className = "mt-3 px-4 py-1.5 bg-green-100 text-green-600 text-[10px] font-bold rounded-full uppercase tracking-wider";
-                            actBtn.disabled = true;
-                            document.getElementById('post-job-form').classList.remove('hidden');
-                            document.getElementById('activation-warning').classList.add('hidden');
-                        }
                     }
                 });
             } else {
                 document.getElementById('auth-view').classList.remove('hidden');
                 document.getElementById('main-view').classList.add('hidden');
+                document.getElementById('bottom-nav').classList.add('hidden');
             }
         });
 
-        // --- Actions ---
+        // --- Button Actions ---
         document.getElementById('login-btn').onclick = () => {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
-            signInWithEmailAndPassword(auth, email, pass).catch(e => alert("Error: " + e.message));
+            signInWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message));
         };
 
         document.getElementById('signup-btn').onclick = () => {
@@ -267,25 +273,30 @@
             }).catch(e => alert(e.message));
         };
 
-        document.getElementById('deposit-btn').onclick = async () => {
-            const amt = Number(document.getElementById('d-amount').value);
-            const trx = document.getElementById('d-trx').value.trim();
-            if(!amt || !trx) return alert("তথ্য দিন");
-            await addDoc(collection(db, "deposits"), { uid: auth.currentUser.uid, email: auth.currentUser.email, amount: amt, trxId: trx, status: "pending", createdAt: serverTimestamp() });
-            alert("সফলভাবে রিকোয়েস্ট পাঠানো হয়েছে!");
-        };
-
-        window.activateAccount = async () => {
+        document.getElementById('withdraw-btn').onclick = async () => {
+            const amount = Number(document.getElementById('w-amount').value);
+            const number = document.getElementById('w-number').value.trim();
+            if(amount < 50 || !number) return alert("তথ্য সঠিক দিন");
+            
             const userRef = doc(db, "users", auth.currentUser.uid);
             const userSnap = await getDoc(userRef);
-            if(userSnap.data().balance >= 100) {
-                await updateDoc(userRef, { balance: increment(-100), isActive: true });
-                alert("অ্যাকাউন্ট এক্টিভ হয়েছে!");
-            } else { alert("ব্যালেন্স কমপক্ষে ১০০ টাকা হতে হবে"); }
+            if(userSnap.data().balance >= amount) {
+                await addDoc(collection(db, "withdraws"), {
+                    uid: auth.currentUser.uid, amount, number, status: "pending", createdAt: serverTimestamp()
+                });
+                await updateDoc(userRef, { balance: increment(-amount) });
+                alert("রিকোয়েস্ট পাঠানো হয়েছে!");
+            } else { alert("পর্যাপ্ত ব্যালেন্স নেই"); }
+        };
+
+        window.copyReferLink = () => {
+            navigator.clipboard.writeText(document.getElementById('refer-link').innerText);
+            alert("লিঙ্ক কপি হয়েছে!");
         };
 
         document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
         document.getElementById('logout-btn-2').onclick = () => signOut(auth).then(() => location.reload());
+
     </script>
 </body>
 </html>
