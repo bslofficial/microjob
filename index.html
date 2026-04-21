@@ -105,8 +105,6 @@
                     <input id="w-number" type="text" placeholder="নম্বর লিখুন (বিকাশ/নগদ)" class="w-full p-3 bg-gray-50 rounded-xl mb-4 text-sm outline-none border focus:border-blue-500">
                     <button id="withdraw-btn" class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-md active:scale-95 transition-all">উইথড্র দিন</button>
                 </div>
-
-                <h3 class="font-bold text-sm px-1 text-gray-600 mt-4">পেমেন্ট হিস্ট্রি</h3>
                 <div id="history-list" class="space-y-2"></div>
             </div>
 
@@ -114,7 +112,6 @@
                 <div class="bg-white p-6 rounded-3xl shadow-md text-center border">
                     <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4"><i class="fas fa-gift"></i></div>
                     <h2 class="text-xl font-bold">রেফার করে আয়!</h2>
-                    <p class="text-xs text-gray-500 mt-2">প্রতি সফল রেফারে পাবেন বোনাস</p>
                     <div class="mt-6 p-4 bg-gray-50 rounded-2xl border-dashed border-2 border-blue-100 overflow-hidden">
                         <p id="refer-link" class="text-blue-600 font-bold text-[10px] truncate">লোড হচ্ছে...</p>
                     </div>
@@ -124,21 +121,9 @@
 
             <div id="profile-tab" class="tab-content space-y-4">
                 <div class="bg-white p-6 rounded-3xl shadow-sm text-center border">
-                    <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-3">
-                        <i class="fas fa-user"></i>
-                    </div>
+                    <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-3"><i class="fas fa-user"></i></div>
                     <h2 class="font-bold text-gray-800" id="prof-email-display">ইউজার ইমেইল</h2>
-                    <button onclick="window.activateAccount()" id="activate-btn-prof" class="mt-3 px-4 py-1.5 bg-red-100 text-red-600 text-[10px] font-bold rounded-full uppercase tracking-wider">Activate Now (৳১০০)</button>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-white p-4 rounded-2xl border text-center shadow-sm">
-                        <p class="text-[9px] text-gray-400 uppercase">মোট রেফার</p>
-                        <h4 id="stat-refers" class="text-xl font-bold text-blue-600">0</h4>
-                    </div>
-                    <div class="bg-white p-4 rounded-2xl border text-center shadow-sm">
-                        <p class="text-[9px] text-gray-400 uppercase">উইথড্র</p>
-                        <h4 id="stat-withdraws" class="text-xl font-bold text-blue-600">৳০</h4>
-                    </div>
+                    <button onclick="window.activateAccount()" id="activate-btn-prof" class="mt-3 px-4 py-1.5 bg-red-100 text-red-600 text-[10px] font-bold rounded-full">Activate Now (৳১০০)</button>
                 </div>
                 <button id="logout-btn-2" class="w-full p-4 bg-white rounded-2xl border text-red-500 font-bold text-sm shadow-sm flex items-center justify-center gap-2"><i class="fas fa-sign-out-alt"></i> লগআউট</button>
             </div>
@@ -146,18 +131,10 @@
     </main>
 
     <nav id="bottom-nav" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3 z-50">
-        <button onclick="window.switchTab('home')" id="btn-home" class="flex flex-col items-center active-tab">
-            <i class="fas fa-home"></i><span class="text-[9px] mt-1">Home</span>
-        </button>
-        <button onclick="window.switchTab('leaderboard')" id="btn-leaderboard" class="flex flex-col items-center text-gray-400">
-            <i class="fas fa-trophy"></i><span class="text-[9px] mt-1">Top 10</span>
-        </button>
-        <button onclick="window.switchTab('wallet')" id="btn-wallet" class="flex flex-col items-center text-gray-400">
-            <i class="fas fa-wallet"></i><span class="text-[9px] mt-1">Wallet</span>
-        </button>
-        <button onclick="window.switchTab('profile')" id="btn-profile" class="flex flex-col items-center text-gray-400">
-            <i class="fas fa-user"></i><span class="text-[9px] mt-1">Profile</span>
-        </button>
+        <button onclick="window.switchTab('home')" id="btn-home" class="flex flex-col items-center active-tab"><i class="fas fa-home"></i><span class="text-[9px] mt-1">Home</span></button>
+        <button onclick="window.switchTab('leaderboard')" id="btn-leaderboard" class="flex flex-col items-center text-gray-400"><i class="fas fa-trophy"></i><span class="text-[9px] mt-1">Top 10</span></button>
+        <button onclick="window.switchTab('wallet')" id="btn-wallet" class="flex flex-col items-center text-gray-400"><i class="fas fa-wallet"></i><span class="text-[9px] mt-1">Wallet</span></button>
+        <button onclick="window.switchTab('profile')" id="btn-profile" class="flex flex-col items-center text-gray-400"><i class="fas fa-user"></i><span class="text-[9px] mt-1">Profile</span></button>
     </nav>
 
     <script type="module">
@@ -178,7 +155,6 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // --- UI Logic ---
         window.toggleMenu = () => {
             const menu = document.getElementById('side-menu');
             const overlay = document.getElementById('menu-overlay');
@@ -191,8 +167,7 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(tab + '-tab').classList.add('active');
             document.querySelectorAll('#bottom-nav button').forEach(el => {
-                el.classList.remove('active-tab');
-                el.classList.add('text-gray-400');
+                el.classList.remove('active-tab'); el.classList.add('text-gray-400');
             });
             const btn = document.getElementById('btn-' + tab);
             if(btn) { btn.classList.add('active-tab'); btn.classList.remove('text-gray-400'); }
@@ -200,7 +175,6 @@
             if(document.getElementById('side-menu').style.transform === 'translateX(0px)') window.toggleMenu();
         };
 
-        // --- Auth States ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('auth-view').classList.add('hidden');
@@ -209,17 +183,12 @@
                 document.getElementById('prof-email-display').innerText = user.email;
                 document.getElementById('user-email-side').innerText = user.email;
                 document.getElementById('refer-link').innerText = `${window.location.origin}${window.location.pathname}?ref=${user.uid}`;
-                
                 loadJobs();
-                loadHistory(user.uid);
-
                 onSnapshot(doc(db, "users", user.uid), (s) => {
                     if(s.exists()){
                         const d = s.data();
                         document.getElementById('balance').innerText = d.balance.toFixed(2);
                         document.getElementById('nav-balance').innerText = d.balance.toFixed(2);
-                        document.getElementById('stat-refers').innerText = d.totalRefers || 0;
-                        document.getElementById('stat-withdraws').innerText = "৳" + (d.totalWithdraw || 0);
                         if(d.isActive) document.getElementById('activate-btn-prof').classList.add('hidden');
                     }
                 });
@@ -230,7 +199,7 @@
             }
         });
 
-        // --- অ্যাডমিন জব লোড করার লজিক ---
+        // --- সংশোধিত জব লোডিং ফাংশন ---
         const loadJobs = () => {
             onSnapshot(collection(db, "jobs"), (snap) => {
                 const container = document.getElementById('job-list');
@@ -241,17 +210,16 @@
                 }
                 snap.forEach(d => {
                     const job = d.data();
-                    if(job.status === "active") {
+                    // স্ট্যাটাস চেক বড় হাতের হোক বা ছোট হাতের—সব ক্ষেত্রেই কাজ করবে
+                    const status = job.status ? job.status.toLowerCase() : "";
+                    if(status === "active") {
                         container.innerHTML += `
                             <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 mb-3 animate-fade-in">
-                                <div class="flex justify-between items-start">
-                                    <h3 class="font-bold text-sm text-gray-800">${job.title}</h3>
-                                    <span class="bg-blue-50 text-blue-600 text-[8px] px-2 py-1 rounded-full font-bold uppercase tracking-tighter">Verified</span>
-                                </div>
+                                <h3 class="font-bold text-sm text-gray-800">${job.title}</h3>
                                 <p class="text-[10px] text-gray-500 mt-2 line-clamp-2">${job.description || 'কাজটি সফলভাবে সম্পন্ন করে বোনাস বুঝে নিন।'}</p>
-                                <div class="flex justify-between items-center mt-4">
+                                <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-50">
                                     <p class="text-[11px] text-blue-600 font-bold">পুরস্কার: ৳${job.budget}</p>
-                                    <a href="${job.url}" target="_blank" class="bg-blue-600 text-white px-5 py-2 rounded-xl text-[10px] font-bold shadow-md shadow-blue-100 active:scale-95 transition-all">কাজ শুরু করুন</a>
+                                    <a href="${job.url}" target="_blank" class="bg-blue-600 text-white px-5 py-2 rounded-xl text-[10px] font-bold active:scale-95 transition-all">কাজ শুরু করুন</a>
                                 </div>
                             </div>`;
                     }
@@ -267,74 +235,32 @@
                 let i = 1;
                 snap.forEach(d => {
                     const u = d.data();
-                    list.innerHTML += `
-                        <div class="p-4 flex justify-between items-center text-xs">
-                            <span class="font-medium text-gray-500">${i++}. ${u.email.split('@')[0]}</span>
-                            <span class="font-bold text-blue-600">৳${u.balance.toFixed(2)}</span>
-                        </div>`;
+                    list.innerHTML += `<div class="p-4 flex justify-between items-center text-xs"><span>${i++}. ${u.email.split('@')[0]}</span><span class="font-bold text-blue-600">৳${u.balance.toFixed(2)}</span></div>`;
                 });
             });
         };
 
-        const loadHistory = (uid) => {
-            const q = query(collection(db, "withdraws"), orderBy("createdAt", "desc"), limit(10));
-            onSnapshot(q, (snap) => {
-                const list = document.getElementById('history-list');
-                list.innerHTML = "";
-                snap.forEach(d => {
-                    const w = d.data();
-                    if(w.uid === uid) {
-                        list.innerHTML += `
-                            <div class="bg-white p-3 rounded-2xl border flex justify-between items-center text-[10px]">
-                                <div><p class="font-bold">৳${w.amount}</p><p class="text-gray-400">${w.number}</p></div>
-                                <span class="px-2 py-1 rounded ${w.status==='completed'?'bg-green-50 text-green-600':'bg-blue-50 text-blue-600'} font-bold uppercase">${w.status}</span>
-                            </div>`;
-                    }
-                });
-            });
-        };
-
-        // --- Actions ---
+        // --- বাটন ফাংশনসমূহ ---
         document.getElementById('deposit-btn').onclick = async () => {
             const amt = Number(document.getElementById('d-amount').value);
             const trx = document.getElementById('d-trx').value.trim();
             if(!amt || !trx) return alert("তথ্য দিন");
-            await addDoc(collection(db, "deposits"), { 
-                uid: auth.currentUser.uid, 
-                email: auth.currentUser.email, 
-                amount: amt, 
-                trxId: trx, 
-                status: "pending", 
-                createdAt: serverTimestamp() 
-            });
+            await addDoc(collection(db, "deposits"), { uid: auth.currentUser.uid, email: auth.currentUser.email, amount: amt, trxId: trx, status: "pending", createdAt: serverTimestamp() });
             alert("সফলভাবে রিকোয়েস্ট পাঠানো হয়েছে!");
-            document.getElementById('d-amount').value = "";
-            document.getElementById('d-trx').value = "";
+            document.getElementById('d-amount').value = ""; document.getElementById('d-trx').value = "";
         };
 
         document.getElementById('withdraw-btn').onclick = async () => {
             const amount = Number(document.getElementById('w-amount').value);
             const number = document.getElementById('w-number').value.trim();
             if(amount < 50 || !number) return alert("৳৫০ এর নিচে উত্তোলন করা যাবে না");
-            
             const userRef = doc(db, "users", auth.currentUser.uid);
             const userSnap = await getDoc(userRef);
             if(userSnap.data().balance >= amount) {
-                await addDoc(collection(db, "withdraws"), {
-                    uid: auth.currentUser.uid, amount, number, status: "pending", createdAt: serverTimestamp()
-                });
+                await addDoc(collection(db, "withdraws"), { uid: auth.currentUser.uid, amount, number, status: "pending", createdAt: serverTimestamp() });
                 await updateDoc(userRef, { balance: increment(-amount) });
                 alert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!");
             } else { alert("পর্যাপ্ত ব্যালেন্স নেই!"); }
-        };
-
-        window.activateAccount = async () => {
-            const userRef = doc(db, "users", auth.currentUser.uid);
-            const userSnap = await getDoc(userRef);
-            if(userSnap.data().balance >= 100) {
-                await updateDoc(userRef, { balance: increment(-100), isActive: true });
-                alert("অ্যাকাউন্ট এক্টিভ হয়েছে!");
-            } else { alert("ব্যালেন্স কমপক্ষে ১০০ টাকা হতে হবে"); }
         };
 
         document.getElementById('login-btn').onclick = () => {
@@ -346,13 +272,10 @@
         document.getElementById('signup-btn').onclick = () => {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
-            if(pass.length < 6) return alert("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের দিন");
             const ref = new URLSearchParams(window.location.search).get('ref');
             createUserWithEmailAndPassword(auth, email, pass).then(async (cred) => {
-                await setDoc(doc(db, "users", cred.user.uid), {
-                    email, balance: 0, isActive: false, referredBy: ref || null, totalRefers: 0, createdAt: serverTimestamp()
-                });
-            }).catch(e => alert("এই ইমেইল দিয়ে অলরেডি অ্যাকাউন্ট আছে।"));
+                await setDoc(doc(db, "users", cred.user.uid), { email, balance: 0, isActive: false, referredBy: ref || null, totalRefers: 0, createdAt: serverTimestamp() });
+            }).catch(e => alert(e.message));
         };
 
         window.copyReferLink = () => {
