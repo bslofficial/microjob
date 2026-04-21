@@ -1,24 +1,81 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <title>Admin Panel - MicroJobs</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - MicroJobs BD</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="bg-gray-100 p-6">
-    <h1 class="text-2xl font-bold mb-6">অ্যাডমিন প্যানেল</h1>
-    
-    <div class="bg-white p-6 rounded-xl shadow mb-8">
-        <h2 class="font-bold mb-4">নতুন কাজ যোগ করুন</h2>
-        <input id="j-title" placeholder="কাজের শিরোনাম" class="w-full p-2 border mb-2">
-        <input id="j-budget" placeholder="বাজেট (৳)" class="w-full p-2 border mb-2">
-        <button onclick="publishJob()" class="bg-blue-600 text-white px-4 py-2 rounded">পাবলিশ করুন</button>
+<body class="bg-gray-100 min-h-screen pb-10">
+
+    <div id="auth-view" class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-red-100">
+            <h2 class="text-2xl font-bold text-red-600 mb-6 text-center">Admin Login</h2>
+            <input id="admin-email" type="email" placeholder="অ্যাডমিন ইমেইল" class="w-full p-4 border rounded-2xl mb-4 outline-none focus:border-red-500">
+            <input id="admin-pass" type="password" placeholder="পাসওয়ার্ড" class="w-full p-4 border rounded-2xl mb-6 outline-none focus:border-red-500">
+            <button onclick="window.adminLogin()" class="w-full bg-red-600 text-white py-4 rounded-2xl font-bold hover:bg-red-700 transition">প্রবেশ করুন</button>
+        </div>
     </div>
 
-    <div class="bg-white p-6 rounded-xl shadow">
-        <h2 class="font-bold mb-4">পেমেন্ট রিকোয়েস্ট</h2>
-        <div id="admin-withdraw-list"></div>
+    <div id="admin-view" class="hidden">
+        <nav class="bg-red-600 text-white p-4 shadow-md sticky top-0 z-50">
+            <div class="max-w-4xl mx-auto flex justify-between items-center">
+                <h1 class="font-bold text-lg"><i class="fas fa-user-shield"></i> Admin Control</h1>
+                <button onclick="window.adminLogout()" class="bg-red-800 px-4 py-2 rounded-xl text-xs hover:bg-red-900">লগআউট</button>
+            </div>
+        </nav>
+
+        <main class="max-w-4xl mx-auto p-4 space-y-6">
+            
+            <section class="bg-white p-6 rounded-3xl shadow-sm border border-blue-100">
+                <h2 class="font-bold text-blue-600 mb-4 flex items-center gap-2"><i class="fas fa-plus-circle"></i> নতুন জব পাবলিশ</h2>
+                <div class="grid grid-cols-1 gap-3">
+                    <input id="adm-title" type="text" placeholder="কাজের নাম" class="p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500">
+                    <textarea id="adm-desc" placeholder="কাজের বিবরণ" class="p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500" rows="3"></textarea>
+                    <input id="adm-url" type="url" placeholder="লিঙ্ক" class="p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500">
+                    <input id="adm-budget" type="number" placeholder="ইউজার পাবে (৳)" class="p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500">
+                    <button onclick="window.adminPostJob()" class="bg-blue-600 text-white font-bold py-3 rounded-xl">পাবলিশ করুন</button>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100">
+                <h2 class="font-bold text-purple-600 mb-4 flex items-center gap-2"><i class="fas fa-paper-plane"></i> ইউজারকে মেসেজ দিন</h2>
+                <div class="grid grid-cols-1 gap-3">
+                    <input id="msg-target-email" type="email" placeholder="ইউজারের ইমেইল (খালি রাখলে সবার কাছে যাবে)" class="p-3 bg-gray-50 border rounded-xl outline-none">
+                    <textarea id="msg-text" placeholder="মেসেজটি লিখুন..." class="p-3 bg-gray-50 border rounded-xl outline-none" rows="2"></textarea>
+                    <button onclick="window.sendUserMessage()" class="bg-purple-600 text-white font-bold py-3 rounded-xl">মেসেজ পাঠান</button>
+                </div>
+            </section>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <section class="bg-white p-6 rounded-3xl shadow-sm border border-green-100">
+                    <h2 class="font-bold text-green-600 mb-4"><i class="fas fa-money-check-alt"></i> পেন্ডিং ডিপোজিট</h2>
+                    <div id="admin-deposit-list" class="space-y-3"></div>
+                </section>
+                <section class="bg-white p-6 rounded-3xl shadow-sm border border-orange-100">
+                    <h2 class="font-bold text-orange-600 mb-4"><i class="fas fa-wallet"></i> উইথড্র রিকোয়েস্ট</h2>
+                    <div id="admin-withdraw-list" class="space-y-3"></div>
+                </section>
+            </div>
+
+            <section class="bg-white p-6 rounded-3xl shadow-sm border border-red-100">
+                <h2 class="font-bold text-red-600 mb-4"><i class="fas fa-tasks"></i> বর্তমান জব লিস্ট</h2>
+                <div id="admin-job-list" class="space-y-3"></div>
+            </section>
+
+            <section class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+                <h2 class="font-bold text-gray-700 mb-4"><i class="fas fa-users"></i> ইউজার ম্যানেজমেন্ট</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead><tr class="border-b"><th class="py-3">ইমেইল</th><th class="py-3">ব্যালেন্স</th><th class="py-3">অ্যাকশন</th></tr></thead>
+                        <tbody id="user-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <script src="admin.js" type="module"></script>
+    <script type="module" src="admin.js"></script>
 </body>
 </html>
