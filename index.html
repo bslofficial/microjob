@@ -86,12 +86,13 @@
 
             <div id="wallet-tab" class="tab-content space-y-4">
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-blue-100">
-                    <h2 class="font-bold text-blue-600 text-sm mb-3 uppercase flex items-center gap-2"><i class="fas fa-plus-circle"></i> Deposit</h2>
+                    <h2 class="font-bold text-blue-600 text-sm mb-3 uppercase flex items-center gap-2"><i class="fas fa-plus-circle"></i> Deposit (টাকা জমা দিন)</h2>
                     <div class="bg-blue-50 p-4 rounded-2xl mb-4 text-[11px] text-blue-700 leading-relaxed border border-blue-100">
                         <div class="flex justify-between items-center">
                             <span>বিকাশ/নগদ (Personal):</span>
                             <b class="text-sm select-all">01913932587</b>
                         </div>
+                        <p class="mt-2 text-gray-500 italic">* উক্ত নাম্বারে টাকা পাঠিয়ে নিচে তথ্য প্রদান করুন।</p>
                     </div>
                     <input id="d-amount" type="number" placeholder="টাকার পরিমাণ (৳)" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border focus:border-blue-500">
                     <input id="d-trx" type="text" placeholder="Transaction ID (TrxID)" class="w-full p-3 bg-gray-50 rounded-xl mb-4 text-sm outline-none border focus:border-blue-500">
@@ -99,23 +100,27 @@
                 </div>
 
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-blue-100">
-                    <h2 class="font-bold text-blue-600 text-sm mb-3 uppercase flex items-center gap-2"><i class="fas fa-minus-circle"></i> Withdraw</h2>
+                    <h2 class="font-bold text-blue-600 text-sm mb-3 uppercase flex items-center gap-2"><i class="fas fa-minus-circle"></i> Withdraw (টাকা উত্তোলন)</h2>
                     <input id="w-amount" type="number" placeholder="৳৫০+" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border focus:border-blue-500">
-                    <input id="w-number" type="text" placeholder="নম্বর লিখুন" class="w-full p-3 bg-gray-50 rounded-xl mb-4 text-sm outline-none border focus:border-blue-500">
+                    <input id="w-number" type="text" placeholder="নম্বর লিখুন (বিকাশ/নগদ)" class="w-full p-3 bg-gray-50 rounded-xl mb-4 text-sm outline-none border focus:border-blue-500">
                     <button id="withdraw-btn" class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-md active:scale-95 transition-all">উইথড্র দিন</button>
                 </div>
+                <div id="history-list" class="space-y-2"></div>
             </div>
 
             <div id="refer-tab" class="tab-content">
                 <div class="bg-white p-6 rounded-3xl shadow-md text-center border">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4"><i class="fas fa-gift"></i></div>
                     <h2 class="text-xl font-bold">রেফার করে আয়!</h2>
-                    <p id="refer-link" class="text-blue-600 font-bold text-[10px] mt-4 truncate">লোড হচ্ছে...</p>
+                    <div class="mt-6 p-4 bg-gray-50 rounded-2xl border-dashed border-2 border-blue-100 overflow-hidden">
+                        <p id="refer-link" class="text-blue-600 font-bold text-[10px] truncate">লোড হচ্ছে...</p>
+                    </div>
                     <button onclick="window.copyReferLink()" class="w-full bg-blue-600 text-white py-3 rounded-2xl mt-4 font-bold">কপি লিঙ্ক</button>
                 </div>
             </div>
 
-            <div id="profile-tab" class="tab-content space-y-4 text-center">
-                <div class="bg-white p-6 rounded-3xl shadow-sm border">
+            <div id="profile-tab" class="tab-content space-y-4">
+                <div class="bg-white p-6 rounded-3xl shadow-sm text-center border">
                     <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-3"><i class="fas fa-user"></i></div>
                     <h2 class="font-bold text-gray-800" id="prof-email-display">ইউজার ইমেইল</h2>
                     <button onclick="window.activateAccount()" id="activate-btn-prof" class="mt-3 px-4 py-1.5 bg-red-100 text-red-600 text-[10px] font-bold rounded-full">Activate Now (৳১০০)</button>
@@ -124,29 +129,6 @@
             </div>
         </div>
     </main>
-
-    <div id="submit-modal" class="fixed inset-0 bg-black/60 hidden z-[100] flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm rounded-[2rem] p-6 animate-fade-in shadow-2xl">
-            <h2 class="text-lg font-bold text-blue-600 mb-4">কাজ জমা দিন (Proof)</h2>
-            <input type="hidden" id="modal-job-id">
-            <input type="hidden" id="modal-job-title">
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="text-[10px] font-bold text-gray-400 block mb-1">স্ক্রিনশট পছন্দ করুন:</label>
-                    <input type="file" id="proof-file" accept="image/*" class="w-full text-xs">
-                </div>
-                <div>
-                    <label class="text-[10px] font-bold text-gray-400 block mb-1">আপনার মতামত (বিকল্প):</label>
-                    <textarea id="proof-note" class="w-full border rounded-xl p-3 text-xs outline-none focus:border-blue-500 h-20" placeholder="ইউজার আইডি বা কাজের প্রুফ সম্পর্কে কিছু লিখুন..."></textarea>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="window.closeModal()" class="flex-1 bg-gray-100 py-3 rounded-xl font-bold text-xs">বাতিল</button>
-                    <button onclick="window.sendToTelegram()" id="submit-btn-action" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-xs">টেলিগ্রামে পাঠান</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <nav id="bottom-nav" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3 z-50">
         <button onclick="window.switchTab('home')" id="btn-home" class="flex flex-col items-center active-tab"><i class="fas fa-home"></i><span class="text-[9px] mt-1">Home</span></button>
@@ -172,10 +154,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-
-        // --- আপনার টেলিগ্রাম তথ্য ---
-        const BOT_TOKEN = "8658250586:AAEni2LGFdpUWQyTmLhNJ6zacg2BEknnxAE";
-        const ADMIN_CHAT_ID = "8658250586";
 
         window.toggleMenu = () => {
             const menu = document.getElementById('side-menu');
@@ -221,67 +199,32 @@
             }
         });
 
+        // --- সংশোধিত জব লোডিং ফাংশন ---
         const loadJobs = () => {
             onSnapshot(collection(db, "jobs"), (snap) => {
                 const container = document.getElementById('job-list');
                 container.innerHTML = "";
+                if(snap.empty) {
+                    container.innerHTML = `<p class="text-center text-gray-400 text-xs mt-10">কোনো কাজ পাওয়া যায়নি</p>`;
+                    return;
+                }
                 snap.forEach(d => {
                     const job = d.data();
+                    // স্ট্যাটাস চেক বড় হাতের হোক বা ছোট হাতের—সব ক্ষেত্রেই কাজ করবে
                     const status = job.status ? job.status.toLowerCase() : "";
                     if(status === "active") {
                         container.innerHTML += `
                             <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 mb-3 animate-fade-in">
                                 <h3 class="font-bold text-sm text-gray-800">${job.title}</h3>
-                                <div class="flex flex-col gap-3 mt-4 pt-3 border-t border-gray-50">
-                                    <div class="flex justify-between items-center">
-                                        <p class="text-[11px] text-blue-600 font-bold">পুরস্কার: ৳${job.budget}</p>
-                                        <a href="${job.url}" target="_blank" class="bg-blue-100 text-blue-600 px-4 py-2 rounded-xl text-[10px] font-bold">লিঙ্কে যান</a>
-                                    </div>
-                                    <button onclick="window.openModal('${d.id}', '${job.title}')" class="w-full bg-blue-600 text-white py-2 rounded-xl text-[10px] font-bold shadow-md">জমা দিন (Submit Proof)</button>
+                                <p class="text-[10px] text-gray-500 mt-2 line-clamp-2">${job.description || 'কাজটি সফলভাবে সম্পন্ন করে বোনাস বুঝে নিন।'}</p>
+                                <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-50">
+                                    <p class="text-[11px] text-blue-600 font-bold">পুরস্কার: ৳${job.budget}</p>
+                                    <a href="${job.url}" target="_blank" class="bg-blue-600 text-white px-5 py-2 rounded-xl text-[10px] font-bold active:scale-95 transition-all">কাজ শুরু করুন</a>
                                 </div>
                             </div>`;
                     }
                 });
             });
-        };
-
-        window.openModal = (id, title) => {
-            document.getElementById('modal-job-id').value = id;
-            document.getElementById('modal-job-title').value = title;
-            document.getElementById('submit-modal').classList.remove('hidden');
-        };
-
-        window.closeModal = () => {
-            document.getElementById('submit-modal').classList.add('hidden');
-            document.getElementById('proof-file').value = "";
-            document.getElementById('proof-note').value = "";
-        };
-
-        window.sendToTelegram = async () => {
-            const user = auth.currentUser;
-            const jobId = document.getElementById('modal-job-id').value;
-            const jobTitle = document.getElementById('modal-job-title').value;
-            const note = document.getElementById('proof-note').value;
-            const fileInput = document.getElementById('proof-file');
-
-            if (fileInput.files.length === 0) return alert("স্ক্রিনশট সিলেক্ট করুন!");
-
-            const btn = document.getElementById('submit-btn-action');
-            btn.disabled = true; btn.innerText = "পাঠানো হচ্ছে...";
-
-            const formData = new FormData();
-            formData.append("chat_id", ADMIN_CHAT_ID);
-            formData.append("photo", fileInput.files[0]);
-            formData.append("caption", `📝 নতুন প্রুফ!\n\nইউজার: ${user.email}\nকাজ: ${jobTitle}\nআইডি: ${jobId}\nনোট: ${note || "নেই"}`);
-
-            try {
-                const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formData });
-                if (res.ok) {
-                    alert("প্রুফ পাঠানো হয়েছে! অ্যাডমিন চেক করে টাকা যোগ করবে।");
-                    window.closeModal();
-                } else { alert("ত্রুটি হয়েছে!"); }
-            } catch (err) { alert("ইন্টারনেট সমস্যা!"); }
-            finally { btn.disabled = false; btn.innerText = "টেলিগ্রামে পাঠান"; }
         };
 
         const loadLeaderboard = () => {
@@ -297,11 +240,12 @@
             });
         };
 
+        // --- বাটন ফাংশনসমূহ ---
         document.getElementById('deposit-btn').onclick = async () => {
             const amt = Number(document.getElementById('d-amount').value);
             const trx = document.getElementById('d-trx').value.trim();
             if(!amt || !trx) return alert("তথ্য দিন");
-            await addDoc(collection(db, "deposits"), { uid: auth.currentUser.uid, email: auth.currentUser.email, amount: amt, trxId: trx, status: \"pending\", createdAt: serverTimestamp() });
+            await addDoc(collection(db, "deposits"), { uid: auth.currentUser.uid, email: auth.currentUser.email, amount: amt, trxId: trx, status: "pending", createdAt: serverTimestamp() });
             alert("সফলভাবে রিকোয়েস্ট পাঠানো হয়েছে!");
             document.getElementById('d-amount').value = ""; document.getElementById('d-trx').value = "";
         };
@@ -313,7 +257,7 @@
             const userRef = doc(db, "users", auth.currentUser.uid);
             const userSnap = await getDoc(userRef);
             if(userSnap.data().balance >= amount) {
-                await addDoc(collection(db, "withdraws"), { uid: auth.currentUser.uid, amount, number, status: \"pending\", createdAt: serverTimestamp() });
+                await addDoc(collection(db, "withdraws"), { uid: auth.currentUser.uid, amount, number, status: "pending", createdAt: serverTimestamp() });
                 await updateDoc(userRef, { balance: increment(-amount) });
                 alert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!");
             } else { alert("পর্যাপ্ত ব্যালেন্স নেই!"); }
@@ -334,22 +278,13 @@
             }).catch(e => alert(e.message));
         };
 
-        window.activateAccount = async () => {
-            const userRef = doc(db, "users", auth.currentUser.uid);
-            const userSnap = await getDoc(userRef);
-            if(userSnap.data().balance >= 100) {
-                await updateDoc(userRef, { balance: increment(-100), isActive: true });
-                alert("অ্যাকাউন্ট এক্টিভ হয়েছে!");
-            } else { alert("ব্যালেন্স কমপক্ষে ১০০ টাকা হতে হবে"); }
-        };
-
         window.copyReferLink = () => {
             navigator.clipboard.writeText(document.getElementById('refer-link').innerText);
             alert("লিঙ্ক কপি হয়েছে!");
         };
 
-        document.getElementById('logout-btn-2').onclick = () => signOut(auth).then(() => location.reload());
         document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
+        document.getElementById('logout-btn-2').onclick = () => signOut(auth).then(() => location.reload());
     </script>
 </body>
 </html>
