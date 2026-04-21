@@ -1,80 +1,46 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { db, auth } from "./firebaseconfig.js";
+import { doc, onSnapshot, collection, query, orderBy, limit, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
-    authDomain: "microjobs-b9d90.firebaseapp.com",
-    projectId: "microjobs-b9d90",
-    storageBucket: "microjobs-b9d90.firebasestorage.app",
-    messagingSenderId: "1006928193385",
-    appId: "1:1006928193385:web:d4b5cc1911abda6ff53ff8"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-// অ্যাডমিন ইমেইল চেক
-const ADMIN_EMAIL = "bslgaimerofficial@gmail.com";
-
-onAuthStateChanged(auth, (user) => {
-    if (!user || user.email !== ADMIN_EMAIL) {
-        alert("অ্যাক্সেস ডিনাইড!");
-        window.location.href = "index.html"; 
-    }
-});
-
-// ১. এডমিন থেকে সরাসরি জব পোস্ট
-window.adminPostJob = async () => {
-    const title = document.getElementById('adm-title').value;
-    const desc = document.getElementById('adm-desc').value; // HTML এ এই আইডি যুক্ত করুন
-    const url = document.getElementById('adm-url').value;
-    const budget = Number(document.getElementById('adm-budget').value);
-
-    if (!title || !budget) return alert("সব তথ্য দিন!");
-
-    try {
-        await addDoc(collection(db, "jobs"), {
-            title, description: desc, url, budget, status: "active", createdAt: serverTimestamp()
+// ব্যালেন্স আপডেট
+auth.onAuthStateChanged(user => {
+    if (user) {
+        onSnapshot(doc(db, "users", user.uid), (s) => {
+            const data = s.data();
+            document.getElementById('main-balance').innerText = data.balance.toFixed(2);
+            document.getElementById('nav-balance').innerText = data.balance.toFixed(2);
         });
-        alert("জব পাবলিশ হয়েছে!");
-        location.reload();
-    } catch (e) { alert(e.message); }
-};
-
-// ২. জব লিস্ট ম্যানেজমেন্ট (পেন্ডিং জবগুলো এপ্রুভ করার অপশনসহ)
-onSnapshot(collection(db, "jobs"), (snapshot) => {
-    const container = document.getElementById('admin-job-list'); // আপনার admin.html এ এই আইডিটি থাকতে হবে
-    if(!container) return;
-    container.innerHTML = "";
-    snapshot.forEach((docData) => {
-        const job = docData.data();
-        const div = document.createElement('div');
-        div.className = `p-4 border mb-2 rounded-xl ${job.status === 'pending' ? 'bg-yellow-50' : 'bg-white'}`;
-        div.innerHTML = `
-            <h4 class="font-bold text-sm">${job.title}</h4>
-            <p class="text-xs text-gray-500">${job.description || ''}</p>
-            <p class="text-xs font-bold text-blue-600">বাজেট: ৳${job.budget} | স্ট্যাটাস: ${job.status}</p>
-            <div class="mt-2 flex gap-2">
-                ${job.status === 'pending' ? `<button onclick="window.approveJob('${docData.id}')" class="bg-green-600 text-white px-3 py-1 rounded text-[10px]">Approve</button>` : ''}
-                <button onclick="window.deleteJob('${docData.id}')" class="bg-red-500 text-white px-3 py-1 rounded text-[10px]">Delete</button>
-            </div>`;
-        container.appendChild(div);
-    });
+        loadLeaderboard();
+    }
 });
 
-window.approveJob = async (id) => {
-    const budget = prompt("এই জবের জন্য বাজেট কত দিবেন?", "1.5");
-    if(budget) {
-        await updateDoc(doc(db, "jobs", id), { status: "active", budget: Number(budget) });
-        alert("জব এপ্রুভ হয়েছে!");
-    }
-};
+// লিডারবোর্ড লোড করা
+async function loadLeaderboard() {
+    const q = query(collection(db, "users"), orderBy("balance", "desc"), limit(10));
+    const snap = await getDocs(q);
+    const list = document.getElementById('leader-list');
+    list.innerHTML = "";
+    snap.forEach((doc, i) => {
+        list.innerHTML += `
+            <div class="flex justify-between p-4 border-b">
+                <span>${i+1}. ${doc.data().name || 'User'}</span>
+                <span class="font-bold text-blue-600">৳${doc.data().balance.toFixed(2)}</span>
+            </div>`;
+    });
+}
 
-window.deleteJob = async (id) => {
-    if(confirm("ডিলিট নিশ্চিত?")) await deleteDoc(doc(db, "jobs", id));
+// উইথড্র রিকোয়েস্ট
+window.requestWithdraw = async () => {
+    const amount = document.getElementById('w-amount').value;
+    const number = document.getElementById('w-number').value;
+    if(amount < 50) return alert("নূন্যতম ৫০ টাকা প্রয়োজন");
+    
+    await addDoc(collection(db, "withdraws"), {
+        userId: auth.currentUser.uid,
+        email: auth.currentUser.email,
+        amount: Number(amount),
+        number: number,
+        status: "pending",
+        date: new Date()
+    });
+    alert("রিকোয়েস্ট সফল হয়েছে!");
 };
-
-// ডিপোজিট ও উইথড্র এপ্রুভাল (আপনার আগের কোডের মতো থাকবে)
-// ... (আপনার আগের পাঠানো এপ্রুভাল লজিক এখানে থাকবে)
