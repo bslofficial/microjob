@@ -33,15 +33,15 @@ onAuthStateChanged(auth, (user) => {
 window.adminLogin = () => {
     const email = document.getElementById('admin-email').value;
     const pass = document.getElementById('admin-pass').value;
-    if(email !== ADMIN_EMAIL) return alert("অ্যাডমিন ইমেইল সঠিক নয়!");
-    signInWithEmailAndPassword(auth, email, pass).catch(e => alert("লগইন ব্যর্থ: " + e.message));
+    if(email !== ADMIN_EMAIL) return alert("Unauthorized!");
+    signInWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message));
 };
 
 window.adminLogout = () => signOut(auth).then(() => location.reload());
 
-// ডাটা লোড ও রিয়েল-টাইম আপডেট
+// ডাটা লোড ফাংশন
 function loadData() {
-    // ১. জব লিস্ট
+    // ১. জব লিস্ট ও ডিলিট
     onSnapshot(collection(db, "jobs"), (snap) => {
         const list = document.getElementById('admin-job-list');
         list.innerHTML = "";
@@ -54,7 +54,7 @@ function loadData() {
         });
     });
 
-    // ২. পেন্ডিং ডিপোজিট লিস্ট ও এপ্রুভ
+    // ২. ডিপোজিট লিস্ট ও এপ্রুভ
     onSnapshot(collection(db, "deposits"), (snap) => {
         const list = document.getElementById('admin-deposit-list');
         list.innerHTML = "";
@@ -69,7 +69,7 @@ function loadData() {
         });
     });
 
-    // ৩. উইথড্র লিস্ট
+    // ৩. উইথড্র লিস্ট ও কমপ্লিট
     onSnapshot(collection(db, "withdraws"), (snap) => {
         const list = document.getElementById('admin-withdraw-list');
         list.innerHTML = "";
@@ -84,59 +84,44 @@ function loadData() {
         });
     });
 
-    // ৪. ইউজার লিস্ট ও ব্যালেন্স মনিটর
+    // ৪. ইউজার লিস্ট
     onSnapshot(collection(db, "users"), (snap) => {
         const table = document.getElementById('user-table-body');
         table.innerHTML = "";
         snap.forEach(u => {
             const user = u.data();
-            table.innerHTML += `<tr class="border-b"><td class="py-3">${user.email}</td><td class="py-3 font-bold text-blue-600">৳${(user.balance || 0).toFixed(2)}</td>
-            <td class="py-3"><button onclick="window.deleteUser('${u.id}')" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
+            table.innerHTML += `<tr class="border-b"><td class="py-3">${user.email}</td><td class="py-3">৳${(user.balance || 0).toFixed(2)}</td>
+            <td class="py-3"><button onclick="window.deleteUser('${u.id}')" class="text-red-500">Delete</button></td></tr>`;
         });
     });
 }
 
-// --- অ্যাডমিন অ্যাকশন ফাংশনসমূহ ---
-
-// ১. ডিপোজিট এপ্রুভ ও ব্যালেন্স যোগ (সংশোধিত)
-window.approveDeposit = async (docId, userId, amount) => {
-    if(confirm("আপনি কি নিশ্চিতভাবে এই পেমেন্টটি এপ্রুভ করতে চান?")) {
-        try {
-            // ডিপোজিট স্ট্যাটাস আপডেট
-            await updateDoc(doc(db, "deposits", docId), { status: "approved" });
-
-            // ইউজারের ব্যালেন্স ইনক্রিমেন্ট (নিশ্চিত করা হয়েছে যে এটি Number)
-            const userRef = doc(db, "users", userId);
-            await updateDoc(userRef, { 
-                balance: increment(Number(amount)) 
-            });
-
-            alert("ডিপোজিট এপ্রুভ হয়েছে এবং ইউজারের ব্যালেন্স আপডেট হয়েছে!");
-        } catch (e) { 
-            console.error(e);
-            alert("ভুল হয়েছে: " + e.message); 
-        }
-    }
-};
-
+// ফাংশনসমূহ
 window.adminPostJob = async () => {
     const title = document.getElementById('adm-title').value;
     const desc = document.getElementById('adm-desc').value;
     const url = document.getElementById('adm-url').value;
     const budget = Number(document.getElementById('adm-budget').value);
-    if (!title || !budget) return alert("টাইটেল ও বাজেট দিন!");
+    if (!title || !budget) return alert("Title & Budget required!");
     await addDoc(collection(db, "jobs"), { title, description: desc, url, budget, status: "active", createdAt: serverTimestamp() });
-    alert("জব পাবলিশ হয়েছে!");
+    alert("পাবলিশ হয়েছে!");
 };
 
 window.sendUserMessage = async () => {
     const email = document.getElementById('msg-target-email').value;
     const msg = document.getElementById('msg-text').value;
     if(!msg) return alert("মেসেজ লিখুন!");
-    await addDoc(collection(db, "notifications"), { targetEmail: email || "all", message: msg, time: serverTimestamp(), isRead: false });
-    alert("মেসেজ পাঠানো হয়েছে!");
+    await addDoc(collection(db, "notifications"), { targetEmail: email || "all", message: msg, time: serverTimestamp() });
+    alert("পাঠানো হয়েছে!");
 };
 
-window.completeWithdraw = async (id) => { if(confirm("পেমেন্ট কি কমপ্লিট?")) await updateDoc(doc(db, "withdraws", id), { status: "completed" }); };
-window.deleteJob = async (id) => { if(confirm("জবটি ডিলিট করতে চান?")) await deleteDoc(doc(db, "jobs", id)); };
-window.deleteUser = async (id) => { if(confirm("ইউজারটি ডিলিট করতে চান?")) await deleteDoc(doc(db, "users", id)); };
+window.approveDeposit = async (id, uid, amount) => {
+    if(confirm("Approve Deposit?")) {
+        await updateDoc(doc(db, "deposits", id), { status: "approved" });
+        await updateDoc(doc(db, "users", uid), { balance: increment(amount) });
+    }
+};
+
+window.completeWithdraw = async (id) => { if(confirm("Mark as Done?")) await updateDoc(doc(db, "withdraws", id), { status: "completed" }); };
+window.deleteJob = async (id) => { if(confirm("Delete Job?")) await deleteDoc(doc(db, "jobs", id)); };
+window.deleteUser = async (id) => { if(confirm("Delete User?")) await deleteDoc(doc(db, "users", id)); };
