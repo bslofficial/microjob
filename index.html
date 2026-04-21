@@ -22,23 +22,33 @@
         </div>
         <div class="flex items-center gap-2">
             <span class="text-[10px] bg-blue-500 px-2 py-1 rounded-lg font-bold">৳<span id="nav-balance">0.00</span></span>
+            <button onclick="window.switchTab('profile')" class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center border border-blue-400">
+                <i class="fas fa-user text-xs"></i>
+            </button>
         </div>
     </header>
 
     <div id="side-menu" class="fixed inset-y-0 left-0 w-64 bg-white shadow-2xl z-[60] transform -translate-x-full">
-        <div class="p-6 bg-blue-600 text-white">
-            <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center text-xl mb-3"><i class="fas fa-user-circle"></i></div>
-            <p id="user-email-display" class="text-xs truncate font-bold">স্বাগতম!</p>
-            <p id="account-status" class="text-[9px] font-bold mt-1 px-2 py-0.5 bg-red-500 rounded-full inline-block">Not Active</p>
-        </div>
-        <nav class="p-4 space-y-1 text-gray-700">
-            <button onclick="window.switchTab('home')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-home w-5"></i> Home</button>
-            <button onclick="window.switchTab('leaderboard')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-trophy w-5 text-yellow-500"></i> Leaderboard</button>
-            <button onclick="window.switchTab('wallet')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-wallet w-5"></i> Wallet</button>
-            <button onclick="window.switchTab('refer')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-gift w-5"></i> Refer & Earn</button>
-            <button onclick="window.switchTab('profile')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-user w-5"></i> Profile</button>
-            <hr class="my-2">
-            <button id="logout-btn" class="w-full text-left p-3 text-red-500 font-bold hover:bg-red-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-sign-out-alt w-5"></i> Logout</button>
+        <nav class="p-4 pt-10 space-y-1 text-gray-700">
+            <button onclick="window.switchTab('home')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm font-medium">
+                <i class="fas fa-home w-5 text-blue-600"></i> Home
+            </button>
+            <button onclick="window.switchTab('leaderboard')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm font-medium">
+                <i class="fas fa-trophy w-5 text-yellow-500"></i> Leaderboard
+            </button>
+            <button onclick="window.switchTab('wallet')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm font-medium">
+                <i class="fas fa-wallet w-5 text-green-600"></i> Wallet
+            </button>
+            <button onclick="window.switchTab('refer')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm font-medium">
+                <i class="fas fa-gift w-5 text-purple-600"></i> Refer & Earn
+            </button>
+            <button onclick="window.switchTab('profile')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm font-medium">
+                <i class="fas fa-user-circle w-5 text-blue-500"></i> My Profile
+            </button>
+            <hr class="my-4">
+            <button id="logout-btn" class="w-full text-left p-3 text-red-500 font-bold hover:bg-red-50 rounded-xl flex items-center gap-3 text-sm">
+                <i class="fas fa-sign-out-alt w-5"></i> Logout
+            </button>
         </nav>
     </div>
     <div id="menu-overlay" onclick="window.toggleMenu()" class="fixed inset-0 bg-black/50 hidden z-[55]"></div>
@@ -68,7 +78,7 @@
 
             <div id="wallet-tab" class="tab-content space-y-4">
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-orange-100">
-                    <h2 class="font-bold text-orange-600 text-sm mb-3">উইথড্র রিকোয়েস্ট</h2>
+                    <h2 class="font-bold text-orange-600 text-sm mb-3">উইথড্র রিকোয়েস্ট (বিকাশ/নগদ)</h2>
                     <input id="w-amount" type="number" placeholder="৳৫০+" class="w-full p-3 bg-gray-50 rounded-xl mb-2 text-sm outline-none border">
                     <input id="w-number" type="text" placeholder="নম্বর লিখুন" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border">
                     <button id="withdraw-btn" class="w-full bg-orange-600 text-white py-3 rounded-xl font-bold text-sm">উইথড্র দিন</button>
@@ -94,7 +104,7 @@
                     <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-3">
                         <i class="fas fa-user"></i>
                     </div>
-                    <h2 class="font-bold text-gray-800" id="prof-email-display">User Email</h2>
+                    <h2 class="font-bold text-gray-800" id="prof-email-display">ইউজার ইমেইল</h2>
                     <button onclick="window.activateAccount()" id="activate-btn-prof" class="mt-3 px-4 py-1.5 bg-red-100 text-red-600 text-[10px] font-bold rounded-full uppercase tracking-wider">Activate Now (৳১০০)</button>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
@@ -132,7 +142,6 @@
         import { getFirestore, doc, onSnapshot, collection, query, orderBy, limit, setDoc, getDoc, updateDoc, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // ফায়ারবেস কনফিগারেশন
         const firebaseConfig = {
             apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
             authDomain: "microjobs-b9d90.firebaseapp.com",
@@ -230,7 +239,6 @@
                 document.getElementById('auth-view').classList.add('hidden');
                 document.getElementById('main-view').classList.remove('hidden');
                 document.getElementById('bottom-nav').classList.remove('hidden');
-                document.getElementById('user-email-display').innerText = user.email;
                 document.getElementById('prof-email-display').innerText = user.email;
                 document.getElementById('refer-link').innerText = `${window.location.origin}${window.location.pathname}?ref=${user.uid}`;
                 
@@ -243,8 +251,6 @@
                         document.getElementById('balance').innerText = d.balance.toFixed(2);
                         document.getElementById('nav-balance').innerText = d.balance.toFixed(2);
                         document.getElementById('stat-refers').innerText = d.totalRefers || 0;
-                        document.getElementById('account-status').innerText = d.isActive ? "Active" : "Not Active";
-                        document.getElementById('account-status').className = d.isActive ? "text-[9px] font-bold mt-1 px-2 py-0.5 bg-green-500 rounded-full inline-block" : "text-[9px] font-bold mt-1 px-2 py-0.5 bg-red-500 rounded-full inline-block";
                     }
                 });
             } else {
@@ -254,11 +260,10 @@
             }
         });
 
-        // --- Handlers ---
+        // --- Actions ---
         document.getElementById('login-btn').onclick = () => {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
-            if(!email || !pass) return alert("Email/Pass missing");
             signInWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message));
         };
 
@@ -291,7 +296,7 @@
 
         window.copyReferLink = () => {
             navigator.clipboard.writeText(document.getElementById('refer-link').innerText);
-            alert("Refer link copied!");
+            alert("লিঙ্ক কপি হয়েছে!");
         };
 
         document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
