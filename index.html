@@ -21,10 +21,7 @@
             <h1 class="font-bold text-lg">MicroJobs BD</h1>
         </div>
         <div class="flex items-center gap-2">
-            <span class="text-[10px] bg-blue-500 px-2 py-1 rounded-lg">৳<span id="nav-balance">0.00</span></span>
-            <button onclick="window.switchTab('profile')" class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center border border-blue-400">
-                <i class="fas fa-user text-xs"></i>
-            </button>
+            <span class="text-[10px] bg-blue-500 px-2 py-1 rounded-lg font-bold">৳<span id="nav-balance">0.00</span></span>
         </div>
     </header>
 
@@ -39,6 +36,7 @@
             <button onclick="window.switchTab('leaderboard')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-trophy w-5 text-yellow-500"></i> Leaderboard</button>
             <button onclick="window.switchTab('wallet')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-wallet w-5"></i> Wallet</button>
             <button onclick="window.switchTab('refer')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-gift w-5"></i> Refer & Earn</button>
+            <button onclick="window.switchTab('profile')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-user w-5"></i> Profile</button>
             <hr class="my-2">
             <button id="logout-btn" class="w-full text-left p-3 text-red-500 font-bold hover:bg-red-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-sign-out-alt w-5"></i> Logout</button>
         </nav>
@@ -51,7 +49,7 @@
             <input id="email" type="email" placeholder="ইমেইল" class="w-full border p-4 rounded-2xl mb-3 outline-none bg-gray-50 focus:border-blue-500 text-sm">
             <input id="password" type="password" placeholder="পাসওয়ার্ড" class="w-full border p-4 rounded-2xl mb-5 outline-none bg-gray-50 focus:border-blue-500 text-sm">
             <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold mb-3 text-sm">Login</button>
-            <button id="signup-btn" class="w-full text-blue-600 font-bold py-2 text-sm">Create Account</button>
+            <button id="signup-btn" class="w-full text-blue-600 font-bold py-2 text-sm text-center block">Create Account</button>
         </div>
 
         <div id="main-view" class="hidden">
@@ -70,7 +68,7 @@
 
             <div id="wallet-tab" class="tab-content space-y-4">
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-orange-100">
-                    <h2 class="font-bold text-orange-600 text-sm mb-3">উইথড্র রিকোয়েস্ট (বিকাশ/নগদ)</h2>
+                    <h2 class="font-bold text-orange-600 text-sm mb-3">উইথড্র রিকোয়েস্ট</h2>
                     <input id="w-amount" type="number" placeholder="৳৫০+" class="w-full p-3 bg-gray-50 rounded-xl mb-2 text-sm outline-none border">
                     <input id="w-number" type="text" placeholder="নম্বর লিখুন" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border">
                     <button id="withdraw-btn" class="w-full bg-orange-600 text-white py-3 rounded-xl font-bold text-sm">উইথড্র দিন</button>
@@ -134,6 +132,7 @@
         import { getFirestore, doc, onSnapshot, collection, query, orderBy, limit, setDoc, getDoc, updateDoc, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+        // ফায়ারবেস কনফিগারেশন
         const firebaseConfig = {
             apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
             authDomain: "microjobs-b9d90.firebaseapp.com",
@@ -147,7 +146,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // --- UI Functions ---
+        // --- UI Logic ---
         window.toggleMenu = () => {
             const menu = document.getElementById('side-menu');
             const overlay = document.getElementById('menu-overlay');
@@ -225,7 +224,7 @@
             });
         };
 
-        // --- Auth Listener ---
+        // --- Auth States ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('auth-view').classList.add('hidden');
@@ -255,10 +254,11 @@
             }
         });
 
-        // --- Button Actions ---
+        // --- Handlers ---
         document.getElementById('login-btn').onclick = () => {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
+            if(!email || !pass) return alert("Email/Pass missing");
             signInWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message));
         };
 
@@ -276,7 +276,7 @@
         document.getElementById('withdraw-btn').onclick = async () => {
             const amount = Number(document.getElementById('w-amount').value);
             const number = document.getElementById('w-number').value.trim();
-            if(amount < 50 || !number) return alert("তথ্য সঠিক দিন");
+            if(amount < 50 || !number) return alert("৫০০ টাকার নিচে উত্তোলন করা যাবে না");
             
             const userRef = doc(db, "users", auth.currentUser.uid);
             const userSnap = await getDoc(userRef);
@@ -285,18 +285,17 @@
                     uid: auth.currentUser.uid, amount, number, status: "pending", createdAt: serverTimestamp()
                 });
                 await updateDoc(userRef, { balance: increment(-amount) });
-                alert("রিকোয়েস্ট পাঠানো হয়েছে!");
-            } else { alert("পর্যাপ্ত ব্যালেন্স নেই"); }
+                alert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!");
+            } else { alert("পর্যাপ্ত ব্যালেন্স নেই!"); }
         };
 
         window.copyReferLink = () => {
             navigator.clipboard.writeText(document.getElementById('refer-link').innerText);
-            alert("লিঙ্ক কপি হয়েছে!");
+            alert("Refer link copied!");
         };
 
         document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
         document.getElementById('logout-btn-2').onclick = () => signOut(auth).then(() => location.reload());
-
     </script>
 </body>
 </html>
