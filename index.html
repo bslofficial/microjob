@@ -37,7 +37,7 @@
                 <i class="fas fa-trophy w-5 text-yellow-500"></i> Leaderboard
             </button>
             <button onclick="window.switchTab('wallet')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm font-medium">
-                <i class="fas fa-wallet w-5 text-green-600"></i> Wallet
+                <i class="fas fa-wallet w-5 text-green-600"></i> Wallet / Deposit
             </button>
             <button onclick="window.switchTab('refer')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm font-medium">
                 <i class="fas fa-gift w-5 text-purple-600"></i> Refer & Earn
@@ -77,8 +77,19 @@
             </div>
 
             <div id="wallet-tab" class="tab-content space-y-4">
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-green-100">
+                    <h2 class="font-bold text-green-600 text-sm mb-3"><i class="fas fa-plus-circle"></i> টাকা জমা দিন (Deposit)</h2>
+                    <div class="bg-green-50 p-3 rounded-xl mb-3 text-[10px] text-green-700">
+                        <p>বিকাশ/নগদ (Personal): <b>017XXXXXXXX</b></p>
+                        <p class="mt-1">* টাকা পাঠানোর পর নিচের ফর্মে ট্রানজেকশন আইডি দিন।</p>
+                    </div>
+                    <input id="d-amount" type="number" placeholder="টাকার পরিমাণ" class="w-full p-3 bg-gray-50 rounded-xl mb-2 text-sm outline-none border">
+                    <input id="d-trx" type="text" placeholder="Transaction ID লিখুন" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border">
+                    <button id="deposit-btn" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold text-sm">ডিপোজিট রিকোয়েস্ট পাঠান</button>
+                </div>
+
                 <div class="bg-white p-5 rounded-3xl shadow-sm border border-orange-100">
-                    <h2 class="font-bold text-orange-600 text-sm mb-3">উইথড্র রিকোয়েস্ট (বিকাশ/নগদ)</h2>
+                    <h2 class="font-bold text-orange-600 text-sm mb-3"><i class="fas fa-minus-circle"></i> টাকা উত্তোলন (Withdraw)</h2>
                     <input id="w-amount" type="number" placeholder="৳৫০+" class="w-full p-3 bg-gray-50 rounded-xl mb-2 text-sm outline-none border">
                     <input id="w-number" type="text" placeholder="নম্বর লিখুন" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border">
                     <button id="withdraw-btn" class="w-full bg-orange-600 text-white py-3 rounded-xl font-bold text-sm">উইথড্র দিন</button>
@@ -177,6 +188,33 @@
             if(document.getElementById('side-menu').style.transform === 'translateX(0px)') window.toggleMenu();
         };
 
+        // --- Auth States ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('auth-view').classList.add('hidden');
+                document.getElementById('main-view').classList.remove('hidden');
+                document.getElementById('bottom-nav').classList.remove('hidden');
+                document.getElementById('prof-email-display').innerText = user.email;
+                document.getElementById('refer-link').innerText = `${window.location.origin}${window.location.pathname}?ref=${user.uid}`;
+                
+                loadJobs();
+                loadHistory(user.uid);
+
+                onSnapshot(doc(db, "users", user.uid), (s) => {
+                    if(s.exists()){
+                        const d = s.data();
+                        document.getElementById('balance').innerText = d.balance.toFixed(2);
+                        document.getElementById('nav-balance').innerText = d.balance.toFixed(2);
+                        document.getElementById('stat-refers').innerText = d.totalRefers || 0;
+                    }
+                });
+            } else {
+                document.getElementById('auth-view').classList.remove('hidden');
+                document.getElementById('main-view').classList.add('hidden');
+                document.getElementById('bottom-nav').classList.add('hidden');
+            }
+        });
+
         // --- Data Loading ---
         const loadJobs = () => {
             onSnapshot(collection(db, "jobs"), (snap) => {
@@ -233,34 +271,51 @@
             });
         };
 
-        // --- Auth States ---
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('auth-view').classList.add('hidden');
-                document.getElementById('main-view').classList.remove('hidden');
-                document.getElementById('bottom-nav').classList.remove('hidden');
-                document.getElementById('prof-email-display').innerText = user.email;
-                document.getElementById('refer-link').innerText = `${window.location.origin}${window.location.pathname}?ref=${user.uid}`;
-                
-                loadJobs();
-                loadHistory(user.uid);
+        // --- Deposit Action ---
+        document.getElementById('deposit-btn').onclick = async () => {
+            const amt = Number(document.getElementById('d-amount').value);
+            const trx = document.getElementById('d-trx').value.trim();
+            if(!amt || !trx) return alert("তথ্য দিন");
+            await addDoc(collection(db, "deposits"), { 
+                uid: auth.currentUser.uid, 
+                email: auth.currentUser.email, 
+                amount: amt, 
+                trxId: trx, 
+                status: "pending", 
+                createdAt: serverTimestamp() 
+            });
+            alert("সফলভাবে রিকোয়েস্ট পাঠানো হয়েছে! অ্যাডমিন চেক করে ব্যালেন্স অ্যাড করে দিবে।");
+            document.getElementById('d-amount').value = "";
+            document.getElementById('d-trx').value = "";
+        };
 
-                onSnapshot(doc(db, "users", user.uid), (s) => {
-                    if(s.exists()){
-                        const d = s.data();
-                        document.getElementById('balance').innerText = d.balance.toFixed(2);
-                        document.getElementById('nav-balance').innerText = d.balance.toFixed(2);
-                        document.getElementById('stat-refers').innerText = d.totalRefers || 0;
-                    }
+        // --- Withdraw Action ---
+        document.getElementById('withdraw-btn').onclick = async () => {
+            const amount = Number(document.getElementById('w-amount').value);
+            const number = document.getElementById('w-number').value.trim();
+            if(amount < 50 || !number) return alert("৫০০ টাকার নিচে উত্তোলন করা যাবে না");
+            
+            const userRef = doc(db, "users", auth.currentUser.uid);
+            const userSnap = await getDoc(userRef);
+            if(userSnap.data().balance >= amount) {
+                await addDoc(collection(db, "withdraws"), {
+                    uid: auth.currentUser.uid, amount, number, status: "pending", createdAt: serverTimestamp()
                 });
-            } else {
-                document.getElementById('auth-view').classList.remove('hidden');
-                document.getElementById('main-view').classList.add('hidden');
-                document.getElementById('bottom-nav').classList.add('hidden');
-            }
-        });
+                await updateDoc(userRef, { balance: increment(-amount) });
+                alert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!");
+            } else { alert("পর্যাপ্ত ব্যালেন্স নেই!"); }
+        };
 
-        // --- Actions ---
+        // --- Other Actions ---
+        window.activateAccount = async () => {
+            const userRef = doc(db, "users", auth.currentUser.uid);
+            const userSnap = await getDoc(userRef);
+            if(userSnap.data().balance >= 100) {
+                await updateDoc(userRef, { balance: increment(-100), isActive: true });
+                alert("অ্যাকাউন্ট এক্টিভ হয়েছে!");
+            } else { alert("ব্যালেন্স কমপক্ষে ১০০ টাকা হতে হবে। আগে ডিপোজিট করুন।"); }
+        };
+
         document.getElementById('login-btn').onclick = () => {
             const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
@@ -276,22 +331,6 @@
                     email, balance: 0, isActive: false, referredBy: ref || null, totalRefers: 0, createdAt: serverTimestamp()
                 });
             }).catch(e => alert(e.message));
-        };
-
-        document.getElementById('withdraw-btn').onclick = async () => {
-            const amount = Number(document.getElementById('w-amount').value);
-            const number = document.getElementById('w-number').value.trim();
-            if(amount < 50 || !number) return alert("৫০০ টাকার নিচে উত্তোলন করা যাবে না");
-            
-            const userRef = doc(db, "users", auth.currentUser.uid);
-            const userSnap = await getDoc(userRef);
-            if(userSnap.data().balance >= amount) {
-                await addDoc(collection(db, "withdraws"), {
-                    uid: auth.currentUser.uid, amount, number, status: "pending", createdAt: serverTimestamp()
-                });
-                await updateDoc(userRef, { balance: increment(-amount) });
-                alert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!");
-            } else { alert("পর্যাপ্ত ব্যালেন্স নেই!"); }
         };
 
         window.copyReferLink = () => {
