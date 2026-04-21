@@ -2,66 +2,81 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>MicroJobs BD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .active-tab { color: #2563eb !important; font-weight: bold; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        #side-menu { transition: transform 0.3s ease-in-out; }
+    </style>
 </head>
-<body class="bg-gray-50 pb-20">
+<body class="bg-slate-50 pb-24 overflow-x-hidden">
 
-    <header class="bg-blue-600 p-4 text-white flex justify-between items-center sticky top-0 z-50">
-        <button onclick="document.getElementById('side-menu').classList.toggle('-translate-x-full')"><i class="fas fa-bars"></i></button>
-        <h1 class="font-bold">MicroJobs BD</h1>
-        <div class="bg-blue-500 px-3 py-1 rounded-full text-xs">৳<span id="nav-balance">0.00</span></div>
+    <header class="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-50 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <button onclick="window.toggleMenu()" class="text-xl"><i class="fas fa-bars"></i></button>
+            <h1 class="font-bold text-lg">MicroJobs BD</h1>
+        </div>
+        <div class="bg-blue-500 px-2 py-1 rounded-lg text-[10px]">৳<span id="nav-balance">0.00</span></div>
     </header>
 
-    <div id="side-menu" class="fixed inset-y-0 left-0 w-64 bg-white shadow-2xl z-[60] transform -translate-x-full transition-transform">
-        <div class="p-6 bg-blue-600 text-white font-bold">মেনু বার</div>
-        <nav class="p-4 space-y-2">
-            <button onclick="showTab('home')" class="w-full text-left p-3 hover:bg-gray-100 rounded-lg"><i class="fas fa-home mr-2"></i> Home</button>
-            <button onclick="showTab('leaderboard')" class="w-full text-left p-3 hover:bg-gray-100 rounded-lg"><i class="fas fa-trophy mr-2 text-yellow-500"></i> Leaderboard</button>
-            <button onclick="showTab('wallet')" class="w-full text-left p-3 hover:bg-gray-100 rounded-lg"><i class="fas fa-wallet mr-2"></i> Wallet</button>
-            <button onclick="showTab('refer')" class="w-full text-left p-3 hover:bg-gray-100 rounded-lg"><i class="fas fa-gift mr-2"></i> Refer & Earn</button>
+    <div id="side-menu" class="fixed inset-y-0 left-0 w-64 bg-white shadow-2xl z-[60] transform -translate-x-full">
+        <div class="p-4 border-b"><h2 class="text-sm font-bold text-gray-800">মেনু বার</h2></div>
+        <nav class="p-4 space-y-1">
+            <button onclick="window.switchTab('home')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-home"></i> Home</button>
+            <button onclick="window.switchTab('leaderboard')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-trophy text-yellow-500"></i> Leaderboard</button>
+            <button onclick="window.switchTab('wallet')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm"><i class="fas fa-wallet"></i> Wallet</button>
+            <hr class="my-2">
+            <button id="logout-btn" class="w-full text-left p-3 text-red-500 font-bold flex items-center gap-3 text-sm"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </nav>
     </div>
+    <div id="menu-overlay" onclick="window.toggleMenu()" class="fixed inset-0 bg-black/50 hidden z-[55]"></div>
 
-    <main class="p-4 max-w-md mx-auto">
-        <div id="home-tab" class="tab-content">
-            <div class="bg-blue-600 rounded-3xl p-8 text-white mb-6">
-                <p class="text-xs opacity-80">বর্তমান ব্যালেন্স</p>
-                <h2 class="text-4xl font-bold">৳<span id="main-balance">0.00</span></h2>
-            </div>
-            <div id="job-list" class="space-y-4">
+    <main class="max-w-md mx-auto p-4">
+        <div id="auth-view" class="bg-white p-8 rounded-3xl shadow-xl mt-10">
+            <h2 class="text-xl font-bold mb-6 text-center text-blue-600">Login / Signup</h2>
+            <input id="email" type="email" placeholder="ইমেইল" class="w-full border p-4 rounded-2xl mb-3 outline-none">
+            <input id="password" type="password" placeholder="পাসওয়ার্ড" class="w-full border p-4 rounded-2xl mb-5 outline-none">
+            <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold mb-3">Login</button>
+            <button id="signup-btn" class="w-full text-blue-600 font-bold py-2 text-sm">Create Account</button>
+        </div>
+
+        <div id="main-view" class="hidden">
+            <div id="home-tab" class="tab-content active">
+                <div class="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-3xl text-white shadow-xl mb-6 text-center">
+                    <p class="opacity-80 text-[10px]">ব্যালেন্স</p>
+                    <h2 class="text-4xl font-extrabold">৳<span id="balance">0.00</span></h2>
                 </div>
-        </div>
+                <div id="job-list" class="space-y-4"></div>
+            </div>
 
-        <div id="leaderboard-tab" class="tab-content hidden">
-            <h2 class="font-bold mb-4"><i class="fas fa-trophy text-yellow-500"></i> সেরা উপার্জনকারী (Top 10)</h2>
-            <div id="leader-list" class="bg-white rounded-2xl border overflow-hidden"></div>
-        </div>
+            <div id="leaderboard-tab" class="tab-content">
+                <h2 class="text-lg font-bold mb-4">সেরা ১০ উপার্জনকারী</h2>
+                <div id="leader-list" class="bg-white rounded-2xl border shadow-sm divide-y"></div>
+            </div>
 
-        <div id="wallet-tab" class="tab-content hidden">
-            <div class="bg-white p-6 rounded-2xl border shadow-sm">
-                <h3 class="font-bold text-green-600 mb-4">উইথড্র রিকোয়েস্ট</h3>
-                <input id="w-amount" type="number" placeholder="৳৫০+" class="w-full p-3 border rounded-xl mb-3 outline-none">
-                <input id="w-number" type="text" placeholder="বিকাশ/নগদ নম্বর" class="w-full p-3 border rounded-xl mb-4 outline-none">
-                <button onclick="requestWithdraw()" class="w-full bg-orange-600 text-white py-3 rounded-xl font-bold">উইথড্র দিন</button>
+            <div id="wallet-tab" class="tab-content">
+                <div class="bg-white p-5 rounded-2xl border mb-6">
+                    <h2 class="font-bold text-sm mb-4">টাকা উত্তোলন</h2>
+                    <input id="w-amount" type="number" placeholder="৳৫০+" class="w-full p-3 border rounded-xl mb-2 text-sm">
+                    <input id="w-number" type="text" placeholder="নম্বর লিখুন" class="w-full p-3 border rounded-xl mb-4 text-sm">
+                    <button id="withdraw-btn" class="w-full bg-orange-600 text-white py-3 rounded-xl font-bold">উইথড্র</button>
+                </div>
+                <h3 class="font-bold text-sm mb-3">পেমেন্ট হিস্ট্রি</h3>
+                <div id="history-list" class="space-y-2"></div>
             </div>
         </div>
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3 text-gray-400">
-        <button onclick="showTab('home')" class="flex flex-col items-center text-blue-600"><i class="fas fa-home"></i><span class="text-[10px]">Home</span></button>
-        <button onclick="showTab('leaderboard')" class="flex flex-col items-center"><i class="fas fa-trophy"></i><span class="text-[10px]">Top 10</span></button>
-        <button onclick="showTab('wallet')" class="flex flex-col items-center"><i class="fas fa-wallet"></i><span class="text-[10px]">Wallet</span></button>
+    <nav id="bottom-nav" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3 z-50">
+        <button onclick="window.switchTab('home')" id="btn-home" class="flex flex-col items-center active-tab"><i class="fas fa-home"></i><span class="text-[9px]">Home</span></button>
+        <button onclick="window.switchTab('leaderboard')" id="btn-leaderboard" class="flex flex-col items-center text-gray-400"><i class="fas fa-trophy"></i><span class="text-[10px]">Top 10</span></button>
+        <button onclick="window.switchTab('wallet')" id="btn-wallet" class="flex flex-col items-center text-gray-400"><i class="fas fa-wallet"></i><span class="text-[10px]">Wallet</span></button>
     </nav>
 
-    <script src="app.js" type="module"></script>
-    <script>
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-            document.getElementById(tabId + '-tab').classList.remove('hidden');
-        }
-    </script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
