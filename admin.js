@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, increment, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// আপনার ফায়ারবেস কনফিগারেশন
 const firebaseConfig = {
     apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
     authDomain: "microjobs-b9d90.firebaseapp.com",
@@ -13,120 +13,133 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
 
-// অ্যাডমিন ইমেইল চেক (সিকিউরিটি রুলস এর সাথে মিল রেখে)
-const ADMIN_EMAIL = "bslgaimerofficial@gmail.com";
-
-onAuthStateChanged(auth, (user) => {
-    if (!user || user.email !== ADMIN_EMAIL) {
-        alert("শুধুমাত্র অ্যাডমিন লগইন করতে পারবেন!");
-        window.location.href = "index.html"; 
-    }
-});
-
-// ১. এডমিন থেকে নতুন জব পাবলিশ
+// --- ১. নতুন জব পাবলিশ (Description সহ) ---
 window.adminPostJob = async () => {
     const title = document.getElementById('adm-title').value;
+    const desc = document.getElementById('adm-desc').value; // ডেসক্রিপশন বক্সের আইডি
     const url = document.getElementById('adm-url').value;
     const budget = Number(document.getElementById('adm-budget').value);
 
-    if (!title || !budget) return alert("সব তথ্য দিন!");
+    if (!title || !desc || !budget) {
+        return alert("টাইটেল, ডেসক্রিপশন এবং বাজেট অবশ্যই দিতে হবে!");
+    }
 
     try {
         await addDoc(collection(db, "jobs"), {
-            title, url, budget, status: "active", createdAt: serverTimestamp()
+            title: title,
+            description: desc,
+            url: url,
+            budget: budget,
+            status: "active",
+            createdAt: serverTimestamp()
         });
-        alert("জব সফলভাবে লাইভ হয়েছে!");
-        location.reload();
-    } catch (e) { alert("ত্রুটি: " + e.message); }
+        alert("জব সফলভাবে পাবলিশ হয়েছে!");
+        
+        // ইনপুট বক্স খালি করা
+        document.getElementById('adm-title').value = "";
+        document.getElementById('adm-desc').value = "";
+        document.getElementById('adm-url').value = "";
+        document.getElementById('adm-budget').value = "";
+    } catch (e) {
+        alert("Error: " + e.message);
+    }
 };
 
-// ২. ডিপোজিট রিকোয়েস্ট লোড ও এপ্রুভ
-onSnapshot(collection(db, "deposits"), (snapshot) => {
-    const container = document.getElementById('deposit-list');
+// --- ২. জব লিস্ট ম্যানেজমেন্ট (যেখান থেকে ডিলিট করা যাবে) ---
+onSnapshot(collection(db, "jobs"), (snap) => {
+    const container = document.getElementById('admin-job-list');
     if (!container) return;
+    
     container.innerHTML = "";
-    snapshot.forEach((docData) => {
-        const d = docData.data();
-        if (d.status === "pending") {
+    if (snap.empty) {
+        container.innerHTML = "<p class='text-gray-400 text-center py-4'>কোনো জব নেই</p>";
+        return;
+    }
+
+    snap.forEach((docSnap) => {
+        const job = docSnap.data();
+        const jobId = docSnap.id;
+        
+        const div = document.createElement('div');
+        div.className = "flex justify-between items-start p-4 bg-gray-50 border rounded-2xl mb-3";
+        div.innerHTML = `
+            <div class="flex-1 pr-4">
+                <h3 class="font-bold text-sm text-gray-800">${job.title}</h3>
+                <p class="text-[11px] text-gray-500 mt-1">${job.description || 'বিবরণ নেই'}</p>
+                <p class="text-[10px] font-bold text-blue-600 mt-1">বাজেট: ৳${job.budget} | স্ট্যাটাস: ${job.status}</p>
+            </div>
+            <div class="flex flex-col gap-2">
+                <button onclick="window.deleteJob('${jobId}')" class="bg-red-50 text-red-500 p-2 rounded-lg hover:bg-red-100 transition-all">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+});
+
+// --- ৩. জব ডিলিট করার ফাংশন ---
+window.deleteJob = async (id) => {
+    if (confirm("আপনি কি নিশ্চিতভাবে এই জবটি ডিলিট করতে চান?")) {
+        try {
+            await deleteDoc(doc(db, "jobs", id));
+            alert("সফলভাবে ডিলিট হয়েছে!");
+        } catch (e) {
+            alert("Error: " + e.message);
+        }
+    }
+};
+
+// --- ৪. পেন্ডিং ডিপোজিট এপ্রুভাল ---
+onSnapshot(collection(db, "deposits"), (snap) => {
+    const list = document.getElementById('deposit-list');
+    if (!list) return;
+    list.innerHTML = "";
+    snap.forEach(d => {
+        const data = d.data();
+        if(data.status === 'pending') {
             const div = document.createElement('div');
-            div.className = "p-4 bg-gray-50 rounded-2xl flex justify-between items-center border";
+            div.className = "p-3 border rounded-xl flex justify-between items-center bg-green-50";
             div.innerHTML = `
-                <div>
-                    <p class="font-bold text-sm">${d.email}</p>
-                    <p class="text-xs text-blue-600">৳${d.amount} | Trx: ${d.trxId}</p>
+                <div class="text-[10px]">
+                    <p><b>User:</b> ${data.email}</p>
+                    <p><b>TrxID:</b> ${data.trxId} | <b>Amount:</b> ৳${data.amount}</p>
                 </div>
-                <button onclick="window.approveDeposit('${docData.id}', '${d.uid}', ${d.amount})" class="bg-green-600 text-white px-4 py-1 rounded-lg text-xs font-bold">Approve</button>`;
-            container.appendChild(div);
+                <button onclick="window.approveDeposit('${d.id}', '${data.uid}', ${data.amount})" class="bg-green-600 text-white px-3 py-1 rounded-lg text-[10px]">Approve</button>
+            `;
+            list.appendChild(div);
         }
     });
 });
 
-window.approveDeposit = async (id, uid, amount) => {
-    if (confirm("পেমেন্ট কি নিশ্চিত?")) {
-        try {
-            await updateDoc(doc(db, "deposits", id), { status: "approved" });
-            await updateDoc(doc(db, "users", uid), { balance: increment(amount) });
-            alert("ডিপোজিট এপ্রুভ হয়েছে!");
-        } catch (e) { alert("Error: " + e.message); }
-    }
-};
-
-// ৩. উইথড্র রিকোয়েস্ট ম্যানেজ
-onSnapshot(collection(db, "withdraws"), (snapshot) => {
-    const container = document.getElementById('withdraw-list');
-    if (!container) return;
-    container.innerHTML = "";
-    snapshot.forEach((docData) => {
-        const w = docData.data();
-        if (w.status === "pending") {
-            const div = document.createElement('div');
-            div.className = "p-4 bg-orange-50 rounded-2xl flex justify-between items-center border border-orange-200";
-            div.innerHTML = `
-                <div>
-                    <p class="font-bold text-sm">${w.number} (${w.method || 'Bkash/Nagad'})</p>
-                    <p class="text-xs text-orange-600">Amount: ৳${w.amount} | User: ${w.email}</p>
-                </div>
-                <button onclick="window.completeWithdraw('${docData.id}')" class="bg-orange-600 text-white px-4 py-1 rounded-lg text-xs font-bold">Paid</button>`;
-            container.appendChild(div);
-        }
-    });
-});
-
-window.completeWithdraw = async (id) => {
-    if (confirm("আপনি কি টাকা পাঠিয়ে দিয়েছেন?")) {
-        try {
-            await updateDoc(doc(db, "withdraws", id), { status: "completed" });
-            alert("উইথড্র সম্পন্ন হয়েছে!");
-        } catch (e) { alert("Error: " + e.message); }
-    }
-};
-
-// ৪. ইউজার ম্যানেজমেন্ট
-onSnapshot(collection(db, "users"), (snapshot) => {
-    const table = document.getElementById('user-table-body');
-    if (!table) return;
-    table.innerHTML = "";
-    snapshot.forEach((docData) => {
-        const u = docData.data();
-        const tr = document.createElement('tr');
-        tr.className = "border-b text-xs";
-        tr.innerHTML = `
-            <td class="py-3">${u.email}</td>
-            <td class="py-3 font-bold">৳${(u.balance || 0).toFixed(1)}</td>
-            <td class="py-3">${u.isActive ? '<span class="text-green-600">Active</span>' : '<span class="text-red-500">Inactive</span>'}</td>
-            <td class="py-3">
-                <button onclick="window.deleteUser('${docData.id}')" class="text-red-500"><i class="fas fa-trash"></i></button>
-            </td>`;
-        table.appendChild(tr);
-    });
-});
-
+// --- ৫. ইউজার ডিলিট করা ---
 window.deleteUser = async (id) => {
-    if (confirm("ইউজার ডিলিট করতে চান?")) {
+    if (confirm("এই ইউজারকে কি ডিলিট করতে চান?")) {
         try {
             await deleteDoc(doc(db, "users", id));
-        } catch (e) { alert("Error: " + e.message); }
+            alert("ইউজার ডিলিট হয়েছে!");
+        } catch (e) {
+            alert("Error: " + e.message);
+        }
     }
 };
+
+// ইউজার টেবিল রেন্ডার
+onSnapshot(collection(db, "users"), (snap) => {
+    const tbody = document.getElementById('user-table-body');
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    snap.forEach(u => {
+        const user = u.data();
+        tbody.innerHTML += `
+            <tr class="border-b text-xs">
+                <td class="py-3">${user.email}</td>
+                <td class="py-3 font-bold">৳${(user.balance || 0).toFixed(2)}</td>
+                <td class="py-3">${user.isActive ? '<span class="text-green-500">Active</span>' : '<span class="text-red-500">Inactive</span>'}</td>
+                <td class="py-3">
+                    <button onclick="window.deleteUser('${u.id}')" class="text-red-500"><i class="fas fa-trash-alt"></i></button>
+                </td>
+            </tr>`;
+    });
+});
