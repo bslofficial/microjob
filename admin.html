@@ -31,10 +31,10 @@
             <section class="bg-white p-6 rounded-3xl shadow-sm border border-blue-100">
                 <h2 class="font-bold text-blue-600 mb-4 flex items-center gap-2"><i class="fas fa-plus-circle"></i> নতুন জব পাবলিশ</h2>
                 <div class="grid grid-cols-1 gap-3">
-                    <input id="adm-title" type="text" placeholder="কাজের নাম" class="p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500">
-                    <textarea id="adm-desc" placeholder="কাজের বিবরণ" class="p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500" rows="3"></textarea>
-                    <input id="adm-url" type="url" placeholder="লিঙ্ক" class="p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500">
-                    <input id="adm-budget" type="number" placeholder="ইউজার পাবে (৳)" class="p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500">
+                    <input id="adm-title" type="text" placeholder="কাজের নাম" class="p-3 bg-gray-50 border rounded-xl outline-none">
+                    <textarea id="adm-desc" placeholder="কাজের বিবরণ" class="p-3 bg-gray-50 border rounded-xl outline-none" rows="3"></textarea>
+                    <input id="adm-url" type="url" placeholder="লিঙ্ক" class="p-3 bg-gray-50 border rounded-xl outline-none">
+                    <input id="adm-budget" type="number" placeholder="ইউজার কত পাবে? (৳)" class="p-3 bg-gray-50 border rounded-xl outline-none">
                     <button onclick="window.adminPostJob()" class="bg-blue-600 text-white font-bold py-3 rounded-xl">পাবলিশ করুন</button>
                 </div>
             </section>
@@ -43,7 +43,7 @@
                 <h2 class="font-bold text-purple-600 mb-4 flex items-center gap-2"><i class="fas fa-paper-plane"></i> ইউজারকে মেসেজ দিন</h2>
                 <div class="grid grid-cols-1 gap-3">
                     <input id="msg-target-email" type="email" placeholder="ইউজারের ইমেইল (খালি রাখলে সবার কাছে যাবে)" class="p-3 bg-gray-50 border rounded-xl outline-none">
-                    <textarea id="msg-text" placeholder="মেসেজটি লিখুন..." class="p-3 bg-gray-50 border rounded-xl outline-none" rows="2"></textarea>
+                    <textarea id="msg-text" placeholder="আপনার মেসেজটি লিখুন..." class="p-3 bg-gray-50 border rounded-xl outline-none" rows="2"></textarea>
                     <button onclick="window.sendUserMessage()" class="bg-purple-600 text-white font-bold py-3 rounded-xl">মেসেজ পাঠান</button>
                 </div>
             </section>
@@ -68,7 +68,13 @@
                 <h2 class="font-bold text-gray-700 mb-4"><i class="fas fa-users"></i> ইউজার ম্যানেজমেন্ট</h2>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs">
-                        <thead><tr class="border-b"><th class="py-3">ইমেইল</th><th class="py-3">ব্যালেন্স</th><th class="py-3">অ্যাকশন</th></tr></thead>
+                        <thead>
+                            <tr class="border-b text-gray-500">
+                                <th class="py-3">ইমেইল</th>
+                                <th class="py-3">ব্যালেন্স</th>
+                                <th class="py-3">অ্যাকশন</th>
+                            </tr>
+                        </thead>
                         <tbody id="user-table-body"></tbody>
                     </table>
                 </div>
