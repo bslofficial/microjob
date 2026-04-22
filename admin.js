@@ -1,61 +1,33 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc, updateDoc, increment, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, updateDoc, increment, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
-    authDomain: "microjobs-b9d90.firebaseapp.com",
-    projectId: "microjobs-b9d90",
-    storageBucket: "microjobs-b9d90.firebasestorage.app",
-    messagingSenderId: "1006928193385",
-    appId: "1:1006928193385:web:d4b5cc1911abda6ff53ff8"
-};
-
+const firebaseConfig = { /* আপনার কনফিগ এখানে পেস্ট করুন */ };
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
 
-// প্রুফ রিকোয়েস্ট লিস্ট লোড করা
-onSnapshot(collection(db, "proofs"), (snap) => {
-    const list = document.getElementById('admin-proof-list'); // আপনার admin.html এ এই আইডিটি থাকতে হবে
-    if(!list) return;
-    list.innerHTML = "";
-    snap.forEach(d => {
-        const p = d.data();
-        if(p.status === "pending") {
-            list.innerHTML += `
-                <div class="p-4 border mb-2 bg-white rounded-xl shadow-sm">
-                    <p class="text-xs font-bold">${p.email}</p>
-                    <p class="text-xs text-gray-500">${p.title} (৳${p.budget})</p>
-                    <div class="mt-2 flex gap-2">
-                        <button onclick="window.approveProof('${d.id}', '${p.uid}', ${p.budget})" class="bg-green-600 text-white px-3 py-1 rounded text-[10px]">Approve & Pay</button>
-                        <button onclick="window.rejectProof('${d.id}')" class="bg-red-500 text-white px-3 py-1 rounded text-[10px]">Reject</button>
-                    </div>
-                </div>`;
-        }
-    });
-});
-
-// --- ব্যালেন্স অ্যাড করার মেইন ফাংশন ---
-window.approveProof = async (id, uid, amount) => {
-    if(confirm("ইউজারকে কি টাকা দিতে চান?")) {
-        try {
-            await updateDoc(doc(db, "proofs", id), { status: "approved" });
-            await updateDoc(doc(db, "users", uid), { balance: increment(amount) });
-            alert("ব্যালেন্স সফলভাবে অ্যাড হয়েছে!");
-        } catch (e) { alert("ত্রুটি হয়েছে!"); }
+// --- ডিপোজিট অ্যাপ্রুভ করার সময় ব্যালেন্স ফিক্স ---
+window.approveDeposit = async (docId, uid, amount) => {
+    try {
+        // ১. রিকোয়েস্ট স্ট্যাটাস পরিবর্তন
+        await updateDoc(doc(db, "deposits", docId), { status: "approved" });
+        
+        // ২. ইউজারের ব্যালেন্সে সরাসরি টাকা যোগ করা (সবচেয়ে গুরুত্বপূর্ণ অংশ)
+        const userRef = doc(db, "users", uid);
+        await updateDoc(userRef, {
+            balance: increment(amount)
+        });
+        
+        alert("ডিপোজিট সফল এবং ইউজারের একাউন্টে টাকা যোগ হয়েছে!");
+    } catch (e) {
+        alert("Error: " + e.message);
     }
 };
 
-window.rejectProof = async (id) => {
-    if(confirm("বাতিল করবেন?")) await updateDoc(doc(db, "proofs", id), { status: "rejected" });
-};
-
-// ডিপোজিট অ্যাপ্রুভ সিস্টেম
-window.approveDeposit = async (id, uid, amount) => {
-    if(confirm("ডিপোজিট অ্যাপ্রুভ করবেন?")) {
-        await updateDoc(doc(db, "deposits", id), { status: "approved" });
-        await updateDoc(doc(db, "users", uid), { balance: increment(amount) });
-        alert("টাকা যোগ হয়েছে!");
+// --- ইউজার ব্যালেন্স ম্যানুয়ালি এডিট করা ---
+window.editBalance = async (uid) => {
+    const newAmount = prompt("নতুন ব্যালেন্স কত দিতে চান?");
+    if(newAmount !== null) {
+        await updateDoc(doc(db, "users", uid), { balance: parseFloat(newAmount) });
+        alert("ব্যালেন্স আপডেট হয়েছে!");
     }
 };
