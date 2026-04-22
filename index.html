@@ -9,115 +9,142 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
-        .active-tab { color: #2563eb !important; }
+        .active-tab { color: #2563eb !important; font-weight: bold; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        #side-menu { transition: transform 0.3s ease; }
-        .verified-badge { font-size: 8px; padding: 2px 6px; border-radius: 4px; background: #e0f2fe; color: #0369a1; font-weight: bold; }
+        #side-menu { transition: transform 0.3s ease-in-out; }
     </style>
 </head>
-<body class="bg-slate-50 pb-20">
+<body class="bg-slate-50 pb-24 overflow-x-hidden">
 
-    <header class="bg-blue-600 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-md">
+    <header class="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-50 flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <button onclick="toggleMenu()" class="text-xl"><i class="fas fa-bars"></i></button>
+            <button onclick="window.toggleMenu()" class="text-xl"><i class="fas fa-bars"></i></button>
             <h1 class="font-bold text-lg">MicroJobs BD</h1>
         </div>
         <div class="flex items-center gap-2">
-            <div class="bg-blue-500/50 px-3 py-1 rounded-full text-xs font-bold border border-white/20">
-                ৳<span id="nav-balance">0.00</span>
-            </div>
-            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center relative">
-                <i class="fas fa-bell text-sm"></i>
-                <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-            </div>
+            <span class="text-[10px] bg-blue-500 px-2 py-1 rounded-lg font-bold">৳<span id="nav-balance">0.00</span></span>
+            <button onclick="window.switchTab('profile')" class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center border border-blue-400">
+                <i class="fas fa-user text-xs"></i>
+            </button>
         </div>
     </header>
 
-    <div id="menu-overlay" onclick="toggleMenu()" class="fixed inset-0 bg-black/40 hidden z-[55]"></div>
-    <div id="side-menu" class="fixed inset-y-0 left-0 w-72 bg-white shadow-2xl z-[60] transform -translate-x-full">
-        <div class="p-6 space-y-2 mt-10">
-            <button onclick="switchTab('home')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-4 text-gray-700 font-semibold">
-                <i class="fas fa-home text-blue-600"></i> Home
+    <div id="side-menu" class="fixed inset-y-0 left-0 w-64 bg-white shadow-2xl z-[60] transform -translate-x-full">
+        <nav class="p-4 pt-10 space-y-1 text-gray-700">
+            <button onclick="window.switchTab('home')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm font-medium">
+                <i class="fas fa-home w-5 text-blue-600"></i> Home
             </button>
-            <button onclick="switchTab('leaderboard')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-4 text-gray-700 font-semibold">
-                <i class="fas fa-trophy text-yellow-500"></i> Leaderboard
+            <button onclick="window.switchTab('leaderboard')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm font-medium">
+                <i class="fas fa-trophy w-5 text-yellow-500"></i> Leaderboard
             </button>
-            <button onclick="switchTab('wallet')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-4 text-gray-700 font-semibold">
-                <i class="fas fa-wallet text-blue-600"></i> Wallet / Deposit
+            <button onclick="window.switchTab('wallet')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm font-medium">
+                <i class="fas fa-wallet w-5 text-blue-600"></i> Wallet / Deposit
             </button>
-            <button onclick="switchTab('refer')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-4 text-gray-700 font-semibold">
-                <i class="fas fa-gift text-purple-600"></i> Refer & Earn
+            <button onclick="window.switchTab('refer')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm font-medium">
+                <i class="fas fa-gift w-5 text-purple-600"></i> Refer & Earn
             </button>
-            <button onclick="switchTab('profile')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-4 text-gray-700 font-semibold">
-                <i class="fas fa-user-circle text-blue-500"></i> My Profile
+            <button onclick="window.switchTab('profile')" class="w-full text-left p-3 hover:bg-blue-50 rounded-xl flex items-center gap-3 text-sm font-medium">
+                <i class="fas fa-user-circle w-5 text-blue-500"></i> My Profile
             </button>
             <hr class="my-4">
-            <button onclick="handleLogout()" class="w-full text-left p-3 text-red-500 font-bold hover:bg-red-50 rounded-xl flex items-center gap-4">
-                <i class="fas fa-sign-out-alt"></i> Logout
+            <button onclick="window.handleLogout()" class="w-full text-left p-3 text-red-500 font-bold hover:bg-red-50 rounded-xl flex items-center gap-3 text-sm">
+                <i class="fas fa-sign-out-alt w-5"></i> Logout
             </button>
-        </div>
+        </nav>
     </div>
+    <div id="menu-overlay" onclick="window.toggleMenu()" class="fixed inset-0 bg-black/50 hidden z-[55]"></div>
 
-    <main class="p-4 max-w-md mx-auto">
-        <div id="auth-view" class="bg-white p-8 rounded-3xl shadow-xl mt-10 hidden">
-             <h2 class="text-xl font-bold mb-6 text-center">Login to Continue</h2>
-             <input id="email" type="email" placeholder="Email" class="w-full border p-4 rounded-2xl mb-3 outline-none bg-gray-50">
-             <input id="password" type="password" placeholder="Password" class="w-full border p-4 rounded-2xl mb-5 outline-none bg-gray-50">
-             <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold mb-3">Login</button>
+    <main class="max-w-md mx-auto p-4">
+        <div id="auth-view" class="bg-white p-8 rounded-3xl shadow-xl mt-10">
+            <h2 class="text-xl font-bold mb-6 text-center text-blue-600">Login / Signup</h2>
+            <input id="email" type="email" placeholder="ইমেইল" class="w-full border p-4 rounded-2xl mb-3 outline-none bg-gray-50 focus:border-blue-500 text-sm">
+            <input id="password" type="password" placeholder="পাসওয়ার্ড" class="w-full border p-4 rounded-2xl mb-5 outline-none bg-gray-50 focus:border-blue-500 text-sm">
+            <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold mb-3 text-sm shadow-md active:scale-95 transition-all">Login</button>
+            <button id="signup-btn" class="w-full text-blue-600 font-bold py-2 text-sm text-center block">Create Account</button>
         </div>
 
-        <div id="main-view">
+        <div id="main-view" class="hidden">
             <div id="home-tab" class="tab-content active">
-                <div class="bg-gradient-to-br from-blue-600 to-blue-800 p-8 rounded-[40px] text-white shadow-xl mb-8 relative overflow-hidden">
-                    <p class="opacity-70 text-xs font-bold mb-1">ব্যালেন্স</p>
-                    <h2 class="text-5xl font-extrabold">৳<span id="balance">0.00</span></h2>
-                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+                <div class="bg-gradient-to-br from-blue-600 to-blue-800 p-6 rounded-3xl text-white shadow-xl mb-6">
+                    <p class="opacity-80 text-[10px] font-bold uppercase">ব্যালেন্স</p>
+                    <h2 class="text-4xl font-extrabold mt-1">৳<span id="balance">0.00</span></h2>
                 </div>
-
-                <h3 class="font-bold text-gray-700 mb-4 ml-1">আপনার জন্য কাজ:</h3>
-                <div id="job-list" class="space-y-4">
-                    </div>
+                <div id="job-list" class="space-y-4"></div>
             </div>
 
             <div id="leaderboard-tab" class="tab-content">
-                <h2 class="font-bold text-lg mb-4">Leaderboard</h2>
-                <div id="leader-list" class="bg-white rounded-3xl border divide-y overflow-hidden"></div>
+                <h2 class="text-lg font-bold mb-4 flex items-center gap-2"><i class="fas fa-trophy text-yellow-500"></i> সেরা ১০ উপার্জনকারী</h2>
+                <div id="leader-list" class="bg-white rounded-3xl shadow-sm border overflow-hidden divide-y"></div>
             </div>
 
-            <div id="wallet-tab" class="tab-content">
-                <div class="bg-white p-6 rounded-3xl border shadow-sm">
-                    <h2 class="font-bold text-blue-600 mb-4 uppercase text-sm"><i class="fas fa-plus-circle mr-2"></i> Deposit</h2>
-                    <input id="d-amount" type="number" placeholder="টাকার পরিমাণ" class="w-full p-4 bg-gray-50 rounded-2xl mb-3 border outline-none">
-                    <input id="d-trx" type="text" placeholder="TrxID" class="w-full p-4 bg-gray-50 rounded-2xl mb-4 border outline-none">
-                    <button id="deposit-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold">ডিপোজিট রিকোয়েস্ট পাঠান</button>
-                </div>
-            </div>
-
-            <div id="profile-tab" class="tab-content text-center">
-                <div class="bg-white p-8 rounded-3xl border shadow-sm mb-4">
-                    <div class="w-20 h-20 bg-blue-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                        <i class="fas fa-user text-3xl text-blue-600"></i>
+            <div id="wallet-tab" class="tab-content space-y-4">
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-blue-100">
+                    <h2 class="font-bold text-blue-600 text-sm mb-3 uppercase flex items-center gap-2"><i class="fas fa-plus-circle"></i> Deposit</h2>
+                    <div class="bg-blue-50 p-4 rounded-2xl mb-4 text-[11px] text-blue-700 leading-relaxed border border-blue-100">
+                        <p class="flex justify-between items-center"><span>বিকাশ/নগদ (Personal):</span> <b class="text-sm">01913932587</b></p>
                     </div>
-                    <h2 class="font-bold text-lg" id="prof-email">Loading...</h2>
-                    <button id="act-btn" class="mt-3 px-6 py-2 bg-red-100 text-red-600 text-xs font-bold rounded-full">Activate Account (৳১০০)</button>
+                    <input id="d-amount" type="number" placeholder="টাকার পরিমাণ (৳)" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border focus:border-blue-500">
+                    <input id="d-trx" type="text" placeholder="Transaction ID (TrxID)" class="w-full p-3 bg-gray-50 rounded-xl mb-4 text-sm outline-none border focus:border-blue-500">
+                    <button id="deposit-btn" class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-md">ডিপোজিট রিকোয়েস্ট পাঠান</button>
                 </div>
-                <button onclick="handleLogout()" class="w-full p-4 bg-white text-red-500 font-bold rounded-2xl border">লগআউট</button>
+
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-blue-100">
+                    <h2 class="font-bold text-blue-600 text-sm mb-3 uppercase flex items-center gap-2"><i class="fas fa-minus-circle"></i> Withdraw</h2>
+                    <input id="w-amount" type="number" placeholder="মিনিমাম ৳৫০০" class="w-full p-3 bg-gray-50 rounded-xl mb-3 text-sm outline-none border focus:border-blue-500">
+                    <input id="w-number" type="text" placeholder="নম্বর লিখুন (বিকাশ/নগদ)" class="w-full p-3 bg-gray-50 rounded-xl mb-4 text-sm outline-none border focus:border-blue-500">
+                    <button id="withdraw-btn" class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-md">উইথড্র দিন</button>
+                </div>
+
+                <h3 class="font-bold text-sm px-1 text-gray-600 mt-4">পেমেন্ট হিস্ট্রি</h3>
+                <div id="history-list" class="space-y-2"></div>
+            </div>
+
+            <div id="refer-tab" class="tab-content">
+                <div class="bg-white p-6 rounded-3xl shadow-md text-center border">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4"><i class="fas fa-gift"></i></div>
+                    <h2 class="text-xl font-bold">রেফার করে আয়!</h2>
+                    <div class="mt-6 p-4 bg-gray-50 rounded-2xl border-dashed border-2 border-blue-100 overflow-hidden">
+                        <p id="refer-link" class="text-blue-600 font-bold text-[10px] truncate">লোড হচ্ছে...</p>
+                    </div>
+                    <button onclick="window.copyReferLink()" class="w-full bg-blue-600 text-white py-3 rounded-2xl mt-4 font-bold">কপি লিঙ্ক</button>
+                </div>
+            </div>
+
+            <div id="profile-tab" class="tab-content space-y-4">
+                <div class="bg-white p-6 rounded-3xl shadow-sm text-center border">
+                    <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-3">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2 class="font-bold text-gray-800" id="prof-email-display">Loading...</h2>
+                    <button onclick="window.activateAccount()" id="activate-btn-prof" class="mt-3 px-4 py-1.5 bg-red-100 text-red-600 text-[10px] font-bold rounded-full uppercase tracking-wider">Activate Now (৳১০০)</button>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-white p-4 rounded-2xl border text-center shadow-sm">
+                        <p class="text-[9px] text-gray-400 uppercase">মোট রেফার</p>
+                        <h4 id="stat-refers" class="text-xl font-bold text-blue-600">0</h4>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border text-center shadow-sm text-red-500">
+                        <p class="text-[9px] text-gray-400 uppercase">উইথড্র স্ট্যাটাস</p>
+                        <h4 id="stat-withdraws" class="text-xl font-bold">৳০</h4>
+                    </div>
+                </div>
+                <button onclick="window.handleLogout()" class="w-full p-4 bg-white rounded-2xl border text-red-500 font-bold text-sm shadow-sm flex items-center justify-center gap-2"><i class="fas fa-sign-out-alt"></i> লগআউট</button>
             </div>
         </div>
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3 px-2 z-50">
-        <button onclick="switchTab('home')" class="flex flex-col items-center text-gray-400 active-tab"><i class="fas fa-home mb-1"></i><span class="text-[10px]">Home</span></button>
-        <button onclick="switchTab('leaderboard')" class="flex flex-col items-center text-gray-400"><i class="fas fa-trophy mb-1"></i><span class="text-[10px]">Top 10</span></button>
-        <button onclick="switchTab('wallet')" class="flex flex-col items-center text-gray-400"><i class="fas fa-wallet mb-1"></i><span class="text-[10px]">Wallet</span></button>
-        <button onclick="switchTab('profile')" class="flex flex-col items-center text-gray-400"><i class="fas fa-user mb-1"></i><span class="text-[10px]">Profile</span></button>
+    <nav id="bottom-nav" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around py-3 z-50">
+        <button onclick="window.switchTab('home')" id="btn-home" class="flex flex-col items-center active-tab"><i class="fas fa-home text-sm"></i><span class="text-[9px] mt-1">Home</span></button>
+        <button onclick="window.switchTab('leaderboard')" id="btn-leaderboard" class="flex flex-col items-center text-gray-400"><i class="fas fa-trophy text-sm"></i><span class="text-[9px] mt-1">Top 10</span></button>
+        <button onclick="window.switchTab('wallet')" id="btn-wallet" class="flex flex-col items-center text-gray-400"><i class="fas fa-wallet text-sm"></i><span class="text-[9px] mt-1">Wallet</span></button>
+        <button onclick="window.switchTab('profile')" id="btn-profile" class="flex flex-col items-center text-gray-400"><i class="fas fa-user text-sm"></i><span class="text-[9px] mt-1">Profile</span></button>
     </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, collection, updateDoc, increment, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, collection, query, orderBy, limit, setDoc, getDoc, updateDoc, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
@@ -132,74 +159,177 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // UI Functions
+        // --- UI Functions ---
         window.toggleMenu = () => {
-            document.getElementById('side-menu').classList.toggle('-translate-x-full');
+            const menu = document.getElementById('side-menu');
+            const isOpen = menu.style.transform === 'translateX(0px)';
+            menu.style.transform = isOpen ? 'translateX(-100%)' : 'translateX(0px)';
             document.getElementById('menu-overlay').classList.toggle('hidden');
         };
 
         window.switchTab = (tab) => {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(tab + '-tab').classList.add('active');
-            if(tab === 'leaderboard') loadLeaders();
-            toggleMenu(); // ক্লোজ সাইডবার ইফ ওপেন
+            document.querySelectorAll('#bottom-nav button').forEach(el => el.classList.replace('active-tab', 'text-gray-400'));
+            const btn = document.getElementById('btn-' + tab);
+            if(btn) btn.classList.replace('text-gray-400', 'active-tab');
+            if(tab === 'leaderboard') loadLeaderboard();
+            if(document.getElementById('side-menu').style.transform === 'translateX(0px)') window.toggleMenu();
         };
 
-        // Real-time Balance & Auth
+        // --- Auth States & Real-time Update ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                document.getElementById('prof-email').innerText = user.email;
+                document.getElementById('auth-view').classList.add('hidden');
+                document.getElementById('main-view').classList.remove('hidden');
+                document.getElementById('bottom-nav').classList.remove('hidden');
+                document.getElementById('prof-email-display').innerText = user.email;
+                document.getElementById('refer-link').innerText = `${window.location.origin}${window.location.pathname}?ref=${user.uid}`;
+                
                 onSnapshot(doc(db, "users", user.uid), (s) => {
                     if(s.exists()){
                         const d = s.data();
                         const b = (d.balance || 0).toFixed(2);
                         document.getElementById('balance').innerText = b;
                         document.getElementById('nav-balance').innerText = b;
-                        if(d.isActive){
-                            document.getElementById('act-btn').innerText = "Verified Account";
-                            document.getElementById('act-btn').className = "mt-3 px-6 py-2 bg-green-100 text-green-600 text-xs font-bold rounded-full";
+                        document.getElementById('stat-refers').innerText = d.totalRefers || 0;
+                        if(d.isActive) {
+                            const ab = document.getElementById('activate-btn-prof');
+                            ab.innerText = "Verified Account";
+                            ab.classList.replace('bg-red-100', 'bg-green-100');
+                            ab.classList.replace('text-red-600', 'text-green-600');
                         }
                     }
                 });
                 loadJobs();
+                loadHistory(user.uid);
             } else {
                 document.getElementById('auth-view').classList.remove('hidden');
                 document.getElementById('main-view').classList.add('hidden');
             }
         });
 
-        // জবস লোড করা (আপনার স্ক্রিনশটের ডিজাইনে)
+        // --- Balance Fix: Work & Earn ---
+        window.completeJob = async (jobId, budget, url) => {
+            window.open(url, '_blank');
+            if(confirm("আপনি কি কাজটি সঠিকভাবে করেছেন? তবেই টাকা যুক্ত হবে।")) {
+                const userRef = doc(db, "users", auth.currentUser.uid);
+                try {
+                    await updateDoc(userRef, { balance: increment(budget) });
+                    alert("সাফল্যের সাথে ৳" + budget + " যোগ হয়েছে!");
+                } catch (e) { alert("ব্যালেন্স আপডেট করতে সমস্যা হয়েছে।"); }
+            }
+        };
+
         const loadJobs = () => {
             onSnapshot(collection(db, "jobs"), (snap) => {
                 const container = document.getElementById('job-list');
                 container.innerHTML = "";
                 snap.forEach(d => {
                     const job = d.data();
-                    container.innerHTML += `
-                        <div class="bg-white p-6 rounded-3xl border shadow-sm relative">
-                            <span class="verified-badge absolute top-6 right-6">VERIFIED</span>
-                            <h3 class="font-bold text-gray-800 mb-1">${job.title}</h3>
-                            <p class="text-[10px] text-gray-400 mb-4">সঠিকভাবে কাজ সম্পন্ন করার নিয়মাবলী ও নির্দেশিকা</p>
-                            <div class="flex justify-between items-center">
-                                <p class="text-blue-600 font-bold text-xs">পুরস্কার: ৳${job.budget}</p>
-                                <button onclick="window.doJob('${d.id}', ${job.budget}, '${job.url}')" class="bg-blue-600 text-white px-6 py-2 rounded-xl text-xs font-bold shadow-md">কাজ শুরু করুন</button>
-                            </div>
-                        </div>`;
+                    if(job.status === "active") {
+                        container.innerHTML += `
+                            <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 mb-3">
+                                <h3 class="font-bold text-sm text-gray-800">${job.title}</h3>
+                                <div class="flex justify-between items-center mt-3">
+                                    <p class="text-[11px] text-blue-600 font-bold">পুরস্কার: ৳${job.budget}</p>
+                                    <button onclick="window.completeJob('${d.id}', ${job.budget}, '${job.url}')" class="bg-blue-600 text-white px-4 py-1.5 rounded-xl text-[10px] font-bold">কাজ শুরু করুন</button>
+                                </div>
+                            </div>`;
+                    }
                 });
             });
         };
 
-        // ব্যালেন্স অ্যাড করার লজিক (Fix)
-        window.doJob = async (id, amount, url) => {
-            window.open(url, '_blank');
-            if(confirm("আপনি কি কাজটি শেষ করেছেন?")){
-                const ref = doc(db, "users", auth.currentUser.uid);
-                await updateDoc(ref, { balance: increment(amount) });
-                alert("আপনার ব্যালেন্সে ৳" + amount + " যোগ হয়েছে!");
-            }
+        // --- Withdraw Logic (Min 500 TK) ---
+        document.getElementById('withdraw-btn').onclick = async () => {
+            const amount = Number(document.getElementById('w-amount').value);
+            const number = document.getElementById('w-number').value.trim();
+            if(amount < 500) return alert("৫০০ টাকার নিচে উত্তোলন করা যাবে না।");
+            if(!number) return alert("নম্বর প্রদান করুন।");
+            
+            const userRef = doc(db, "users", auth.currentUser.uid);
+            const userSnap = await getDoc(userRef);
+            if(userSnap.data().balance >= amount) {
+                await addDoc(collection(db, "withdraws"), {
+                    uid: auth.currentUser.uid, amount, number, status: "pending", createdAt: serverTimestamp()
+                });
+                await updateDoc(userRef, { balance: increment(-amount) });
+                alert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!");
+            } else { alert("পর্যাপ্ত ব্যালেন্স নেই!"); }
+        };
+
+        // --- Leaderboard & History ---
+        const loadLeaderboard = () => {
+            const q = query(collection(db, "users"), orderBy("balance", "desc"), limit(10));
+            onSnapshot(q, (snap) => {
+                const list = document.getElementById('leader-list');
+                list.innerHTML = "";
+                let rank = 1;
+                snap.forEach(d => {
+                    const u = d.data();
+                    list.innerHTML += `<div class="p-4 flex justify-between items-center text-[11px]">
+                        <span class="text-gray-500">${rank++}. ${u.email.split('@')[0]}</span>
+                        <span class="font-bold text-blue-600">৳${(u.balance || 0).toFixed(2)}</span>
+                    </div>`;
+                });
+            });
+        };
+
+        const loadHistory = (uid) => {
+            const q = query(collection(db, "withdraws"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (snap) => {
+                const list = document.getElementById('history-list');
+                list.innerHTML = "";
+                snap.forEach(d => {
+                    const w = d.data();
+                    if(w.uid === uid) {
+                        list.innerHTML += `
+                            <div class="bg-white p-3 rounded-2xl border flex justify-between items-center text-[10px]">
+                                <div><p class="font-bold text-gray-700">৳${w.amount}</p><p class="text-gray-400 text-[9px]">${w.number}</p></div>
+                                <span class="px-2 py-1 rounded bg-blue-50 text-blue-600 font-bold uppercase">${w.status}</span>
+                            </div>`;
+                    }
+                });
+            });
+        };
+
+        // --- Other Actions ---
+        document.getElementById('deposit-btn').onclick = async () => {
+            const amt = Number(document.getElementById('d-amount').value);
+            const trx = document.getElementById('d-trx').value.trim();
+            if(!amt || !trx) return alert("তথ্য দিন");
+            await addDoc(collection(db, "deposits"), { uid: auth.currentUser.uid, email: auth.currentUser.email, amount: amt, trxId: trx, status: "pending", createdAt: serverTimestamp() });
+            alert("সফলভাবে রিকোয়েস্ট পাঠানো হয়েছে!");
+            document.getElementById('d-amount').value = ""; document.getElementById('d-trx').value = "";
+        };
+
+        window.activateAccount = async () => {
+            const userRef = doc(db, "users", auth.currentUser.uid);
+            const userSnap = await getDoc(userRef);
+            if(userSnap.data().balance >= 100) {
+                await updateDoc(userRef, { balance: increment(-100), isActive: true });
+                alert("অ্যাকাউন্ট এক্টিভ হয়েছে!");
+            } else { alert("ব্যালেন্স কমপক্ষে ১০০ টাকা হতে হবে।"); }
+        };
+
+        document.getElementById('login-btn').onclick = () => {
+            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(e => alert("লগইন ব্যর্থ!"));
+        };
+
+        document.getElementById('signup-btn').onclick = () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            createUserWithEmailAndPassword(auth, email, pass).then(async (cred) => {
+                await setDoc(doc(db, "users", cred.user.uid), { email, balance: 0, isActive: false, totalRefers: 0, createdAt: serverTimestamp() });
+            }).catch(e => alert(e.message));
         };
 
         window.handleLogout = () => signOut(auth).then(() => location.reload());
+        window.copyReferLink = () => {
+            navigator.clipboard.writeText(document.getElementById('refer-link').innerText);
+            alert("লিঙ্ক কপি হয়েছে!");
+        };
     </script>
 </body>
 </html>
