@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MicroJobs BD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
+    <div class="max-w-md w-full bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800">লগইন করুন</h2>
+            <p class="text-gray-400 text-sm mt-1">আপনার একাউন্টে প্রবেশ করুন</p>
+        </div>
+
+        <div class="space-y-4">
+            <input id="email" type="email" placeholder="ইমেইল" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500 transition">
+            <input id="password" type="password" placeholder="পাসওয়ার্ড" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500 transition">
+            <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition">প্রবেশ করুন</button>
+        </div>
+
+        <p class="text-center mt-8 text-gray-500 text-sm">
+            একাউন্ট নেই? <a href="signup.html" class="text-blue-600 font-bold">সাইনআপ করুন</a>
+        </p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
+            authDomain: "microjobs-b9d90.firebaseapp.com",
+            projectId: "microjobs-b9d90",
+            storageBucket: "microjobs-b9d90.firebasestorage.app",
+            messagingSenderId: "1006928193385",
+            appId: "1:1006928193385:web:d4b5cc1911abda6ff53ff8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        document.getElementById('login-btn').onclick = async () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                location.href = "index.html";
+            } catch (e) {
+                alert("ভুল ইমেইল বা পাসওয়ার্ড!");
+            }
+        };
+    </script>
+</body>
+</html>
