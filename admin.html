@@ -6,76 +6,215 @@
     <title>Admin Panel - MicroJobs BD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; }
+        .tab-btn.active { background: #2563eb; color: white; }
+        .admin-card { transition: transform 0.2s; }
+        .admin-card:hover { transform: translateY(-2px); }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen pb-10">
+<body class="bg-gray-100 min-h-screen">
 
-    <div id="auth-view" class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-red-100">
-            <h2 class="text-2xl font-bold text-red-600 mb-6 text-center">Admin Login</h2>
-            <input id="admin-email" type="email" placeholder="অ্যাডমিন ইমেইল" class="w-full p-4 border rounded-2xl mb-4 outline-none focus:border-red-500">
-            <input id="admin-pass" type="password" placeholder="পাসওয়ার্ড" class="w-full p-4 border rounded-2xl mb-6 outline-none focus:border-red-500">
-            <button onclick="window.adminLogin()" class="w-full bg-red-600 text-white py-4 rounded-2xl font-bold hover:bg-red-700 transition">প্রবেশ করুন</button>
+    <header class="bg-slate-900 text-white p-5 shadow-xl sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <i class="fas fa-user-shield text-blue-400"></i> Admin Dashboard
+            </h1>
+            <div id="admin-info" class="hidden text-sm flex items-center gap-4">
+                <span id="admin-email" class="opacity-70"></span>
+                <button onclick="window.handleLogout()" class="bg-red-500 hover:bg-red-600 px-4 py-1.5 rounded-lg font-bold">Logout</button>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <div id="admin-view" class="hidden">
-        <nav class="bg-red-600 text-white p-4 shadow-md sticky top-0 z-50">
-            <div class="max-w-4xl mx-auto flex justify-between items-center">
-                <h1 class="font-bold text-lg"><i class="fas fa-user-shield"></i> Admin Control</h1>
-                <button onclick="window.adminLogout()" class="bg-red-800 px-4 py-2 rounded-xl text-xs hover:bg-red-900">লগআউট</button>
-            </div>
-        </nav>
+    <main class="max-w-6xl mx-auto p-4 md:p-8">
+        <div id="admin-auth" class="max-w-md mx-auto bg-white p-8 rounded-3xl shadow-2xl mt-10">
+            <h2 class="text-2xl font-bold mb-6 text-center text-slate-800">Admin Login</h2>
+            <input id="email" type="email" placeholder="Admin Email" class="w-full border p-4 rounded-2xl mb-3 outline-none bg-gray-50 focus:border-blue-500">
+            <input id="password" type="password" placeholder="Password" class="w-full border p-4 rounded-2xl mb-6 outline-none bg-gray-50 focus:border-blue-500">
+            <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-all">Enter Dashboard</button>
+        </div>
 
-        <main class="max-w-4xl mx-auto p-4 space-y-6">
-            
-            <section class="bg-white p-6 rounded-3xl shadow-sm border border-blue-100">
-                <h2 class="font-bold text-blue-600 mb-4 flex items-center gap-2"><i class="fas fa-plus-circle"></i> নতুন জব পাবলিশ</h2>
-                <div class="grid grid-cols-1 gap-3">
-                    <input id="adm-title" type="text" placeholder="কাজের নাম" class="p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500">
-                    <textarea id="adm-desc" placeholder="কাজের বিবরণ" class="p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500" rows="3"></textarea>
-                    <input id="adm-url" type="url" placeholder="লিঙ্ক" class="p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500">
-                    <input id="adm-budget" type="number" placeholder="ইউজার পাবে (৳)" class="p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500">
-                    <button onclick="window.adminPostJob()" class="bg-blue-600 text-white font-bold py-3 rounded-xl">পাবলিশ করুন</button>
-                </div>
-            </section>
-
-            <section class="bg-white p-6 rounded-3xl shadow-sm border border-purple-100">
-                <h2 class="font-bold text-purple-600 mb-4 flex items-center gap-2"><i class="fas fa-paper-plane"></i> ইউজারকে মেসেজ দিন</h2>
-                <div class="grid grid-cols-1 gap-3">
-                    <input id="msg-target-email" type="email" placeholder="ইউজারের ইমেইল (খালি রাখলে সবার কাছে যাবে)" class="p-3 bg-gray-50 border rounded-xl outline-none">
-                    <textarea id="msg-text" placeholder="মেসেজটি লিখুন..." class="p-3 bg-gray-50 border rounded-xl outline-none" rows="2"></textarea>
-                    <button onclick="window.sendUserMessage()" class="bg-purple-600 text-white font-bold py-3 rounded-xl">মেসেজ পাঠান</button>
-                </div>
-            </section>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <section class="bg-white p-6 rounded-3xl shadow-sm border border-green-100">
-                    <h2 class="font-bold text-green-600 mb-4"><i class="fas fa-money-check-alt"></i> পেন্ডিং ডিপোজিট</h2>
-                    <div id="admin-deposit-list" class="space-y-3"></div>
-                </section>
-                <section class="bg-white p-6 rounded-3xl shadow-sm border border-orange-100">
-                    <h2 class="font-bold text-orange-600 mb-4"><i class="fas fa-wallet"></i> উইথড্র রিকোয়েস্ট</h2>
-                    <div id="admin-withdraw-list" class="space-y-3"></div>
-                </section>
+        <div id="admin-view" class="hidden">
+            <div class="flex flex-wrap gap-2 mb-8 bg-white p-2 rounded-2xl shadow-sm border">
+                <button onclick="showTab('jobs')" class="tab-btn active px-6 py-2.5 rounded-xl text-sm font-bold transition-all">Add Jobs</button>
+                <button onclick="showTab('deposits')" class="tab-btn px-6 py-2.5 rounded-xl text-sm font-bold transition-all">Deposits</button>
+                <button onclick="showTab('withdraws')" class="tab-btn px-6 py-2.5 rounded-xl text-sm font-bold transition-all">Withdraws</button>
+                <button onclick="showTab('users')" class="tab-btn px-6 py-2.5 rounded-xl text-sm font-bold transition-all">Manage Users</button>
             </div>
 
-            <section class="bg-white p-6 rounded-3xl shadow-sm border border-red-100">
-                <h2 class="font-bold text-red-600 mb-4"><i class="fas fa-tasks"></i> বর্তমান জব লিস্ট</h2>
-                <div id="admin-job-list" class="space-y-3"></div>
-            </section>
+            <div id="jobs-tab" class="tab-content">
+                <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-blue-100 max-w-2xl">
+                    <h3 class="text-lg font-bold mb-6 flex items-center gap-2"><i class="fas fa-plus-circle text-blue-600"></i> Post New Job</h3>
+                    <div class="space-y-4">
+                        <input id="job-title" type="text" placeholder="কাজের শিরোনাম (যেমন: Youtube Subscribe)" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500">
+                        <input id="job-budget" type="number" placeholder="পুরস্কারের পরিমাণ (৳)" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500">
+                        <input id="job-url" type="url" placeholder="কাজের লিঙ্ক (URL)" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500">
+                        <button onclick="window.postJob()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-md">পাবলিশ জব</button>
+                    </div>
+                </div>
+            </div>
 
-            <section class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-                <h2 class="font-bold text-gray-700 mb-4"><i class="fas fa-users"></i> ইউজার ম্যানেজমেন্ট</h2>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead><tr class="border-b"><th class="py-3">ইমেইল</th><th class="py-3">ব্যালেন্স</th><th class="py-3">অ্যাকশন</th></tr></thead>
-                        <tbody id="user-table-body"></tbody>
+            <div id="deposits-tab" class="tab-content hidden">
+                <h3 class="font-bold text-gray-800 mb-4">Pending Deposits</h3>
+                <div class="bg-white rounded-3xl border shadow-sm overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 border-b">
+                            <tr>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500">User Email</th>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Amount</th>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500">TrxID</th>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deposit-list" class="divide-y text-sm"></tbody>
                     </table>
                 </div>
-            </section>
-        </main>
-    </div>
+            </div>
 
-    <script type="module" src="admin.js"></script>
+            <div id="withdraws-tab" class="tab-content hidden">
+                <h3 class="font-bold text-gray-800 mb-4">Withdraw Requests</h3>
+                <div class="bg-white rounded-3xl border shadow-sm overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 border-b">
+                            <tr>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500">User UID</th>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Amount</th>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Number</th>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="withdraw-list" class="divide-y text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="users-tab" class="tab-content hidden text-center p-10 bg-white rounded-3xl border">
+                <i class="fas fa-users text-5xl text-gray-200 mb-4"></i>
+                <p class="text-gray-400">User management module loading...</p>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, onSnapshot, collection, updateDoc, increment, setDoc, addDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
+            authDomain: "microjobs-b9d90.firebaseapp.com",
+            projectId: "microjobs-b9d90",
+            storageBucket: "microjobs-b9d90.firebasestorage.app",
+            messagingSenderId: "1006928193385",
+            appId: "1:1006928193385:web:d4b5cc1911abda6ff53ff8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // UI Tabs
+        window.showTab = (tabId) => {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(tabId + '-tab').classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        };
+
+        // Auth Logic
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === "admin@microjobs.com") { // আপনার অ্যাডমিন ইমেইল দিন
+                document.getElementById('admin-auth').classList.add('hidden');
+                document.getElementById('admin-view').classList.remove('hidden');
+                document.getElementById('admin-info').classList.remove('hidden');
+                document.getElementById('admin-email').innerText = user.email;
+                loadDeposits();
+                loadWithdraws();
+            } else {
+                document.getElementById('admin-auth').classList.remove('hidden');
+                document.getElementById('admin-view').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('login-btn').onclick = () => {
+            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message));
+        };
+
+        // Post Job
+        window.postJob = async () => {
+            const title = document.getElementById('job-title').value;
+            const budget = Number(document.getElementById('job-budget').value);
+            const url = document.getElementById('job-url').value;
+            if(!title || !budget || !url) return alert("সব তথ্য দিন");
+            await addDoc(collection(db, "jobs"), { title, budget, url, status: "active", createdAt: serverTimestamp() });
+            alert("জব পাবলিশ হয়েছে!");
+            location.reload();
+        };
+
+        // Load Deposits & Approve
+        const loadDeposits = () => {
+            onSnapshot(collection(db, "deposits"), (snap) => {
+                const list = document.getElementById('deposit-list');
+                list.innerHTML = "";
+                snap.forEach(d => {
+                    const dep = d.data();
+                    if(dep.status === "pending") {
+                        list.innerHTML += `
+                            <tr>
+                                <td class="p-4 font-medium">${dep.email}</td>
+                                <td class="p-4 font-bold text-blue-600">৳${dep.amount}</td>
+                                <td class="p-4 font-mono text-xs">${dep.trxId}</td>
+                                <td class="p-4">
+                                    <button onclick="window.approveDeposit('${d.id}', '${dep.uid}', ${dep.amount})" class="bg-green-500 text-white px-3 py-1 rounded-lg text-xs font-bold mr-2">Approve</button>
+                                    <button onclick="window.deleteItem('deposits', '${d.id}')" class="bg-red-500 text-white px-3 py-1 rounded-lg text-xs font-bold">Delete</button>
+                                </td>
+                            </tr>`;
+                    }
+                });
+            });
+        };
+
+        window.approveDeposit = async (docId, uid, amount) => {
+            if(confirm("ইউজার ব্যালেন্সে টাকা যোগ করবেন?")){
+                await updateDoc(doc(db, "users", uid), { balance: increment(amount) });
+                await updateDoc(doc(db, "deposits", docId), { status: "approved" });
+                alert("ডিপোজিট অ্যাপ্রুভ হয়েছে!");
+            }
+        };
+
+        // Load Withdraws & Approve
+        const loadWithdraws = () => {
+            onSnapshot(collection(db, "withdraws"), (snap) => {
+                const list = document.getElementById('withdraw-list');
+                list.innerHTML = "";
+                snap.forEach(d => {
+                    const w = d.data();
+                    if(w.status === "pending") {
+                        list.innerHTML += `
+                            <tr>
+                                <td class="p-4">${w.uid.substring(0,8)}...</td>
+                                <td class="p-4 font-bold text-red-600">৳${w.amount}</td>
+                                <td class="p-4 font-bold">${w.number}</td>
+                                <td class="p-4">
+                                    <button onclick="window.approveWithdraw('${d.id}')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-bold">Mark Paid</button>
+                                </td>
+                            </tr>`;
+                    }
+                });
+            });
+        };
+
+        window.approveWithdraw = async (docId) => {
+            if(confirm("আপনি কি টাকা পাঠিয়েছেন?")){
+                await updateDoc(doc(db, "withdraws", docId), { status: "completed" });
+                alert("পেমেন্ট সফল হিসেবে মার্ক করা হয়েছে।");
+            }
+        };
+
+        window.deleteItem = async (col, id) => { if(confirm("মুছে ফেলতে চান?")) await deleteDoc(doc(db, col, id)); };
+        window.handleLogout = () => signOut(auth).then(() => location.reload());
+    </script>
 </body>
 </html>
