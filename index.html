@@ -60,7 +60,6 @@
     </div>
 
     <main class="max-w-md mx-auto p-4 mt-2">
-        
         <div id="home-tab" class="tab-content active space-y-5">
             <div class="bg-gradient-to-br from-blue-600 to-blue-800 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
                 <div class="relative z-10">
@@ -123,20 +122,13 @@
                 <p class="text-[10px] opacity-80 mt-1">প্রতিটি সফল রেফারে জিতে নিন বোনাস!</p>
             </div>
             <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 text-center">
-                <p class="text-gray-400 text-[10px] uppercase font-bold mb-3 tracking-widest">আপনার রেফারেল লিঙ্ক</p>
-                <div class="bg-gray-50 p-4 rounded-2xl border-2 border-dashed border-purple-200 mb-5 overflow-hidden">
-                    <p id="refer-link-display" class="text-blue-600 font-bold text-xs truncate">জেনারেটিং...</p>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <button onclick="window.copyReferLink()" class="bg-purple-600 text-white py-4 rounded-2xl font-bold shadow-md active:scale-95 transition">কপি লিঙ্ক</button>
-                    <button onclick="window.shareReferLink()" class="bg-green-500 text-white py-4 rounded-2xl font-bold shadow-md active:scale-95 transition">শেয়ার করুন</button>
-                </div>
+                <p id="refer-link-display" class="text-blue-600 font-bold text-xs truncate mb-4">জেনারেটিং...</p>
+                <button onclick="window.copyReferLink()" class="w-full bg-purple-600 text-white py-4 rounded-2xl font-bold">লিঙ্ক কপি করুন</button>
             </div>
         </div>
-
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-100 flex justify-around py-3 z-50 shadow-2xl">
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-100 flex justify-around py-3 z-50">
         <button onclick="window.switchTab('home')" id="btn-home" class="flex flex-col items-center active-tab">
             <i class="fas fa-home text-lg"></i><span class="text-[9px] mt-1">Home</span>
         </button>
@@ -145,9 +137,6 @@
         </button>
         <button onclick="window.switchTab('wallet')" id="btn-wallet" class="flex flex-col items-center text-gray-400">
             <i class="fas fa-wallet text-lg"></i><span class="text-[9px] mt-1">Wallet</span>
-        </button>
-        <button onclick="window.switchTab('refer')" id="btn-refer" class="flex flex-col items-center text-gray-400">
-            <i class="fas fa-gift text-lg"></i><span class="text-[9px] mt-1">Refer</span>
         </button>
         <button onclick="window.switchTab('profile')" id="btn-profile" class="flex flex-col items-center text-gray-400">
             <i class="fas fa-user text-lg"></i><span class="text-[9px] mt-1">Profile</span>
@@ -159,6 +148,7 @@
         import { getFirestore, doc, onSnapshot, collection, query, orderBy, limit, updateDoc, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+        // আপনার Firebase Config (স্ক্রিনশট অনুযায়ী তথ্য)
         const firebaseConfig = {
             apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
             authDomain: "microjobs-b9d90.firebaseapp.com",
@@ -172,7 +162,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // Core Functions
+        // UI Logic
         window.toggleMenu = () => {
             const menu = document.getElementById('side-menu');
             const overlay = document.getElementById('menu-overlay');
@@ -183,33 +173,25 @@
 
         window.switchTab = (tab) => {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            const target = document.getElementById(tab + '-tab');
-            if(target) target.classList.add('active');
-            
+            document.getElementById(tab + '-tab')?.classList.add('active');
             document.querySelectorAll('nav button').forEach(el => el.classList.replace('active-tab', 'text-gray-400'));
-            const btn = document.getElementById('btn-' + tab);
-            if(btn) btn.classList.replace('text-gray-400', 'active-tab');
-            
+            document.getElementById('btn-' + tab)?.classList.replace('text-gray-400', 'active-tab');
             if(tab === 'leaderboard') loadLeaderboard();
-            if(document.getElementById('side-menu').style.transform === 'translateX(0px)') window.toggleMenu();
         };
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('prof-email').innerText = user.email;
                 document.getElementById('menu-user-email').innerText = user.email;
-                
-                // Generate Refer Link
                 const referURL = `${window.location.origin}${window.location.pathname}?ref=${user.uid}`;
                 document.getElementById('refer-link-display').innerText = referURL;
 
-                // Watch Balance & Status
                 onSnapshot(doc(db, "users", user.uid), (s) => {
                     if(s.exists()){
                         const d = s.data();
-                        const b = (d.balance || 0).toFixed(2);
-                        document.getElementById('balance').innerText = b;
-                        document.getElementById('nav-balance').innerText = b;
+                        const balance = (d.balance || 0).toFixed(2);
+                        document.getElementById('balance').innerText = balance;
+                        document.getElementById('nav-balance').innerText = balance;
                         const badge = document.getElementById('status-badge');
                         badge.innerText = d.isActive ? "Verified" : "Not Active";
                         badge.className = d.isActive ? "mt-3 px-6 py-2 bg-green-100 text-green-600 text-[10px] font-bold rounded-full uppercase" : "mt-3 px-6 py-2 bg-red-100 text-red-600 text-[10px] font-bold rounded-full uppercase";
@@ -247,47 +229,9 @@
             });
         };
 
-        // Financial Actions
-        document.getElementById('deposit-btn').onclick = async () => {
-            const amount = Number(document.getElementById('d-amount').value);
-            const trxId = document.getElementById('d-trx').value;
-            if(!amount || !trxId) return alert("সব তথ্য দিন।");
-            await addDoc(collection(db, "deposits"), { uid: auth.currentUser.uid, email: auth.currentUser.email, amount, trxId, status: "pending", createdAt: serverTimestamp() });
-            alert("ডিপোজিট রিকোয়েস্ট পাঠানো হয়েছে।");
-        };
-
-        document.getElementById('withdraw-btn').onclick = async () => {
-            const amount = Number(document.getElementById('w-amount').value);
-            const number = document.getElementById('w-number').value;
-            if(amount < 500) return alert("মিনিমাম ৫০০ টাকা লাগবে।");
-            await addDoc(collection(db, "withdraws"), { uid: auth.currentUser.uid, amount, number, status: "pending", createdAt: serverTimestamp() });
-            await updateDoc(doc(db, "users", auth.currentUser.uid), { balance: increment(-amount) });
-            alert("উইথড্র রিকোয়েস্ট পাঠানো হয়েছে।");
-        };
-
-        // Refer Actions
         window.copyReferLink = () => {
             const link = document.getElementById('refer-link-display').innerText;
             navigator.clipboard.writeText(link).then(() => alert("লিঙ্ক কপি হয়েছে!"));
-        };
-
-        window.shareReferLink = () => {
-            const link = document.getElementById('refer-link-display').innerText;
-            if (navigator.share) navigator.share({ title: 'MicroJobs BD', url: link });
-            else window.copyReferLink();
-        };
-
-        const loadLeaderboard = () => {
-            const q = query(collection(db, "users"), orderBy("balance", "desc"), limit(10));
-            onSnapshot(q, (snap) => {
-                const list = document.getElementById('leader-list');
-                list.innerHTML = "";
-                let r = 1;
-                snap.forEach(d => {
-                    const u = d.data();
-                    list.innerHTML += `<div class="p-4 flex justify-between items-center"><span class="text-xs font-medium">${r++}. ${u.email.split('@')[0]}</span><span class="font-bold text-blue-600 text-xs">৳${(u.balance || 0).toFixed(2)}</span></div>`;
-                });
-            });
         };
 
         window.handleLogout = () => signOut(auth).then(() => location.reload());
