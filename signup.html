@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup - MicroJobs BD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
+    <div class="max-w-md w-full bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100">
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-bold text-gray-800">নতুন একাউন্ট</h2>
+            <p class="text-gray-400 text-sm mt-1">আজই কাজ শুরু করুন</p>
+        </div>
+
+        <div class="space-y-4">
+            <input id="email" type="email" placeholder="আপনার ইমেইল" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500 transition">
+            <input id="password" type="password" placeholder="পাসওয়ার্ড (মিনিমাম ৬ অক্ষর)" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500 transition">
+            <button id="signup-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition">সাইনআপ করুন</button>
+        </div>
+
+        <p class="text-center mt-8 text-gray-500 text-sm">
+            একাউন্ট আছে? <a href="login.html" class="text-blue-600 font-bold">লগইন করুন</a>
+        </p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
+            authDomain: "microjobs-b9d90.firebaseapp.com",
+            projectId: "microjobs-b9d90",
+            appId: "1:1006928193385:web:d4b5cc1911abda6ff53ff8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        document.getElementById('signup-btn').onclick = async () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            const urlParams = new URLSearchParams(window.location.search);
+            const refBy = urlParams.get('ref'); // রেফারেল আইডি চেক
+
+            try {
+                const res = await createUserWithEmailAndPassword(auth, email, pass);
+                const user = res.user;
+
+                // নতুন ইউজার ডাটাবেস তৈরি
+                await setDoc(doc(db, "users", user.uid), {
+                    email: email,
+                    balance: 0,
+                    isActive: false,
+                    totalRefers: 0,
+                    referBy: refBy || null
+                });
+
+                // যদি কেউ রেফারেল দিয়ে আসে, তবে রেফারকারীকে বোনাস দেওয়া
+                if (refBy) {
+                    const refRef = doc(db, "users", refBy);
+                    await updateDoc(refRef, {
+                        totalRefers: increment(1),
+                        balance: increment(5) // রেফার বোনাস ৫ টাকা
+                    });
+                }
+
+                location.href = "index.html";
+            } catch (e) {
+                alert("সমস্যা হয়েছে! ইমেইল চেক করুন।");
+            }
+        };
+    </script>
+</body>
+</html>
