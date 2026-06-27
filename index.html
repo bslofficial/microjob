@@ -162,7 +162,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // গ্লোবাল ফাংশন ডেফিনিশন যাতে HTML কম্পোনেন্ট সরাসরি এক্সেস পায়
+        // গ্লোবাল ফাংশন ডেফিনিশন
         window.toggleMenu = () => {
             const menu = document.getElementById('side-menu');
             const overlay = document.getElementById('menu-overlay');
@@ -179,7 +179,7 @@
             if(tab === 'leaderboard') loadLeaderboard();
         };
 
-        // কাজ সম্পন্ন করার ফিক্সড গ্লোবাল লজিক
+        // কাজ সম্পন্ন করার মূল ফাংশন
         window.completeJob = async function(id, budget, url) {
             window.open(url, '_blank');
             setTimeout(async () => {
@@ -243,7 +243,7 @@
                     } catch (e) { alert("রিকোয়েস্ট পাঠাতে সমস্যা হয়েছে।"); }
                 };
 
-                // Withdraw Request
+                // Withdraw Request (Fixed Spelled & Method)
                 document.getElementById('withdraw-btn').onclick = async () => {
                     const amount = Number(document.getElementById('w-amount').value);
                     const number = document.getElementById('w-number').value;
@@ -262,7 +262,7 @@
                         alert("উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!");
                         document.getElementById('w-amount').value = "";
                         document.getElementById('w-number').value = "";
-                    } catch (e) { alert("সমস্যা হয়েছে!"); }
+                    } catch (e) { alert("উইথড্র রিকোয়েস্ট পাঠানো যায়নি।"); }
                 };
 
             } else {
@@ -270,6 +270,7 @@
             }
         });
 
+        // ডায়নামিক জব লোড করার ফিক্সড ফাংশন
         const loadJobs = () => {
             onSnapshot(collection(db, "jobs"), (snap) => {
                 const container = document.getElementById('job-list');
@@ -279,8 +280,13 @@
                     if(job.status === "active") {
                         container.innerHTML += `
                             <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex justify-between items-center transition active:scale-95">
-                                <div><h4 class="font-bold text-gray-800 text-sm">${job.title}</h4><p class="text-blue-600 font-bold text-xs">পুরস্কার: ৳${job.budget}</p></div>
-                                <button onclick="window.completeJob('${d.id}', ${job.budget}, '${job.url}')" class="bg-blue-600 text-white px-5 py-2.5 rounded-2xl text-[10px] font-bold shadow-md">কাজ শুরু করুন</button>
+                                <div>
+                                    <h4 class="font-bold text-gray-800 text-sm">${job.title}</h4>
+                                    <p class="text-blue-600 font-bold text-xs">পুরস্কার: ৳${job.budget}</p>
+                                </div>
+                                <button onclick="window.completeJob('${d.id}', '${job.budget}', '${job.url}')" class="bg-blue-600 text-white px-5 py-2.5 rounded-2xl text-[10px] font-bold shadow-md">
+                                    কাজ শুরু করুন
+                                </button>
                             </div>`;
                     }
                 });
