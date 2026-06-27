@@ -148,7 +148,6 @@
         import { getFirestore, doc, onSnapshot, collection, query, orderBy, limit, updateDoc, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // আপনার Firebase Config (স্ক্রিনশট অনুযায়ী তথ্য)
         const firebaseConfig = {
             apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
             authDomain: "microjobs-b9d90.firebaseapp.com",
@@ -162,7 +161,6 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // UI Logic
         window.toggleMenu = () => {
             const menu = document.getElementById('side-menu');
             const overlay = document.getElementById('menu-overlay');
@@ -197,19 +195,68 @@
                         badge.className = d.isActive ? "mt-3 px-6 py-2 bg-green-100 text-green-600 text-[10px] font-bold rounded-full uppercase" : "mt-3 px-6 py-2 bg-red-100 text-red-600 text-[10px] font-bold rounded-full uppercase";
                     }
                 });
+
                 loadJobs();
+
+                // Deposit রিকোয়েস্ট লজিক
+                document.getElementById('deposit-btn').onclick = async () => {
+                    const amount = Number(document.getElementById('d-amount').value);
+                    const trxId = document.getElementById('d-trx').value;
+                    if(!amount || !trxId) return alert("সবগুলো ঘর পূরণ করুন!");
+                    try {
+                        await addDoc(collection(db, "deposits"), {
+                            uid: user.uid,
+                            email: user.email,
+                            amount: amount,
+                            trxId: trxId,
+                            status: "pending",
+                            createdAt: serverTimestamp()
+                        });
+                        alert("ডিপোজিট রিকোয়েস্ট পাঠানো হয়েছে!");
+                        document.getElementById('d-amount').value = "";
+                        document.getElementById('d-trx').value = "";
+                    } catch (e) { alert("রিকোয়েস্ট পাঠাতে সমস্যা হয়েছে।"); }
+                };
+
+                // Withdraw রিকোয়েস্ট লজিক
+                document.getElementById('withdraw-btn').onclick = async () => {
+                    const amount = Number(document.getElementById('w-amount').value);
+                    const number = document.getElementById('w-number').value;
+                    if(!amount || !number) return alert("সবগুলো ঘর পূরণ করুন!");
+                    if(amount < 500) return alert("মিনিমাম ৫০০ টাকা উইথড্র করতে পারবেন।");
+                    
+                    try {
+                        await addDoc(collection(db, "withdraws"), {
+                            uid: user.uid,
+                            email: user.email,
+                            amount: amount,
+                            number: number,
+                            status: "pending",
+                            createdAt: serverTimestamp()
+                        });
+                        alert("উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!");
+                        document.getElementById('w-amount').value = "";
+                        document.getElementById('w-number').value = "";
+                    } catch (e) { alert("সমস্যা হয়েছে!"); }
+                };
+
             } else {
                 location.href = "login.html";
             }
         });
 
-        // Job Logic
+        // ব্যালেন্স যোগ হওয়ার ফিক্সড লজিক
         window.completeJob = async (id, budget, url) => {
             window.open(url, '_blank');
-            if(confirm("কাজ সম্পন্ন করেছেন? ব্যালেন্স যোগ করতে OK দিন।")) {
-                await updateDoc(doc(db, "users", auth.currentUser.uid), { balance: increment(budget) });
-                alert("৳" + budget + " যোগ হয়েছে!");
-            }
+            setTimeout(async () => {
+                if(confirm("কাজ সম্পন্ন করেছেন? ব্যালেন্স যোগ করতে OK দিন।")) {
+                    try {
+                        const userRef = doc(db, "users", auth.currentUser.uid);
+                        await updateDoc(userRef, { balance: increment(Number(budget)) });
+                        alert("৳" + budget + " যোগ হয়েছে!");
+                    } catch(e) { alert("ব্যালেন্স যোগ করা যায়নি।"); }
+                }
+            }, 1000);
         };
 
         const loadJobs = () => {
@@ -225,6 +272,27 @@
                                 <button onclick="window.completeJob('${d.id}', ${job.budget}, '${job.url}')" class="bg-blue-600 text-white px-5 py-2.5 rounded-2xl text-[10px] font-bold shadow-md">কাজ শুরু করুন</button>
                             </div>`;
                     }
+                });
+            });
+        };
+
+        // লিডারবোর্ড ফাংশন
+        const loadLeaderboard = () => {
+            const q = query(collection(db, "users"), orderBy("balance", "desc"), limit(10));
+            onSnapshot(q, (snap) => {
+                const list = document.getElementById('leader-list');
+                list.innerHTML = "";
+                let index = 1;
+                snap.forEach(d => {
+                    const u = d.data();
+                    list.innerHTML += `
+                        <div class="flex justify-between items-center p-4">
+                            <div class="flex items-center gap-3">
+                                <span class="font-bold text-gray-500">#${index++}</span>
+                                <span class="text-sm text-gray-700">${u.email ? u.email.substring(0,4) + '***@' + u.email.split('@')[1] : 'User'}</span>
+                            </div>
+                            <span class="font-bold text-yellow-600">৳${(u.balance || 0).toFixed(2)}</span>
+                        </div>`;
                 });
             });
         };
