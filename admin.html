@@ -3,63 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - MicroJobs BD</title>
+    <title>MicroJobs BD - Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
-        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f1f5f9; }
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #0f172a; color: #f8fafc; }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen pb-12">
+<body>
 
-    <header class="bg-slate-900 text-white p-5 shadow-xl sticky top-0 z-50 flex justify-between items-center max-w-lg mx-auto rounded-b-3xl">
-        <div class="flex items-center gap-3">
-            <div class="bg-blue-600 p-2.5 rounded-2xl shadow-md"><i class="fas fa-user-shield text-xl"></i></div>
-            <div>
-                <h1 class="font-bold text-base leading-tight">Admin Dashboard</h1>
-                <p class="text-[10px] text-gray-400 mt-0.5" id="admin-email">Loading...</p>
+    <!-- 🔒 লগইন ফর্ম সেকশন (প্রথমে এটি দেখাবে) -->
+    <div id="admin-login-card" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 w-full max-w-sm shadow-2xl space-y-6">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-500/10 text-blue-500 rounded-full flex items-center justify-center text-2xl mx-auto mb-3 border border-blue-500/20">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h2 class="text-xl font-bold text-slate-200">অ্যাডমিন লগইন</h2>
+                <p class="text-xs text-gray-400 mt-1">প্যানেলে প্রবেশ করতে সঠিক তথ্য দিন</p>
+            </div>
+            <div class="space-y-4">
+                <input id="auth-email" type="email" placeholder="অ্যাডমিন জিমেইল" class="w-full p-4 bg-slate-800/50 rounded-2xl border border-slate-700 outline-none text-sm text-white focus:border-blue-500 transition">
+                <input id="auth-password" type="password" placeholder="পাসওয়ার্ড" class="w-full p-4 bg-slate-800/50 rounded-2xl border border-slate-700 outline-none text-sm text-white focus:border-blue-500 transition">
+                <button id="admin-login-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-bold text-sm active:scale-95 transition shadow-lg shadow-blue-600/20">লগইন করুন</button>
             </div>
         </div>
-        <button onclick="window.handleLogout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition active:scale-95 shadow-md shadow-red-500/20">
-            Logout
-        </button>
-    </header>
+    </div>
 
-    <main class="max-w-md mx-auto p-4 mt-4 space-y-6">
-        
-        <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100">
-            <h2 class="font-bold text-slate-800 flex items-center gap-2 mb-5 text-sm uppercase tracking-wider">
-                <span class="w-2 h-5 bg-blue-600 rounded-full"></span> <i class="fas fa-plus-circle text-blue-600"></i> Post New Job
-            </h2>
-            
-            <div class="space-y-3.5">
-                <input id="job-title" type="text" placeholder="কাজের শিরোনাম" class="w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 outline-none text-sm focus:border-blue-500 transition">
-                <input id="job-budget" type="number" placeholder="পুরস্কারের পরিমাণ (৳)" class="w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 outline-none text-sm focus:border-blue-500 transition">
-                <input id="job-url" type="url" placeholder="কাজের লিঙ্ক (URL)" class="w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 outline-none text-sm focus:border-blue-500 transition">
-                <input id="job-duration" type="number" placeholder="টাইমার সেকেন্ড (যেমন: ৬০)" class="w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 outline-none text-sm focus:border-blue-500 transition">
-                
-                <button id="publish-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-bold transition shadow-lg shadow-blue-500/20 mt-2 active:scale-[0.98]">
-                    পাবলিশ জব
+    <!-- 🖥️ ড্যাশবোর্ড সেকশন (লগইন সফল হলে এটি দৃশ্যমান হবে) -->
+    <div id="admin-dashboard" class="min-h-screen flex flex-col md:flex-row hidden">
+        <!-- Sidebar -->
+        <aside class="w-full md:w-64 bg-slate-900 p-6 flex flex-col border-r border-slate-800">
+            <div class="mb-8">
+                <h1 class="text-xl font-bold text-blue-500"><i class="fas fa-user-shield"></i> Admin Panel</h1>
+                <p class="text-xs text-gray-400 mt-1" id="admin-email">Loading...</p>
+            </div>
+            <nav class="space-y-2 flex-1">
+                <button class="w-full text-left p-3 hover:bg-slate-800 rounded-xl flex items-center gap-3 font-medium text-blue-400 bg-slate-800/50">
+                    <i class="fas fa-tasks"></i> Jobs Approval
                 </button>
+            </nav>
+            <button onclick="window.adminLogout()" class="w-full text-left p-3 text-red-400 hover:bg-red-950/30 rounded-xl flex items-center gap-3 font-bold mt-auto">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">পেন্ডিং জব রিকোয়েস্ট সমূহ</h2>
+            <div id="admin-job-list" class="grid gap-4 max-w-3xl">
+                <p class="text-gray-500 text-sm">কোনো পেন্ডিং কাজ নেই।</p>
             </div>
-        </div>
+        </main>
+    </div>
 
-        <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100">
-            <h2 class="font-bold text-slate-800 flex items-center gap-2 mb-4 text-sm uppercase tracking-wider">
-                <span class="w-2 h-5 bg-red-500 rounded-full"></span> <i class="fas fa-tasks text-red-500"></i> Active Jobs (<span id="job-count">0</span>)
-            </h2>
-            <div id="admin-job-list" class="space-y-3 divide-y divide-gray-50">
-                <p class="text-center text-xs text-gray-400 py-4">কোনো কাজ খুঁজে পাওয়া যায়নি।</p>
-            </div>
-        </div>
-
-    </main>
-
+    <!-- Firebase Script Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
@@ -74,86 +77,105 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // লগআউট ফাংশন
-        window.handleLogout = () => signOut(auth).then(() => location.href = "login.html");
+        // 🔒 হার্ডকোডেড কড়া সিকিউরিটি ম্যাচিং
+        const ADMIN_EMAIL = "Mddulalhosen0@gmail.com";
+        const ADMIN_PASSWORD = "@#MdDulal596@#";
 
-        // জব ডিলিট করার গ্লোবাল ফাংশন
-        window.deleteJob = async (id) => {
-            if(confirm("আপনি কি নিশ্চিতভাবে এই জবটি ডিলিট করতে চান?")) {
+        // লগআউট প্রসেস
+        window.adminLogout = () => {
+            signOut(auth).then(() => {
+                document.getElementById('admin-dashboard').classList.add('hidden');
+                document.getElementById('admin-login-card').classList.remove('hidden');
+            });
+        };
+
+        // ম্যানুয়াল ফর্ম লগইন বাটন ইভেন্ট
+        document.getElementById('admin-login-btn').onclick = async () => {
+            const inputEmail = document.getElementById('auth-email').value.trim();
+            const inputPass = document.getElementById('auth-password').value;
+
+            if(!inputEmail || !inputPass) return alert("সবগুলো ঘর পূরণ করুন!");
+
+            // প্রথম ডিফেন্স লেয়ার: আপনার দেওয়া সিক্রেট আইডির সাথে মিল চেক
+            if (inputEmail === ADMIN_EMAIL && inputPass === ADMIN_PASSWORD) {
                 try {
-                    await deleteDoc(doc(db, "jobs", id));
-                    alert("জবটি সফলভাবে ডিলিট করা হয়েছে!");
-                } catch (e) {
-                    alert("ডিলিট করা যায়নি!");
+                    // দ্বিতীয় ডিফেন্স লেয়ার: ফায়ারবেস অথেনটিকেশন চেক
+                    const userCredential = await signInWithEmailAndPassword(auth, inputEmail, inputPass);
+                    showDashboard(userCredential.user.email);
+                } catch (error) {
+                    alert("ফায়ারবেস অথেনটিকেশন ব্যর্থ হয়েছে! ফায়ারবেস কনসোলে Email/Password অপশনটি সচল করা আছে কিনা চেক করুন।");
                 }
+            } else {
+                alert("ভুল জিমেইল বা পাসওয়ার্ড! আপনি এই অ্যাপের অ্যাডমিন নন।");
             }
         };
 
+        // ড্যাশবোর্ড দেখানোর ফাংশন
+        function showDashboard(email) {
+            document.getElementById('admin-email').innerText = email;
+            document.getElementById('admin-login-card').classList.add('hidden');
+            document.getElementById('admin-dashboard').classList.remove('hidden');
+            loadPendingJobs();
+        }
+
+        // রিয়েল-টাইম স্টেট অবজারভার (পেজ রিফ্রেশ করলেও যাতে লগইন থাকে)
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // চেক করুন এটা অ্যাডমিন কিনা (অথবা সরাসরি ইমেইল দেখাবে)
-                document.getElementById('admin-email').innerText = user.email;
-
-                // জব পাবলিশ লজিক
-                document.getElementById('publish-btn').onclick = async () => {
-                    const title = document.getElementById('job-title').value.trim();
-                    const budget = document.getElementById('job-budget').value.trim();
-                    const url = document.getElementById('job-url').value.trim();
-                    const duration = document.getElementById('job-duration').value.trim();
-
-                    if(!title || !budget || !url) return alert("দয়া করে সবগুলো ঘর পূরণ করুন!");
-
-                    try {
-                        await addDoc(collection(db, "jobs"), {
-                            title: title,
-                            budget: Number(budget),
-                            url: url,
-                            duration: Number(duration) || 60, // কিছু না দিলে অটো ৬০ সেকেন্ড হবে
-                            status: "active",
-                            createdAt: serverTimestamp()
-                        });
-
-                        alert("জব সফলভাবে পাবলিশ হয়েছে!");
-                        // ইনপুট ফিল্ড ক্লিয়ার করা
-                        document.getElementById('job-title').value = "";
-                        document.getElementById('job-budget').value = "";
-                        document.getElementById('job-url').value = "";
-                        document.getElementById('job-duration').value = "";
-                    } catch (e) {
-                        alert("জব পাবলিশ করতে সমস্যা হয়েছে!");
-                    }
-                };
-
-                // ড্যাশবোর্ডে সব জব লাইভ লোড করা ও ডিলিট অপশন দেওয়া
-                onSnapshot(collection(db, "jobs"), (snap) => {
-                    const container = document.getElementById('admin-job-list');
-                    document.getElementById('job-count').innerText = snap.size;
-                    container.innerHTML = "";
-                    
-                    if(snap.empty) {
-                        container.innerHTML = `<p class="text-center text-xs text-gray-400 py-4">কোনো কাজ খুঁজে পাওয়া যায়নি।</p>`;
-                        return;
-                    }
-
-                    snap.forEach(d => {
-                        const job = d.data();
-                        container.innerHTML += `
-                            <div class="flex justify-between items-center py-3.5 first:pt-0">
-                                <div class="max-w-[70%]">
-                                    <h4 class="font-bold text-gray-800 text-sm truncate">${job.title}</h4>
-                                    <p class="text-xs text-gray-500 mt-0.5">টাকা: ৳${job.budget} | সময়: ${job.duration || 60}সেকেণ্ড</p>
-                                </div>
-                                <button onclick="window.deleteJob('${d.id}')" class="bg-red-50 hover:bg-red-100 text-red-500 w-9 h-9 rounded-xl flex items-center justify-center transition active:scale-90">
-                                    <i class="fas fa-trash-alt text-sm"></i>
-                                </button>
-                            </div>`;
-                    });
-                });
-
+            if (user && user.email === ADMIN_EMAIL) {
+                showDashboard(user.email);
             } else {
-                location.href = "login.html";
+                document.getElementById('admin-dashboard').classList.add('hidden');
+                document.getElementById('admin-login-card').classList.remove('hidden');
             }
         });
+
+        // পেন্ডিং জব ডাটাবেজ থেকে লোড করা
+        const loadPendingJobs = () => {
+            onSnapshot(collection(db, "jobs"), (snap) => {
+                const container = document.getElementById('admin-job-list');
+                container.innerHTML = "";
+                let hasPending = false;
+
+                snap.forEach(d => {
+                    const job = d.data();
+                    if (job.status === "pending") {
+                        hasPending = true;
+                        container.innerHTML += `
+                            <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-3 shadow-md">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="text-lg font-bold text-slate-200">${job.title}</h4>
+                                        <p class="text-xs text-blue-400 font-semibold mt-1">ইউজার: ${job.email}</p>
+                                    </div>
+                                    <span class="px-3 py-1 bg-yellow-500/10 text-yellow-500 text-xs font-bold rounded-full">PENDING</span>
+                                </div>
+                                <p class="text-xs text-gray-400 truncate">লিঙ্ক: <a href="${job.url}" target="_blank" class="text-blue-400 underline">${job.url}</a></p>
+                                <div class="grid grid-cols-3 gap-2 text-xs bg-slate-800/40 p-3 rounded-xl border border-slate-800 text-gray-300">
+                                    <p>কর্মী: <b class="text-white">${job.workersLimit} জন</b></p>
+                                    <p>বাজেট: <b class="text-white">৳${job.budget}</b></p>
+                                    <p>মোট খরচ: <b class="text-white">৳${job.totalCost}</b></p>
+                                </div>
+                                <div class="flex gap-2 pt-2">
+                                    <button onclick="window.approveJob('${d.id}')" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl text-xs font-bold transition">অ্যাপ্রুভ করুন (Live)</button>
+                                </div>
+                            </div>`;
+                    }
+                });
+
+                if (!hasPending) {
+                    container.innerHTML = `<p class="text-gray-500 text-sm p-8 bg-slate-900 rounded-2xl border border-slate-800 text-center w-full">কোনো পেন্ডিং কাজ জমা নেই।</p>`;
+                }
+            });
+        };
+
+        // কাজ লাইভ বা একটিভ করার ফাংশন
+        window.approveJob = async (id) => {
+            if (confirm("আপনি কি নিশ্চিত এই কাজটি লাইভ করতে চান?")) {
+                try {
+                    await updateDoc(doc(db, "jobs", id), { status: "active" });
+                    alert("কাজটি সফলভাবে লাইভ করা হয়েছে!");
+                } catch(e) { alert("অ্যাপ্রুভ করা যায়নি।"); }
+            }
+        };
     </script>
 </body>
 </html>
