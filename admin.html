@@ -3,96 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - MicroJobs BD</title>
+    <title>Admin Dashboard - MicroJobs BD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
-        body { font-family: 'Hind Siliguri', sans-serif; }
-        .tab-btn.active { background: #2563eb; color: white; }
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f1f5f9; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-slate-100 min-h-screen pb-12">
 
-    <header class="bg-slate-900 text-white p-5 shadow-xl sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold flex items-center gap-2">
-                <i class="fas fa-user-shield text-blue-400"></i> Admin Dashboard
-            </h1>
-            <div id="admin-info" class="hidden text-sm flex items-center gap-4">
-                <span id="admin-email" class="opacity-70"></span>
-                <button onclick="window.handleLogout()" class="bg-red-500 hover:bg-red-600 px-4 py-1.5 rounded-lg font-bold">Logout</button>
+    <header class="bg-slate-900 text-white p-5 shadow-xl sticky top-0 z-50 flex justify-between items-center max-w-lg mx-auto rounded-b-3xl">
+        <div class="flex items-center gap-3">
+            <div class="bg-blue-600 p-2.5 rounded-2xl shadow-md"><i class="fas fa-user-shield text-xl"></i></div>
+            <div>
+                <h1 class="font-bold text-base leading-tight">Admin Dashboard</h1>
+                <p class="text-[10px] text-gray-400 mt-0.5" id="admin-email">Loading...</p>
             </div>
         </div>
+        <button onclick="window.handleLogout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition active:scale-95 shadow-md shadow-red-500/20">
+            Logout
+        </button>
     </header>
 
-    <main class="max-w-6xl mx-auto p-4 md:p-8">
-        <div id="admin-auth" class="max-w-md mx-auto bg-white p-8 rounded-3xl shadow-2xl mt-10">
-            <h2 class="text-2xl font-bold mb-6 text-center text-slate-800">Admin Login</h2>
-            <input id="email" type="email" placeholder="Admin Email" class="w-full border p-4 rounded-2xl mb-3 outline-none bg-gray-50 focus:border-blue-500">
-            <input id="password" type="password" placeholder="Password" class="w-full border p-4 rounded-2xl mb-6 outline-none bg-gray-50 focus:border-blue-500">
-            <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-all">Enter Dashboard</button>
-        </div>
-
-        <div id="admin-view" class="hidden">
-            <div class="flex flex-wrap gap-2 mb-8 bg-white p-2 rounded-2xl shadow-sm border">
-                <button onclick="showTab('jobs')" class="tab-btn active px-6 py-2.5 rounded-xl text-sm font-bold transition-all">Add Jobs</button>
-                <button onclick="showTab('deposits')" class="tab-btn px-6 py-2.5 rounded-xl text-sm font-bold transition-all">Deposits</button>
-                <button onclick="showTab('withdraws')" class="tab-btn px-6 py-2.5 rounded-xl text-sm font-bold transition-all">Withdraws</button>
-            </div>
-
-            <div id="jobs-tab" class="tab-content">
-                <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-blue-100 max-w-2xl">
-                    <h3 class="text-lg font-bold mb-6 flex items-center gap-2"><i class="fas fa-plus-circle text-blue-600"></i> Post New Job</h3>
-                    <div class="space-y-4">
-                        <input id="job-title" type="text" placeholder="কাজের শিরোনাম" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none">
-                        <input id="job-budget" type="number" placeholder="পুরস্কারের পরিমাণ (৳)" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none">
-                        <input id="job-url" type="url" placeholder="কাজের লিঙ্ক (URL)" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none">
-                        <button onclick="window.postJob()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-md">পাবলিশ জব</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="deposits-tab" class="tab-content hidden">
-                <h3 class="font-bold text-gray-800 mb-4">Pending Deposits</h3>
-                <div class="bg-white rounded-3xl border shadow-sm overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead class="bg-gray-50 border-b">
-                            <tr>
-                                <th class="p-4 text-xs font-bold uppercase text-gray-500">User Email</th>
-                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Amount</th>
-                                <th class="p-4 text-xs font-bold uppercase text-gray-500">TrxID</th>
-                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="deposit-list" class="divide-y text-sm"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="withdraws-tab" class="tab-content hidden">
-                <h3 class="font-bold text-gray-800 mb-4">Withdraw Requests</h3>
-                <div class="bg-white rounded-3xl border shadow-sm overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead class="bg-gray-50 border-b">
-                            <tr>
-                                <th class="p-4 text-xs font-bold uppercase text-gray-500">User Email</th>
-                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Amount</th>
-                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Number</th>
-                                <th class="p-4 text-xs font-bold uppercase text-gray-500">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="withdraw-list" class="divide-y text-sm"></tbody>
-                    </table>
-                </div>
+    <main class="max-w-md mx-auto p-4 mt-4 space-y-6">
+        
+        <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100">
+            <h2 class="font-bold text-slate-800 flex items-center gap-2 mb-5 text-sm uppercase tracking-wider">
+                <span class="w-2 h-5 bg-blue-600 rounded-full"></span> <i class="fas fa-plus-circle text-blue-600"></i> Post New Job
+            </h2>
+            
+            <div class="space-y-3.5">
+                <input id="job-title" type="text" placeholder="কাজের শিরোনাম" class="w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 outline-none text-sm focus:border-blue-500 transition">
+                <input id="job-budget" type="number" placeholder="পুরস্কারের পরিমাণ (৳)" class="w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 outline-none text-sm focus:border-blue-500 transition">
+                <input id="job-url" type="url" placeholder="কাজের লিঙ্ক (URL)" class="w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 outline-none text-sm focus:border-blue-500 transition">
+                <input id="job-duration" type="number" placeholder="টাইমার সেকেন্ড (যেমন: ৬০)" class="w-full p-4 bg-gray-50 rounded-2xl border border-gray-200 outline-none text-sm focus:border-blue-500 transition">
+                
+                <button id="publish-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-bold transition shadow-lg shadow-blue-500/20 mt-2 active:scale-[0.98]">
+                    পাবলিশ জব
+                </button>
             </div>
         </div>
+
+        <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100">
+            <h2 class="font-bold text-slate-800 flex items-center gap-2 mb-4 text-sm uppercase tracking-wider">
+                <span class="w-2 h-5 bg-red-500 rounded-full"></span> <i class="fas fa-tasks text-red-500"></i> Active Jobs (<span id="job-count">0</span>)
+            </h2>
+            <div id="admin-job-list" class="space-y-3 divide-y divide-gray-50">
+                <p class="text-center text-xs text-gray-400 py-4">কোনো কাজ খুঁজে পাওয়া যায়নি।</p>
+            </div>
+        </div>
+
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, collection, updateDoc, increment, addDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
@@ -107,103 +74,86 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        window.showTab = (tabId) => {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-            document.getElementById(tabId + '-tab').classList.remove('hidden');
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+        // লগআউট ফাংশন
+        window.handleLogout = () => signOut(auth).then(() => location.href = "login.html");
+
+        // জব ডিলিট করার গ্লোবাল ফাংশন
+        window.deleteJob = async (id) => {
+            if(confirm("আপনি কি নিশ্চিতভাবে এই জবটি ডিলিট করতে চান?")) {
+                try {
+                    await deleteDoc(doc(db, "jobs", id));
+                    alert("জবটি সফলভাবে ডিলিট করা হয়েছে!");
+                } catch (e) {
+                    alert("ডিলিট করা যায়নি!");
+                }
+            }
         };
 
         onAuthStateChanged(auth, (user) => {
-            if (user && user.email === "admin@microjobs.com") { 
-                document.getElementById('admin-auth').classList.add('hidden');
-                document.getElementById('admin-view').classList.remove('hidden');
-                document.getElementById('admin-info').classList.remove('hidden');
+            if (user) {
+                // চেক করুন এটা অ্যাডমিন কিনা (অথবা সরাসরি ইমেইল দেখাবে)
                 document.getElementById('admin-email').innerText = user.email;
-                loadDeposits();
-                loadWithdraws();
+
+                // জব পাবলিশ লজিক
+                document.getElementById('publish-btn').onclick = async () => {
+                    const title = document.getElementById('job-title').value.trim();
+                    const budget = document.getElementById('job-budget').value.trim();
+                    const url = document.getElementById('job-url').value.trim();
+                    const duration = document.getElementById('job-duration').value.trim();
+
+                    if(!title || !budget || !url) return alert("দয়া করে সবগুলো ঘর পূরণ করুন!");
+
+                    try {
+                        await addDoc(collection(db, "jobs"), {
+                            title: title,
+                            budget: Number(budget),
+                            url: url,
+                            duration: Number(duration) || 60, // কিছু না দিলে অটো ৬০ সেকেন্ড হবে
+                            status: "active",
+                            createdAt: serverTimestamp()
+                        });
+
+                        alert("জব সফলভাবে পাবলিশ হয়েছে!");
+                        // ইনপুট ফিল্ড ক্লিয়ার করা
+                        document.getElementById('job-title').value = "";
+                        document.getElementById('job-budget').value = "";
+                        document.getElementById('job-url').value = "";
+                        document.getElementById('job-duration').value = "";
+                    } catch (e) {
+                        alert("জব পাবলিশ করতে সমস্যা হয়েছে!");
+                    }
+                };
+
+                // ড্যাশবোর্ডে সব জব লাইভ লোড করা ও ডিলিট অপশন দেওয়া
+                onSnapshot(collection(db, "jobs"), (snap) => {
+                    const container = document.getElementById('admin-job-list');
+                    document.getElementById('job-count').innerText = snap.size;
+                    container.innerHTML = "";
+                    
+                    if(snap.empty) {
+                        container.innerHTML = `<p class="text-center text-xs text-gray-400 py-4">কোনো কাজ খুঁজে পাওয়া যায়নি।</p>`;
+                        return;
+                    }
+
+                    snap.forEach(d => {
+                        const job = d.data();
+                        container.innerHTML += `
+                            <div class="flex justify-between items-center py-3.5 first:pt-0">
+                                <div class="max-w-[70%]">
+                                    <h4 class="font-bold text-gray-800 text-sm truncate">${job.title}</h4>
+                                    <p class="text-xs text-gray-500 mt-0.5">টাকা: ৳${job.budget} | সময়: ${job.duration || 60}সেকেণ্ড</p>
+                                </div>
+                                <button onclick="window.deleteJob('${d.id}')" class="bg-red-50 hover:bg-red-100 text-red-500 w-9 h-9 rounded-xl flex items-center justify-center transition active:scale-90">
+                                    <i class="fas fa-trash-alt text-sm"></i>
+                                </button>
+                            </div>`;
+                    });
+                });
+
             } else {
-                document.getElementById('admin-auth').classList.remove('hidden');
-                document.getElementById('admin-view').classList.add('hidden');
+                location.href = "login.html";
             }
         });
-
-        document.getElementById('login-btn').onclick = () => {
-            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(e => alert("লগইন ব্যর্থ!"));
-        };
-
-        window.postJob = async () => {
-            const title = document.getElementById('job-title').value;
-            const budget = Number(document.getElementById('job-budget').value);
-            const url = document.getElementById('job-url').value;
-            if(!title || !budget || !url) return alert("সব তথ্য দিন");
-            await addDoc(collection(db, "jobs"), { title, budget: Number(budget), url, status: "active", createdAt: serverTimestamp() });
-            alert("জব পাবলিশ হয়েছে!");
-            location.reload();
-        };
-
-        const loadDeposits = () => {
-            onSnapshot(collection(db, "deposits"), (snap) => {
-                const list = document.getElementById('deposit-list');
-                list.innerHTML = "";
-                snap.forEach(d => {
-                    const dep = d.data();
-                    if(dep.status === "pending") {
-                        list.innerHTML += `
-                            <tr>
-                                <td class="p-4 font-medium">${dep.email}</td>
-                                <td class="p-4 font-bold text-blue-600">৳${dep.amount}</td>
-                                <td class="p-4 font-mono text-xs">${dep.trxId}</td>
-                                <td class="p-4">
-                                    <button onclick="window.approveDeposit('${d.id}', '${dep.uid}', ${dep.amount})" class="bg-green-500 text-white px-3 py-1 rounded-lg text-xs font-bold mr-2">Approve</button>
-                                    <button onclick="window.deleteItem('deposits', '${d.id}')" class="bg-red-500 text-white px-3 py-1 rounded-lg text-xs font-bold">Delete</button>
-                                </td>
-                            </tr>`;
-                    }
-                });
-            });
-        };
-
-        window.approveDeposit = async (docId, uid, amount) => {
-            if(confirm("ইউজার ব্যালেন্সে টাকা যোগ করবেন?")){
-                try {
-                    await updateDoc(doc(db, "users", uid), { balance: increment(Number(amount)) });
-                    await updateDoc(doc(db, "deposits", docId), { status: "approved" });
-                    alert("ডিপোজিট অ্যাপ্রুভ হয়েছে!");
-                } catch(e) { alert("অ্যাপ্রুভ করা যায়নি।"); }
-            }
-        };
-
-        const loadWithdraws = () => {
-            onSnapshot(collection(db, "withdraws"), (snap) => {
-                const list = document.getElementById('withdraw-list');
-                list.innerHTML = "";
-                snap.forEach(d => {
-                    const w = d.data();
-                    if(w.status === "pending") {
-                        list.innerHTML += `
-                            <tr>
-                                <td class="p-4">${w.email || 'N/A'}</td>
-                                <td class="p-4 font-bold text-red-600">৳${w.amount}</td>
-                                <td class="p-4 font-bold">${w.number}</td>
-                                <td class="p-4">
-                                    <button onclick="window.approveWithdraw('${d.id}')" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-bold">Mark Paid</button>
-                                </td>
-                            </tr>`;
-                    }
-                });
-            });
-        };
-
-        window.approveWithdraw = async (docId) => {
-            if(confirm("আপনি কি টাকা পাঠিয়েছেন?")){
-                await updateDoc(doc(db, "withdraws", docId), { status: "completed" });
-                alert("পেমেন্ট সফল হিসেবে মার্ক করা হয়েছে।");
-            }
-        };
-
-        window.deleteItem = async (col, id) => { if(confirm("মুছে ফেলতে চান?")) await deleteDoc(doc(db, col, id)); };
-        window.handleLogout = () => signOut(auth).then(() => location.reload());
     </script>
 </body>
 </html>
