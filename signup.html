@@ -34,6 +34,8 @@
             apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
             authDomain: "microjobs-b9d90.firebaseapp.com",
             projectId: "microjobs-b9d90",
+            storageBucket: "microjobs-b9d90.firebasestorage.app",
+            messagingSenderId: "1006928193385",
             appId: "1:1006928193385:web:d4b5cc1911abda6ff53ff8"
         };
 
@@ -45,33 +47,31 @@
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
             const urlParams = new URLSearchParams(window.location.search);
-            const refBy = urlParams.get('ref'); // রেফারেল আইডি চেক
+            const refBy = urlParams.get('ref');
 
             try {
                 const res = await createUserWithEmailAndPassword(auth, email, pass);
                 const user = res.user;
 
-                // নতুন ইউজার ডাটাবেস তৈরি
                 await setDoc(doc(db, "users", user.uid), {
                     email: email,
-                    balance: 0,
+                    balance: Number(0), // Number ফরম্যাটে ব্যালেন্স ০ করা হলো
                     isActive: false,
                     totalRefers: 0,
                     referBy: refBy || null
                 });
 
-                // যদি কেউ রেফারেল দিয়ে আসে, তবে রেফারকারীকে বোনাস দেওয়া
                 if (refBy) {
                     const refRef = doc(db, "users", refBy);
                     await updateDoc(refRef, {
                         totalRefers: increment(1),
-                        balance: increment(5) // রেফার বোনাস ৫ টাকা
+                        balance: increment(5) // ৫ টাকা রেফারেল বোনাস (সংখ্যা)
                     });
                 }
 
                 location.href = "index.html";
             } catch (e) {
-                alert("সমস্যা হয়েছে! ইমেইল চেক করুন।");
+                alert("সমস্যা হয়েছে! ইমেইল ও পাসওয়ার্ড চেক করুন।");
             }
         };
     </script>
