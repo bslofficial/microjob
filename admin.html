@@ -10,8 +10,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; }
         .tab-btn.active { background: #2563eb; color: white; }
-        .admin-card { transition: transform 0.2s; }
-        .admin-card:hover { transform: translateY(-2px); }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -41,16 +39,15 @@
                 <button onclick="showTab('jobs')" class="tab-btn active px-6 py-2.5 rounded-xl text-sm font-bold transition-all">Add Jobs</button>
                 <button onclick="showTab('deposits')" class="tab-btn px-6 py-2.5 rounded-xl text-sm font-bold transition-all">Deposits</button>
                 <button onclick="showTab('withdraws')" class="tab-btn px-6 py-2.5 rounded-xl text-sm font-bold transition-all">Withdraws</button>
-                <button onclick="showTab('users')" class="tab-btn px-6 py-2.5 rounded-xl text-sm font-bold transition-all">Manage Users</button>
             </div>
 
             <div id="jobs-tab" class="tab-content">
                 <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-blue-100 max-w-2xl">
                     <h3 class="text-lg font-bold mb-6 flex items-center gap-2"><i class="fas fa-plus-circle text-blue-600"></i> Post New Job</h3>
                     <div class="space-y-4">
-                        <input id="job-title" type="text" placeholder="কাজের শিরোনাম (যেমন: Youtube Subscribe)" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500">
-                        <input id="job-budget" type="number" placeholder="পুরস্কারের পরিমাণ (৳)" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500">
-                        <input id="job-url" type="url" placeholder="কাজের লিঙ্ক (URL)" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500">
+                        <input id="job-title" type="text" placeholder="কাজের শিরোনাম" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none">
+                        <input id="job-budget" type="number" placeholder="পুরস্কারের পরিমাণ (৳)" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none">
+                        <input id="job-url" type="url" placeholder="কাজের লিঙ্ক (URL)" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none">
                         <button onclick="window.postJob()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-md">পাবলিশ জব</button>
                     </div>
                 </div>
@@ -79,7 +76,7 @@
                     <table class="w-full text-left">
                         <thead class="bg-gray-50 border-b">
                             <tr>
-                                <th class="p-4 text-xs font-bold uppercase text-gray-500">User UID</th>
+                                <th class="p-4 text-xs font-bold uppercase text-gray-500">User Email</th>
                                 <th class="p-4 text-xs font-bold uppercase text-gray-500">Amount</th>
                                 <th class="p-4 text-xs font-bold uppercase text-gray-500">Number</th>
                                 <th class="p-4 text-xs font-bold uppercase text-gray-500">Action</th>
@@ -89,17 +86,12 @@
                     </table>
                 </div>
             </div>
-
-            <div id="users-tab" class="tab-content hidden text-center p-10 bg-white rounded-3xl border">
-                <i class="fas fa-users text-5xl text-gray-200 mb-4"></i>
-                <p class="text-gray-400">User management module loading...</p>
-            </div>
         </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, collection, updateDoc, increment, setDoc, addDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, collection, updateDoc, increment, addDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -115,7 +107,6 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // UI Tabs
         window.showTab = (tabId) => {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
             document.getElementById(tabId + '-tab').classList.remove('hidden');
@@ -123,9 +114,8 @@
             event.target.classList.add('active');
         };
 
-        // Auth Logic
         onAuthStateChanged(auth, (user) => {
-            if (user && user.email === "admin@microjobs.com") { // আপনার অ্যাডমিন ইমেইল দিন
+            if (user && user.email === "admin@microjobs.com") { 
                 document.getElementById('admin-auth').classList.add('hidden');
                 document.getElementById('admin-view').classList.remove('hidden');
                 document.getElementById('admin-info').classList.remove('hidden');
@@ -139,21 +129,19 @@
         });
 
         document.getElementById('login-btn').onclick = () => {
-            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message));
+            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(e => alert("লগইন ব্যর্থ!"));
         };
 
-        // Post Job
         window.postJob = async () => {
             const title = document.getElementById('job-title').value;
             const budget = Number(document.getElementById('job-budget').value);
             const url = document.getElementById('job-url').value;
             if(!title || !budget || !url) return alert("সব তথ্য দিন");
-            await addDoc(collection(db, "jobs"), { title, budget, url, status: "active", createdAt: serverTimestamp() });
+            await addDoc(collection(db, "jobs"), { title, budget: Number(budget), url, status: "active", createdAt: serverTimestamp() });
             alert("জব পাবলিশ হয়েছে!");
             location.reload();
         };
 
-        // Load Deposits & Approve
         const loadDeposits = () => {
             onSnapshot(collection(db, "deposits"), (snap) => {
                 const list = document.getElementById('deposit-list');
@@ -178,13 +166,14 @@
 
         window.approveDeposit = async (docId, uid, amount) => {
             if(confirm("ইউজার ব্যালেন্সে টাকা যোগ করবেন?")){
-                await updateDoc(doc(db, "users", uid), { balance: increment(amount) });
-                await updateDoc(doc(db, "deposits", docId), { status: "approved" });
-                alert("ডিপোজিট অ্যাপ্রুভ হয়েছে!");
+                try {
+                    await updateDoc(doc(db, "users", uid), { balance: increment(Number(amount)) });
+                    await updateDoc(doc(db, "deposits", docId), { status: "approved" });
+                    alert("ডিপোজিট অ্যাপ্রুভ হয়েছে!");
+                } catch(e) { alert("অ্যাপ্রুভ করা যায়নি।"); }
             }
         };
 
-        // Load Withdraws & Approve
         const loadWithdraws = () => {
             onSnapshot(collection(db, "withdraws"), (snap) => {
                 const list = document.getElementById('withdraw-list');
@@ -194,7 +183,7 @@
                     if(w.status === "pending") {
                         list.innerHTML += `
                             <tr>
-                                <td class="p-4">${w.uid.substring(0,8)}...</td>
+                                <td class="p-4">${w.email || 'N/A'}</td>
                                 <td class="p-4 font-bold text-red-600">৳${w.amount}</td>
                                 <td class="p-4 font-bold">${w.number}</td>
                                 <td class="p-4">
