@@ -146,7 +146,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, collection, query, orderBy, limit, updateDoc, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, collection, query, orderBy, limit, getDoc, setDoc, updateDoc, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -178,16 +178,14 @@
             if(tab === 'leaderboard') loadLeaderboard();
         };
 
-        // কাজের লিঙ্ক ওপেন এবং ব্যাকগ্রাউন্ডে চমৎকার টাইমার লজিক
+        // নিরাপদ জব কমপ্লিশন ও রিয়েল-টাইম ব্যালেন্স আপডেট লজিক
         window.completeJob = async function(id, budget, url, duration) {
-            // ১. প্রথমে কাজের লিঙ্কটি নতুন ট্যাবে ওপেন হবে যাতে ইউজার কাজটি দেখতে পারে
             window.open(url, '_blank');
             
             let timeLeft = Number(duration) || 60;
             
-            // ২. মূল অ্যাপ পেজে ফুলস্ক্রিন কাউন্টডাউন পপআপ বক্স চালু হবে
             const timerDiv = document.createElement('div');
-            timerDiv.className = "fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-[100] text-white p-6 text-center animate-fade-in";
+            timerDiv.className = "fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-[100] text-white p-6 text-center";
             timerDiv.innerHTML = `
                 <div class="bg-gray-900 p-8 rounded-[2rem] border border-gray-800 max-w-xs w-full shadow-2xl">
                     <div class="w-20 h-20 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto flex items-center justify-center mb-4">
@@ -213,14 +211,24 @@
                                 if (!auth.currentUser) return alert("আবার লগইন করুন!");
                                 const userRef = doc(db, "users", auth.currentUser.uid);
                                 
-                                // ফায়ারবেস ইমপোর্টসহ ফিক্সড ব্যালেন্স ইনক্রিমেন্ট মেথড
-                                await updateDoc(userRef, { 
-                                    balance: increment(Number(budget)) 
-                                });
+                                // ডাটাবেজে ডাটা টাইপ সেফটি নিশ্চিত করে আপডেট করার মেথড
+                                const userSnap = await getDoc(userRef);
+                                if (userSnap.exists()) {
+                                    await updateDoc(userRef, { 
+                                        balance: increment(Number(budget)) 
+                                    });
+                                } else {
+                                    // যদি কোনো কারণে ইউজারের ডকুমেন্ট তৈরি না থাকে, তবে নতুন করে তৈরি করবে
+                                    await setDoc(userRef, {
+                                        email: auth.currentUser.email,
+                                        balance: Number(budget),
+                                        isActive: false
+                                    });
+                                }
                                 alert("৳" + budget + " সফলভাবে আপনার অ্যাকাউন্টে যোগ হয়েছে!");
                             } catch(e) { 
                                 console.error(e);
-                                alert("ব্যালেন্স যোগ করা যায়নি। ফায়ারবেস রুলস বা ডাটা ফিল্ড চেক করুন।"); 
+                                alert("ব্যালেন্স যোগ করা যায়নি। ফায়ারবেস রুলস চেক করুন।"); 
                             }
                         }
                     }, 500);
@@ -235,15 +243,22 @@
                 const referURL = `${window.location.origin}${window.location.pathname}?ref=${user.uid}`;
                 document.getElementById('refer-link-display').innerText = referURL;
 
+                // লাইভ ব্যালেন্স রিড এবং স্ক্রিনে রেন্ডার করার অংশ
                 onSnapshot(doc(db, "users", user.uid), (s) => {
                     if(s.exists()){
                         const d = s.data();
+                        // ডাটাবেজ থেকে প্রাপ্ত ব্যালেন্সকে নাম্বারে রূপান্তর করে ফিক্সড করা হচ্ছে
                         const balance = (Number(d.balance) || 0).toFixed(2);
                         document.getElementById('balance').innerText = balance;
                         document.getElementById('nav-balance').innerText = balance;
+                        
                         const badge = document.getElementById('status-badge');
                         badge.innerText = d.isActive ? "Verified" : "Not Active";
                         badge.className = d.isActive ? "mt-3 px-6 py-2 bg-green-100 text-green-600 text-[10px] font-bold rounded-full uppercase" : "mt-3 px-6 py-2 bg-red-100 text-red-600 text-[10px] font-bold rounded-full uppercase";
+                    } else {
+                        // যদি ফায়ারবেস `users` কালেকশনে ডাটা না থাকে তবে ডিফল্ট ০.০০ দেখাবে
+                        document.getElementById('balance').innerText = "0.00";
+                        document.getElementById('nav-balance').innerText = "0.00";
                     }
                 });
 
@@ -296,7 +311,7 @@
             }
         });
 
-        // জবস রিড এবং রেন্ডার
+        // একটিভ জবস লিস্ট রেন্ডার
         const loadJobs = () => {
             onSnapshot(collection(db, "jobs"), (snap) => {
                 const container = document.getElementById('job-list');
