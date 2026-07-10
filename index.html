@@ -6,6 +6,7 @@
     <title>MicroJobs BD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
@@ -14,6 +15,8 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         #side-menu { transition: transform 0.3s ease-in-out; }
+        /* SweetAlert কাস্টমাইজেশন */
+        .swal2-popup { font-family: 'Hind Siliguri', sans-serif !important; border-radius: 2rem !important; }
     </style>
 </head>
 <body class="pb-24">
@@ -27,8 +30,9 @@
             <div class="bg-blue-500/50 px-3 py-1 rounded-full border border-white/20">
                 <span class="text-xs font-bold">৳<span id="nav-balance">0.00</span></span>
             </div>
-            <button onclick="window.switchTab('profile')" class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center border border-white/30">
-                <i class="fas fa-user text-sm"></i>
+            <button onclick="window.switchTab('profile')" class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center border border-white/30 overflow-hidden">
+                <img id="nav-avatar" src="" class="w-full h-full object-cover hidden" alt="User">
+                <i id="nav-icon" class="fas fa-user text-sm"></i>
             </button>
         </div>
     </header>
@@ -133,7 +137,7 @@
                 <h2 class="font-bold text-red-600 flex items-center gap-2 mb-4 uppercase text-xs tracking-wider"><i class="fas fa-minus-circle"></i> Withdraw</h2>
                 <input id="w-amount" type="number" placeholder="মিনিমাম ৳৫০০" class="w-full p-4 bg-gray-50 rounded-2xl border mb-3 outline-none">
                 <input id="w-number" type="text" placeholder="বিকাশ/নগদ নম্বর" class="w-full p-4 bg-gray-50 rounded-2xl border mb-4 outline-none">
-                <button id="withdraw-btn" class="w-full bg-red-50 text-white py-4 rounded-2xl font-bold">উইথड्र রিকোয়েস্ট পাঠান</button>
+                <button id="withdraw-btn" class="w-full bg-red-50 text-white py-4 rounded-2xl font-bold">উইথড্র রিকোয়েস্ট পাঠান</button>
             </div>
         </div>
 
@@ -149,8 +153,9 @@
 
         <div id="profile-tab" class="tab-content space-y-4 text-center">
             <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border">
-                <div class="w-24 h-24 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 border-4 border-white shadow-md">
-                    <i class="fas fa-user"></i>
+                <div class="w-24 h-24 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 border-4 border-white shadow-md overflow-hidden">
+                    <img id="prof-avatar" src="" class="w-full h-full object-cover hidden" alt="Profile Picture">
+                    <i id="prof-icon" class="fas fa-user"></i>
                 </div>
                 <h2 class="font-bold text-lg text-gray-800" id="prof-name">ইউজার নাম</h2>
                 <p class="text-xs text-gray-500" id="prof-email">User Email</p>
@@ -208,7 +213,6 @@
         const auth = getAuth(app);
 
         let currentUserBalance = 0;
-        // 🔒 গ্লোবাল ভেরিয়েবল ইউজারের নাম স্টোর করার জন্য
         let currentUserName = "User"; 
 
         window.toggleMenu = () => {
@@ -227,7 +231,7 @@
             if(tab === 'leaderboard') loadLeaderboard();
         };
 
-        // 🔄 মডিফাইড ফাংশন: ডাইনামিক নাম শো করার জন্য
+        // 🔄 SweetAlert2 দিয়ে পরিবর্তিত এবং কাস্টম নাম যুক্ত ফাংশন
         window.completeJob = async function(id, budget, url, duration) {
             window.open(url, '_blank');
             let timeLeft = Number(duration) || 60;
@@ -254,21 +258,40 @@
                     document.body.removeChild(timerDiv);
                     
                     setTimeout(async () => {
-                        // 💬 এখানে `currentUserName` ডাইনামিক ভাবে ব্যবহার করা হয়েছে
-                        if(confirm(`অভিনंदन ${currentUserName}! আপনার নির্ধারিত সময় শেষ হয়েছে। ব্যালেন্স যোগ করতে OK দিন।`)) {
-                            try {
-                                if (!auth.currentUser) return alert("আবার লগইন করুন!");
-                                const userRef = doc(db, "users", auth.currentUser.uid);
-                                const userSnap = await getDoc(userRef);
-                                if (userSnap.exists()) {
-                                    await updateDoc(userRef, { balance: increment(Number(budget)) });
-                                } else {
-                                    await setDoc(userRef, { name: currentUserName, email: auth.currentUser.email, balance: Number(budget), isActive: false });
+                        // 💬 কাস্টম পপআপ উইন্ডো: ব্রাউজারের লেখা পরিবর্তন করে "MicroJobsBD" দেওয়া হয়েছে
+                        Swal.fire({
+                            title: 'MicroJobsBD',
+                            text: `অভিনন্দন ${currentUserName}! আপনার নির্ধারিত সময় শেষ হয়েছে। ব্যালেন্স যোগ করতে OK দিন।`,
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'OK',
+                            cancelButtonText: 'Cancel',
+                            confirmButtonColor: '#2563eb'
+                        }).then(async (result) => {
+                            if (result.isConfirmed) {
+                                try {
+                                    if (!auth.currentUser) return Swal.fire('Error', 'আবার লগইন করুন!', 'error');
+                                    const userRef = doc(db, "users", auth.currentUser.uid);
+                                    const userSnap = await getDoc(userRef);
+                                    if (userSnap.exists()) {
+                                        await updateDoc(userRef, { balance: increment(Number(budget)) });
+                                    } else {
+                                        await setDoc(userRef, { name: currentUserName, email: auth.currentUser.email, balance: Number(budget), isActive: false });
+                                    }
+                                    
+                                    // ৳২ সফলভাবে যোগ হওয়ার সুন্দর কাস্টম পপআপ
+                                    Swal.fire({
+                                        title: 'MicroJobsBD',
+                                        text: `৳${budget} সফলভাবে আপনার অ্যাকাউন্টে যোগ হয়েছে, ${currentUserName}!`,
+                                        icon: 'success',
+                                        confirmButtonText: 'OK',
+                                        confirmButtonColor: '#2563eb'
+                                    });
+                                } catch(e) { 
+                                    Swal.fire('Error', 'ব্যালেন্স যোগ করা যায়নি।', 'error'); 
                                 }
-                                // 💬 এখানেও ইউজারের নাম শো করবে
-                                alert(`৳${budget} সফলভাবে আপনার অ্যাকাউন্টে যোগ হয়েছে, ${currentUserName}!`);
-                            } catch(e) { alert("ব্যালেন্স যোগ করা যায়নি।"); }
-                        }
+                            }
+                        });
                     }, 500);
                 }
             }, 1000);
@@ -298,15 +321,26 @@
                 const referURL = `${window.location.origin}${window.location.pathname}?ref=${user.uid}`;
                 document.getElementById('refer-link-display').innerText = referURL;
 
-                // 📡 রিয়েল-টাইম ডাটা লিসেনার থেকে ইউজারের নাম বের করা
+                // 📸 গুগল জিমেইল অ্যাকাউন্ট থেকে ফটো URL নিয়ে প্রোফাইলে সেট করার লজিক
+                if(user.photoURL) {
+                    // প্রোফাইল পেজের ইমেজ আপডেট
+                    const profAvatar = document.getElementById('prof-avatar');
+                    profAvatar.src = user.photoURL;
+                    profAvatar.classList.remove('hidden');
+                    document.getElementById('prof-icon').classList.add('hidden');
+
+                    // নেভিগেশন বারের ছোট ইমেজ আপডেট
+                    const navAvatar = document.getElementById('nav-avatar');
+                    navAvatar.src = user.photoURL;
+                    navAvatar.classList.remove('hidden');
+                    document.getElementById('nav-icon').classList.add('hidden');
+                }
+
                 onSnapshot(doc(db, "users", user.uid), (s) => {
                     if(s.exists()){
                         const d = s.data();
-                        
-                        // যদি ডাটাবেজে name ফিল্ড থাকে তবে সেটা নিবে, না থাকলে ইমেইলের প্রথম অংশ বা গুগল নাম নিবে
                         currentUserName = d.name || user.displayName || user.email.split('@')[0];
                         
-                        // ইন্টারফেসে নাম সেট করা
                         document.getElementById('menu-user-name').innerText = currentUserName;
                         document.getElementById('prof-name').innerText = currentUserName;
 
@@ -319,7 +353,6 @@
                         badge.innerText = d.isActive ? "Verified" : "Not Active";
                         badge.className = d.isActive ? "mt-3 px-6 py-2 bg-green-100 text-green-600 text-[10px] font-bold rounded-full uppercase" : "mt-3 px-6 py-2 bg-red-100 text-red-600 text-[10px] font-bold rounded-full uppercase";
                     } else {
-                        // যদি ফায়ারবেস ডক প্রথমবার তৈরি না হয়ে থাকে
                         currentUserName = user.displayName || user.email.split('@')[0];
                         document.getElementById('menu-user-name').innerText = currentUserName;
                         document.getElementById('prof-name').innerText = currentUserName;
@@ -335,53 +368,63 @@
                     const budget = Number(document.getElementById('j-budget').value);
                     const duration = Number(document.getElementById('j-duration').value) || 60;
 
-                    if(!title || !url || !workers || !budget) return alert("সবগুলো ঘর সঠিকভাবে পূরণ করুন!");
+                    if(!title || !url || !workers || !budget) return Swal.fire('Warning', 'সবগুলো ঘর সঠিকভাবে পূরণ করুন!', 'warning');
                     
                     const totalCost = calculateJobCost();
 
                     if(currentUserBalance < totalCost) {
-                        return alert(`দুঃখিত! আপনার পর্যাপ্ত ব্যালেন্স নেই। এই জবটি পোস্ট করতে মোট ৳${totalCost.toFixed(2)} লাগবে। অনুগ্রহ করে প্রথমে ওয়ালেট থেকে ডিপোজিট করুন।`);
+                        return Swal.fire('Oops!', `দুঃখিত! আপনার পর্যাপ্ত ব্যালেন্স নেই। এই জবটি পোস্ট করতে মোট ৳${totalCost.toFixed(2)} লাগবে।`, 'error');
                     }
 
-                    if(confirm(`আপনি কি নিশ্চিত? এই জবটি পোস্ট করলে আপনার অ্যাকাউন্ট থেকে মোট ৳${totalCost.toFixed(2)} কেটে নেওয়া হবে।`)) {
-                        try {
-                            const userRef = doc(db, "users", user.uid);
-                            await updateDoc(userRef, { balance: increment(-totalCost) });
+                    Swal.fire({
+                        title: 'MicroJobsBD',
+                        text: `এই জবটি পোস্ট করলে আপনার অ্যাকাউন্ট থেকে মোট ৳${totalCost.toFixed(2)} কেটে নেওয়া হবে। আপনি কি নিশ্চিত?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'হ্যাঁ',
+                        cancelButtonText: 'না',
+                        confirmButtonColor: '#2563eb'
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                const userRef = doc(db, "users", user.uid);
+                                await updateDoc(userRef, { balance: increment(-totalCost) });
 
-                            await addDoc(collection(db, "jobs"), {
-                                uid: user.uid,
-                                email: user.email,
-                                title: title,
-                                url: url,
-                                workersLimit: workers,
-                                budget: budget,
-                                duration: duration,
-                                totalCost: totalCost,
-                                status: "pending",
-                                createdAt: serverTimestamp()
-                            });
+                                await addDoc(collection(db, "jobs"), {
+                                    uid: user.uid,
+                                    email: user.email,
+                                    title: title,
+                                    url: url,
+                                    workersLimit: workers,
+                                    budget: budget,
+                                    duration: duration,
+                                    totalCost: totalCost,
+                                    status: "pending",
+                                    createdAt: serverTimestamp()
+                                });
 
-                            alert("আপনার জবটি সফলভাবে সাবমিট হয়েছে! এডমিন অ্যাপ্রুভ করার কিছুক্ষণের মধ্যেই এটি লাইভ হবে।");
-                            
-                            document.getElementById('j-title').value = "";
-                            document.getElementById('j-url').value = "";
-                            document.getElementById('j-workers').value = "";
-                            document.getElementById('j-budget').value = "";
-                            document.getElementById('j-duration').value = "";
-                            calculateJobCost();
-                            window.switchTab('home');
+                                Swal.fire('Success', 'আপনার জবটি সফলভাবে সাবমিট হয়েছে!', 'success');
+                                
+                                document.getElementById('j-title').value = "";
+                                document.getElementById('j-url').value = "";
+                                document.getElementById('j-workers').value = "";
+                                document.getElementById('j-budget').value = "";
+                                document.getElementById('j-duration').value = "";
+                                calculateJobCost();
+                                window.switchTab('home');
 
-                        } catch(e) {
-                            alert("জব পোস্ট করতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।");
+                            } catch(e) {
+                                Swal.fire('Error', 'জব পোস্ট করতে সমস্যা হয়েছে।', 'error');
+                            }
                         }
-                    }
+                    });
                 };
 
                 // Deposit Logic
                 document.getElementById('deposit-btn').onclick = async () => {
                     const amount = Number(document.getElementById('d-amount').value);
                     const trxId = document.getElementById('d-trx').value;
-                    if(!amount || !trxId) return alert("সবগুলো ঘর পূরণ করুন!");
+                    if(!amount || !trxId) return Swal.fire('Warning', 'সবগুলো ঘর পূরণ করুন!', 'warning');
                     try {
                         await addDoc(collection(db, "deposits"), {
                             uid: user.uid,
@@ -391,18 +434,18 @@
                             status: "pending",
                             createdAt: serverTimestamp()
                         });
-                        alert("ডিপোজিট রিকোয়েস্ট পাঠানো হয়েছে!");
+                        Swal.fire('Success', 'ডিপোজিট রিকোয়েস্ট পাঠানো হয়েছে!', 'success');
                         document.getElementById('d-amount').value = "";
                         document.getElementById('d-trx').value = "";
-                    } catch (e) { alert("রিকোয়েস্ট পাঠাতে সমস্যা হয়েছে।"); }
+                    } catch (e) { Swal.fire('Error', 'রিকোয়েস্ট পাঠাতে সমস্যা হয়েছে।', 'error'); }
                 };
 
                 // Withdraw Logic
                 document.getElementById('withdraw-btn').onclick = async () => {
                     const amount = Number(document.getElementById('w-amount').value);
                     const number = document.getElementById('w-number').value;
-                    if(!amount || !number) return alert("সবগুলো ঘর পূরণ করুন!");
-                    if(amount < 500) return alert("মিনিমাম ৫০০ টাকা উইথড্র করতে পারবেন।");
+                    if(!amount || !number) return Swal.fire('Warning', 'সবগুলো ঘর পূরণ করুন!', 'warning');
+                    if(amount < 500) return Swal.fire('Warning', 'মিনিমাম ৫০০ টাকা উইথড্র করতে পারবেন।', 'warning');
                     try {
                         await addDoc(collection(db, "withdraws"), {
                             uid: user.uid,
@@ -412,10 +455,10 @@
                             status: "pending",
                             createdAt: serverTimestamp()
                         });
-                        alert("উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!");
+                        Swal.fire('Success', 'উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!', 'success');
                         document.getElementById('w-amount').value = "";
                         document.getElementById('w-number').value = "";
-                    } catch (e) { alert("উইথড্র রিকোয়েস্ট পাঠানো যায়নি।"); }
+                    } catch (e) { Swal.fire('Error', 'উইথড্র রিকোয়েস্ট পাঠানো যায়নি।', 'error'); }
                 };
 
             } else {
@@ -467,7 +510,7 @@
 
         window.copyReferLink = () => {
             const link = document.getElementById('refer-link-display').innerText;
-            navigator.clipboard.writeText(link).then(() => alert("লিঙ্ক কপি হয়েছে!"));
+            navigator.clipboard.writeText(link).then(() => Swal.fire('Success', 'লিঙ্ক কপি হয়েছে!', 'success'));
         };
 
         window.handleLogout = () => signOut(auth).then(() => location.reload());
