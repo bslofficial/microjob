@@ -18,7 +18,6 @@
 </head>
 <body class="pb-24">
 
-    <!-- Header Section -->
     <header class="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-50 flex justify-between items-center">
         <div class="flex items-center gap-3">
             <button onclick="window.toggleMenu()" class="text-xl active:scale-90 transition"><i class="fas fa-bars"></i></button>
@@ -34,11 +33,10 @@
         </div>
     </header>
 
-    <!-- Sidebar Menu -->
     <div id="menu-overlay" onclick="window.toggleMenu()" class="fixed inset-0 bg-black/50 hidden z-[55]"></div>
     <div id="side-menu" class="fixed inset-y-0 left-0 w-72 bg-white shadow-2xl z-[60] transform -translate-x-full overflow-y-auto">
         <div class="p-6 bg-blue-600 text-white">
-            <h2 class="text-xl font-bold">মেনু</h2>
+            <h2 class="text-xl font-bold" id="menu-user-name">ইউজার নাম</h2>
             <p class="text-xs opacity-70 mt-1" id="menu-user-email">Loading...</p>
         </div>
         <nav class="p-4 space-y-1">
@@ -64,10 +62,8 @@
         </nav>
     </div>
 
-    <!-- Main Content Area -->
     <main class="max-w-md mx-auto p-4 mt-2">
         
-        <!-- Home Tab -->
         <div id="home-tab" class="tab-content active space-y-5">
             <div class="bg-gradient-to-br from-blue-600 to-blue-800 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
                 <div class="relative z-10">
@@ -82,7 +78,6 @@
             <div id="job-list" class="space-y-4"></div>
         </div>
 
-        <!-- NEW: Post Job Tab -->
         <div id="postjob-tab" class="tab-content space-y-6">
             <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
                 <h2 class="font-bold text-blue-600 flex items-center gap-2 mb-2 uppercase text-xs tracking-wider"><i class="fas fa-bullhorn"></i> নতুন জব পোস্ট করুন</h2>
@@ -112,7 +107,6 @@
                         <input id="j-duration" type="number" placeholder="ডিফল্ট ৬০ সেকেন্ড" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none text-sm mt-1">
                     </div>
                     
-                    <!-- খরচ ক্যালকুলেশন প্রাকদর্শন -->
                     <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 text-xs text-blue-800 space-y-1">
                         <p class="flex justify-between"><span>মূল কাজের খরচ:</span> <span id="calc-subtotal">৳০.০০</span></p>
                         <p class="flex justify-between"><span>এডমিন ফি (১০%):</span> <span id="calc-fee">৳০.০০</span></p>
@@ -125,7 +119,6 @@
             </div>
         </div>
 
-        <!-- Wallet Tab -->
         <div id="wallet-tab" class="tab-content space-y-6">
             <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
                 <h2 class="font-bold text-blue-600 flex items-center gap-2 mb-4 uppercase text-xs tracking-wider"><i class="fas fa-plus-circle"></i> Deposit</h2>
@@ -140,11 +133,10 @@
                 <h2 class="font-bold text-red-600 flex items-center gap-2 mb-4 uppercase text-xs tracking-wider"><i class="fas fa-minus-circle"></i> Withdraw</h2>
                 <input id="w-amount" type="number" placeholder="মিনিমাম ৳৫০০" class="w-full p-4 bg-gray-50 rounded-2xl border mb-3 outline-none">
                 <input id="w-number" type="text" placeholder="বিকাশ/নগদ নম্বর" class="w-full p-4 bg-gray-50 rounded-2xl border mb-4 outline-none">
-                <button id="withdraw-btn" class="w-full bg-red-50 text-white py-4 rounded-2xl font-bold">উইথড্র রিকোয়েস্ট পাঠান</button>
+                <button id="withdraw-btn" class="w-full bg-red-50 text-white py-4 rounded-2xl font-bold">উইথड्र রিকোয়েস্ট পাঠান</button>
             </div>
         </div>
 
-        <!-- Leaderboard Tab -->
         <div id="leaderboard-tab" class="tab-content">
             <div class="bg-white rounded-[2rem] shadow-sm border overflow-hidden">
                 <div class="bg-yellow-500 p-6 text-white text-center">
@@ -155,13 +147,13 @@
             </div>
         </div>
 
-        <!-- Profile Tab -->
         <div id="profile-tab" class="tab-content space-y-4 text-center">
             <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border">
                 <div class="w-24 h-24 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 border-4 border-white shadow-md">
                     <i class="fas fa-user"></i>
                 </div>
-                <h2 class="font-bold text-lg text-gray-800" id="prof-email">User Email</h2>
+                <h2 class="font-bold text-lg text-gray-800" id="prof-name">ইউজার নাম</h2>
+                <p class="text-xs text-gray-500" id="prof-email">User Email</p>
                 <button id="status-badge" class="mt-3 px-6 py-2 bg-gray-100 text-gray-500 text-[10px] font-bold rounded-full uppercase">Loading...</button>
             </div>
             <button onclick="window.handleLogout()" class="w-full p-5 bg-white rounded-3xl border text-red-500 font-bold shadow-sm flex items-center justify-center gap-3">
@@ -169,7 +161,6 @@
             </button>
         </div>
 
-        <!-- Refer Tab -->
         <div id="refer-tab" class="tab-content space-y-6">
             <div class="bg-gradient-to-br from-purple-600 to-indigo-700 p-8 rounded-[2.5rem] text-white text-center shadow-xl">
                 <i class="fas fa-gift text-3xl mb-4"></i>
@@ -183,7 +174,6 @@
         </div>
     </main>
 
-    <!-- Bottom Navigation Bar -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-100 flex justify-around py-3 z-50">
         <button onclick="window.switchTab('home')" id="btn-home" class="flex flex-col items-center active-tab">
             <i class="fas fa-home text-lg"></i><span class="text-[9px] mt-1">Home</span>
@@ -199,7 +189,6 @@
         </button>
     </nav>
 
-    <!-- Firebase Script Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot, collection, query, orderBy, limit, getDoc, setDoc, updateDoc, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -218,8 +207,9 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // গ্লোবাল ভেরিয়েবল কারেন্ট ইউজারের ব্যালেন্স ট্র্যাক রাখার জন্য
         let currentUserBalance = 0;
+        // 🔒 গ্লোবাল ভেরিয়েবল ইউজারের নাম স্টোর করার জন্য
+        let currentUserName = "User"; 
 
         window.toggleMenu = () => {
             const menu = document.getElementById('side-menu');
@@ -237,6 +227,7 @@
             if(tab === 'leaderboard') loadLeaderboard();
         };
 
+        // 🔄 মডিফাইড ফাংশন: ডাইনামিক নাম শো করার জন্য
         window.completeJob = async function(id, budget, url, duration) {
             window.open(url, '_blank');
             let timeLeft = Number(duration) || 60;
@@ -263,7 +254,8 @@
                     document.body.removeChild(timerDiv);
                     
                     setTimeout(async () => {
-                        if(confirm("অভিনন্দন! আপনার নির্ধারিত সময় শেষ হয়েছে। ব্যালেন্স যোগ করতে OK দিন।")) {
+                        // 💬 এখানে `currentUserName` ডাইনামিক ভাবে ব্যবহার করা হয়েছে
+                        if(confirm(`অভিনंदन ${currentUserName}! আপনার নির্ধারিত সময় শেষ হয়েছে। ব্যালেন্স যোগ করতে OK দিন।`)) {
                             try {
                                 if (!auth.currentUser) return alert("আবার লগইন করুন!");
                                 const userRef = doc(db, "users", auth.currentUser.uid);
@@ -271,9 +263,10 @@
                                 if (userSnap.exists()) {
                                     await updateDoc(userRef, { balance: increment(Number(budget)) });
                                 } else {
-                                    await setDoc(userRef, { email: auth.currentUser.email, balance: Number(budget), isActive: false });
+                                    await setDoc(userRef, { name: currentUserName, email: auth.currentUser.email, balance: Number(budget), isActive: false });
                                 }
-                                alert("৳" + budget + " সফলভাবে আপনার অ্যাকাউন্টে যোগ হয়েছে!");
+                                // 💬 এখানেও ইউজারের নাম শো করবে
+                                alert(`৳${budget} সফলভাবে আপনার অ্যাকাউন্টে যোগ হয়েছে, ${currentUserName}!`);
                             } catch(e) { alert("ব্যালেন্স যোগ করা যায়নি।"); }
                         }
                     }, 500);
@@ -281,13 +274,12 @@
             }, 1000);
         };
 
-        // রিয়েল-টাইম লাইভ কস্ট ক্যালকুলেটর লজিক
         const calculateJobCost = () => {
             const workers = Number(document.getElementById('j-workers').value) || 0;
             const budget = Number(document.getElementById('j-budget').value) || 0;
             
             const subtotal = workers * budget;
-            const fee = subtotal * 0.10; // ১০% এডমিন ফি
+            const fee = subtotal * 0.10;
             const total = subtotal + fee;
 
             document.getElementById('calc-subtotal').innerText = `৳${subtotal.toFixed(2)}`;
@@ -306,9 +298,18 @@
                 const referURL = `${window.location.origin}${window.location.pathname}?ref=${user.uid}`;
                 document.getElementById('refer-link-display').innerText = referURL;
 
+                // 📡 রিয়েল-টাইম ডাটা লিসেনার থেকে ইউজারের নাম বের করা
                 onSnapshot(doc(db, "users", user.uid), (s) => {
                     if(s.exists()){
                         const d = s.data();
+                        
+                        // যদি ডাটাবেজে name ফিল্ড থাকে তবে সেটা নিবে, না থাকলে ইমেইলের প্রথম অংশ বা গুগল নাম নিবে
+                        currentUserName = d.name || user.displayName || user.email.split('@')[0];
+                        
+                        // ইন্টারফেসে নাম সেট করা
+                        document.getElementById('menu-user-name').innerText = currentUserName;
+                        document.getElementById('prof-name').innerText = currentUserName;
+
                         currentUserBalance = Number(d.balance) || 0;
                         const balanceStr = currentUserBalance.toFixed(2);
                         document.getElementById('balance').innerText = balanceStr;
@@ -317,12 +318,16 @@
                         const badge = document.getElementById('status-badge');
                         badge.innerText = d.isActive ? "Verified" : "Not Active";
                         badge.className = d.isActive ? "mt-3 px-6 py-2 bg-green-100 text-green-600 text-[10px] font-bold rounded-full uppercase" : "mt-3 px-6 py-2 bg-red-100 text-red-600 text-[10px] font-bold rounded-full uppercase";
+                    } else {
+                        // যদি ফায়ারবেস ডক প্রথমবার তৈরি না হয়ে থাকে
+                        currentUserName = user.displayName || user.email.split('@')[0];
+                        document.getElementById('menu-user-name').innerText = currentUserName;
+                        document.getElementById('prof-name').innerText = currentUserName;
                     }
                 });
 
                 loadJobs();
 
-                // নতুন জব সাবমিশন প্রসেস ও ব্যালেন্স কাটার লজিক
                 document.getElementById('submit-job-btn').onclick = async () => {
                     const title = document.getElementById('j-title').value;
                     const url = document.getElementById('j-url').value;
@@ -341,13 +346,8 @@
                     if(confirm(`আপনি কি নিশ্চিত? এই জবটি পোস্ট করলে আপনার অ্যাকাউন্ট থেকে মোট ৳${totalCost.toFixed(2)} কেটে নেওয়া হবে।`)) {
                         try {
                             const userRef = doc(db, "users", user.uid);
-                            
-                            // ১. ইউজারের মেইন ব্যালেন্স থেকে টাকা মাইনাস করা হলো
-                            await updateDoc(userRef, {
-                                balance: increment(-totalCost)
-                            });
+                            await updateDoc(userRef, { balance: increment(-totalCost) });
 
-                            // ২. জবস কালেকশনে pending স্ট্যাটাস দিয়ে ডাটা সেভ করা হলো
                             await addDoc(collection(db, "jobs"), {
                                 uid: user.uid,
                                 email: user.email,
@@ -357,13 +357,12 @@
                                 budget: budget,
                                 duration: duration,
                                 totalCost: totalCost,
-                                status: "pending", // এডমিন Firestore থেকে এটিকে "active" করে দিলেই সবার হোমে শো করবে
+                                status: "pending",
                                 createdAt: serverTimestamp()
                             });
 
                             alert("আপনার জবটি সফলভাবে সাবমিট হয়েছে! এডমিন অ্যাপ্রুভ করার কিছুক্ষণের মধ্যেই এটি লাইভ হবে।");
                             
-                            // ফর্ম ক্লিয়ার করা
                             document.getElementById('j-title').value = "";
                             document.getElementById('j-url').value = "";
                             document.getElementById('j-workers').value = "";
@@ -373,7 +372,6 @@
                             window.switchTab('home');
 
                         } catch(e) {
-                            console.error(e);
                             alert("জব পোস্ট করতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।");
                         }
                     }
@@ -459,7 +457,7 @@
                         <div class="flex justify-between items-center p-4">
                             <div class="flex items-center gap-3">
                                 <span class="font-bold text-gray-500">#${index++}</span>
-                                <span class="text-sm text-gray-700">${u.email ? u.email.substring(0,4) + '***@' + u.email.split('@')[1] : 'User'}</span>
+                                <span class="text-sm text-gray-700">${u.name || (u.email ? u.email.substring(0,4) + '***@' + u.email.split('@')[1] : 'User')}</span>
                             </div>
                             <span class="font-bold text-yellow-600">৳${(Number(u.balance) || 0).toFixed(2)}</span>
                         </div>`;
