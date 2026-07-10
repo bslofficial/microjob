@@ -228,7 +228,8 @@
             </div>
             <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 text-center">
                 <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">আপনার রেফার কোড:</p>
-                <p id="refer-code-display" class="text-purple-600 font-extrabold text-lg select-all tracking-wider mb-4">জেনারেটিং...</p>
+                <!-- 🟢 এখানে ইউনিক ৬ সংখ্যার কোড শো করবে -->
+                <p id="refer-code-display" class="text-purple-600 font-extrabold text-2xl select-all tracking-wider mb-4">জেনারেটিং...</p>
                 <button onclick="window.copyReferCode()" class="w-full bg-purple-600 text-white py-4 rounded-2xl font-bold active:scale-95 transition">কোড কপি করুন</button>
             </div>
         </div>
@@ -271,8 +272,18 @@
 
         let currentUserBalance = 0;
         let currentUserName = "User"; 
-        let selectedCategory = "all"; // ডিফল্ট ফিল্টার স্টেট
-        let allJobsData = []; // রিয়েলটাইম ডেটা স্টোর করার অ্যারে
+        let selectedCategory = "all"; 
+        let allJobsData = []; 
+
+        // 🎲 ৬ সংখ্যার ইউনিক আলফানিউমেরিক কোড জেনারেটর ফাংশন (ব্যাকআপ সিকিউরিটির জন্য)
+        function generateShortReferCode() {
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
 
         window.toggleMenu = () => {
             const menu = document.getElementById('side-menu');
@@ -380,7 +391,6 @@
             if (user) {
                 document.getElementById('prof-email').innerText = user.email;
                 document.getElementById('menu-user-email').innerText = user.email;
-                document.getElementById('refer-code-display').innerText = user.uid;
 
                 if(user.photoURL) {
                     const profAvatar = document.getElementById('prof-avatar');
@@ -394,7 +404,8 @@
                     document.getElementById('nav-icon').classList.add('hidden');
                 }
 
-                onSnapshot(doc(db, "users", user.uid), (s) => {
+                // 🟢 ইউজার রিয়েলটাইম ডেটা এবং ৬ সংখ্যার ছোট রেফার কোড প্রসেসিং লজিক
+                onSnapshot(doc(db, "users", user.uid), async (s) => {
                     if(s.exists()){
                         const d = s.data();
                         currentUserName = d.name || user.displayName || user.email.split('@')[0];
@@ -410,10 +421,30 @@
                         const badge = document.getElementById('status-badge');
                         badge.innerText = d.isActive ? "Verified" : "Not Active";
                         badge.className = d.isActive ? "mt-3 px-6 py-2 bg-green-100 text-green-600 text-[10px] font-bold rounded-full uppercase" : "mt-3 px-6 py-2 bg-red-100 text-red-600 text-[10px] font-bold rounded-full uppercase";
+                        
+                        // ✨ এখানে ড্যাশবোর্ডে UID-এর বদলে ডেটাবেজে থাকা ছোট 'referCode' শো করবে
+                        if (d.referCode) {
+                            document.getElementById('refer-code-display').innerText = d.referCode;
+                        } else {
+                            // পুরাতন বা কোড না থাকা অ্যাকাউন্টগুলোর জন্য অটোমেটিক জেনারেট হয়ে আপডেট হবে
+                            const newCode = generateShortReferCode();
+                            await updateDoc(doc(db, "users", user.uid), { referCode: newCode });
+                            document.getElementById('refer-code-display').innerText = newCode;
+                        }
                     } else {
                         currentUserName = user.displayName || user.email.split('@')[0];
                         document.getElementById('menu-user-name').innerText = currentUserName;
                         document.getElementById('prof-name').innerText = currentUserName;
+
+                        const newCode = generateShortReferCode();
+                        await setDoc(doc(db, "users", user.uid), { 
+                            name: currentUserName, 
+                            email: user.email, 
+                            balance: 0, 
+                            isActive: false,
+                            referCode: newCode
+                        });
+                        document.getElementById('refer-code-display').innerText = newCode;
                     }
                 });
 
@@ -421,7 +452,7 @@
 
                 document.getElementById('submit-job-btn').onclick = async () => {
                     const title = document.getElementById('j-title').value;
-                    const category = document.getElementById('j-category').value; // ক্যাটাগরি ভ্যালু রিড
+                    const category = document.getElementById('j-category').value; 
                     const url = document.getElementById('j-url').value;
                     const workers = Number(document.getElementById('j-workers').value);
                     const budget = Number(document.getElementById('j-budget').value);
@@ -453,7 +484,7 @@
                                     uid: user.uid,
                                     email: user.email,
                                     title: title,
-                                    category: category, // ফায়ারবেসে ক্যাটাগরি সাবমিট
+                                    category: category, 
                                     url: url,
                                     workersLimit: workers,
                                     budget: budget,
@@ -526,18 +557,16 @@
             }
         });
 
-        // 🔄 ফায়ারবেস থেকে রিয়েলটাইম ডেটা লিসেন করার ফাংশন
         const listenToJobs = () => {
             onSnapshot(collection(db, "jobs"), (snap) => {
                 allJobsData = [];
                 snap.forEach(doc => {
                     allJobsData.push({ id: doc.id, ...doc.data() });
                 });
-                renderJobs(); // ডেটা পেলেই রেন্ডার হবে
+                renderJobs(); 
             });
         };
 
-        // 🖼️ ইউজার ইন্টারফেসে জব রেন্ডার এবং ফিল্টারিং লজিক
         const renderJobs = () => {
             const container = document.getElementById('job-list');
             container.innerHTML = "";
@@ -554,7 +583,6 @@
             }
 
             filteredJobs.forEach(job => {
-                // ক্যাটাগরি অনুযায়ী ব্যাজ টেক্সট সেট করার জন্য কন্ডিশন
                 let catBadge = job.category ? job.category.toUpperCase() : "JOB";
                 
                 container.innerHTML += `
@@ -571,16 +599,11 @@
             });
         };
 
-        // 🔘 ক্যাটাগরি বাটন ক্লিকের গ্লোবাল ফাংশন
         window.filterJobs = (category, buttonElement) => {
             selectedCategory = category;
-            
-            // সব বাটনের অ্যাক্টিভ ক্লাস রিমুভ করা
             document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active-cat'));
-            // ক্লিক করা বাটনে অ্যাক্টিভ ক্লাস অ্যাড করা
             buttonElement.classList.add('active-cat');
-            
-            renderJobs(); // ফিল্টার করা ডেটা শো করা
+            renderJobs(); 
         };
 
         const loadLeaderboard = () => {
