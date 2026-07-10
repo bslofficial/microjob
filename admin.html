@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MicroJobs BD - Admin Panel</title>
+    <title>MicroJobs BD - Ultimate Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
         body { font-family: 'Hind Siliguri', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .sidebar-btn.active { background-color: rgba(30, 41, 59, 1); color: #3b82f6; border-left: 4px solid #3b82f6; }
     </style>
 </head>
 <body>
 
-    <!-- 🔒 লগইন ফর্ম সেকশন (প্রথমে এটি দেখাবে) -->
     <div id="admin-login-card" class="min-h-screen flex items-center justify-center p-4">
         <div class="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 w-full max-w-sm shadow-2xl space-y-6">
             <div class="text-center">
@@ -31,39 +31,106 @@
         </div>
     </div>
 
-    <!-- 🖥️ ড্যাশবোর্ড সেকশন (লগইন সফল হলে এটি দৃশ্যমান হবে) -->
     <div id="admin-dashboard" class="min-h-screen flex flex-col md:flex-row hidden">
-        <!-- Sidebar -->
         <aside class="w-full md:w-64 bg-slate-900 p-6 flex flex-col border-r border-slate-800">
             <div class="mb-8">
                 <h1 class="text-xl font-bold text-blue-500"><i class="fas fa-user-shield"></i> Admin Panel</h1>
                 <p class="text-xs text-gray-400 mt-1" id="admin-email">Loading...</p>
             </div>
             <nav class="space-y-2 flex-1">
-                <button class="w-full text-left p-3 hover:bg-slate-800 rounded-xl flex items-center gap-3 font-medium text-blue-400 bg-slate-800/50">
-                    <i class="fas fa-tasks"></i> Jobs Approval
+                <button onclick="switchTab('overview', this)" class="sidebar-btn active w-full text-left p-3 rounded-xl flex items-center gap-3 font-medium transition">
+                    <i class="fas fa-chart-pie"></i> ওভারভিউ (Overview)
+                </button>
+                <button onclick="switchTab('jobs', this)" class="sidebar-btn w-full text-left p-3 rounded-xl flex items-center gap-3 font-medium transition">
+                    <i class="fas fa-tasks"></i> জবস অ্যাপ্রুভাল
+                </button>
+                <button onclick="switchTab('users', this)" class="sidebar-btn w-full text-left p-3 rounded-xl flex items-center gap-3 font-medium transition">
+                    <i class="fas fa-users"></i> ইউজার ম্যানেজমেন্ট
+                </button>
+                <button onclick="switchTab('withdraws', this)" class="sidebar-btn w-full text-left p-3 rounded-xl flex items-center gap-3 font-medium transition">
+                    <i class="fas fa-wallet"></i> উইথড্র রিকোয়েস্ট
+                </button>
+                <button onclick="switchTab('deposits', this)" class="sidebar-btn w-full text-left p-3 rounded-xl flex items-center gap-3 font-medium transition">
+                    <i class="fas fa-university"></i> ডিপোজিট রিকোয়েস্ট
                 </button>
             </nav>
-            <button onclick="window.adminLogout()" class="w-full text-left p-3 text-red-400 hover:bg-red-950/30 rounded-xl flex items-center gap-3 font-bold mt-auto">
+            <button onclick="window.adminLogout()" class="w-full text-left p-3 text-red-400 hover:bg-red-950/30 rounded-xl flex items-center gap-3 font-bold mt-auto transition">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </button>
         </aside>
 
-        <!-- Main Content -->
-        <main class="flex-1 p-6 md:p-10">
-            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">পেন্ডিং জব রিকোয়েস্ট সমূহ</h2>
-            <div id="admin-job-list" class="grid gap-4 max-w-3xl">
-                <p class="text-gray-500 text-sm">কোনো পেন্ডিং কাজ নেই।</p>
-            </div>
+        <main class="flex-1 p-6 md:p-10 space-y-8 overflow-y-auto">
+            
+            <section id="tab-overview" class="tab-content space-y-6">
+                <h2 class="text-2xl font-bold">প্ল্যাটফর্ম ওভারভিউ</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex items-center justify-between">
+                        <div><p class="text-xs text-gray-400">মোট ইউজার</p><h3 id="stat-users" class="text-2xl font-bold mt-1">0</h3></div>
+                        <div class="w-12 h-12 bg-blue-500/10 text-blue-500 rounded-xl flex items-center justify-center text-xl"><i class="fas fa-users"></i></div>
+                    </div>
+                    <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex items-center justify-between">
+                        <div><p class="text-xs text-gray-400">পেন্ডিং জবস</p><h3 id="stat-jobs" class="text-2xl font-bold mt-1">0</h3></div>
+                        <div class="w-12 h-12 bg-yellow-500/10 text-yellow-500 rounded-xl flex items-center justify-center text-xl"><i class="fas fa-stopwatch"></i></div>
+                    </div>
+                    <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex items-center justify-between">
+                        <div><p class="text-xs text-gray-400">পেন্ডিং উইথড্র</p><h3 id="stat-withdraws" class="text-2xl font-bold mt-1">0</h3></div>
+                        <div class="w-12 h-12 bg-red-500/10 text-red-500 rounded-xl flex items-center justify-center text-xl"><i class="fas fa-money-check-alt"></i></div>
+                    </div>
+                    <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex items-center justify-between">
+                        <div><p class="text-xs text-gray-400">পেন্ডিং ডিপোজিট</p><h3 id="stat-deposits" class="text-2xl font-bold mt-1">0</h3></div>
+                        <div class="w-12 h-12 bg-green-500/10 text-green-500 rounded-xl flex items-center justify-center text-xl"><i class="fas fa-cash-register"></i></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-jobs" class="tab-content hidden space-y-6">
+                <h2 class="text-2xl font-bold">পেন্ডিং জব রিকোয়েস্ট সমূহ</h2>
+                <div id="admin-job-list" class="grid gap-4 max-w-3xl">
+                    <p class="text-gray-500 text-sm">লোড হচ্ছে...</p>
+                </div>
+            </section>
+
+            <section id="tab-users" class="tab-content hidden space-y-6">
+                <h2 class="text-2xl font-bold">ইউজার ডাটাবেজ ম্যানেজমেন্ট</h2>
+                <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-lg">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-800/50 text-gray-400 font-semibold border-b border-slate-800">
+                                    <th class="p-4">ইউজার ইমেইল</th>
+                                    <th class="p-4">ব্যালেন্স (৳)</th>
+                                    <th class="p-4">স্ট্যাটাস</th>
+                                    <th class="p-4 text-center">অ্যাকশন</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-user-list">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-withdraws" class="tab-content hidden space-y-6">
+                <h2 class="text-2xl font-bold">টাকা তোলার (Withdraw) রিকোয়েস্ট</h2>
+                <div id="admin-withdraw-list" class="grid gap-4 max-w-3xl">
+                    </div>
+            </section>
+
+            <section id="tab-deposits" class="tab-content hidden space-y-6">
+                <h2 class="text-2xl font-bold">টাকা জমার (Deposit) রিকোয়েস্ট</h2>
+                <div id="admin-deposit-list" class="grid gap-4 max-w-3xl">
+                    </div>
+            </section>
+
         </main>
     </div>
 
-    <!-- Firebase Script Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, collection, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, collection, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+        // ফায়ারবেস কনফিগারেশন
         const firebaseConfig = {
             apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
             authDomain: "microjobs-b9d90.firebaseapp.com",
@@ -77,7 +144,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // 🔒 হার্ডকোডেড কড়া সিকিউরিটি ম্যাচিং
+        // অ্যাডমিন ক্রেডেনশিয়াল
         const ADMIN_EMAIL = "mddulalhosen0@gmail.com";
         const ADMIN_PASSWORD = "@#MdDulal596@#";
 
@@ -89,36 +156,26 @@
             });
         };
 
-        // ম্যানুয়াল ফর্ম লগইন বাটন ইভেন্ট
+        // লগইন ইভেন্ট হ্যান্ডলার
         document.getElementById('admin-login-btn').onclick = async () => {
             const inputEmail = document.getElementById('auth-email').value.trim();
             const inputPass = document.getElementById('auth-password').value;
 
             if(!inputEmail || !inputPass) return alert("সবগুলো ঘর পূরণ করুন!");
 
-            // প্রথম ডিফেন্স লেয়ার: আপনার দেওয়া সিক্রেট আইডির সাথে মিল চেক
             if (inputEmail === ADMIN_EMAIL && inputPass === ADMIN_PASSWORD) {
                 try {
-                    // দ্বিতীয় ডিফেন্স লেয়ার: ফায়ারবেস অথেনটিকেশন চেক
                     const userCredential = await signInWithEmailAndPassword(auth, inputEmail, inputPass);
                     showDashboard(userCredential.user.email);
                 } catch (error) {
-                    alert("ফায়ারবেস অথেনটিকেশন ব্যর্থ হয়েছে! ফায়ারবেস কনসোলে Email/Password অপশনটি সচল করা আছে কিনা চেক করুন।");
+                    alert("ফায়ারবেস অথেনটিকেশন ব্যর্থ হয়েছে!");
                 }
             } else {
-                alert("ভুল জিমেইল বা পাসওয়ার্ড! আপনি এই অ্যাপের অ্যাডমিন নন।");
+                alert("ভুল জিমেইল বা পাসওয়ার্ড!");
             }
         };
 
-        // ড্যাশবোর্ড দেখানোর ফাংশন
-        function showDashboard(email) {
-            document.getElementById('admin-email').innerText = email;
-            document.getElementById('admin-login-card').classList.add('hidden');
-            document.getElementById('admin-dashboard').classList.remove('hidden');
-            loadPendingJobs();
-        }
-
-        // রিয়েল-টাইম স্টেট অবজারভার (পেজ রিফ্রেশ করলেও যাতে লগইন থাকে)
+        // স্টেট অবজারভার
         onAuthStateChanged(auth, (user) => {
             if (user && user.email === ADMIN_EMAIL) {
                 showDashboard(user.email);
@@ -128,8 +185,43 @@
             }
         });
 
-        // পেন্ডিং জব ডাটাবেজ থেকে লোড করা
-        const loadPendingJobs = () => {
+        // ড্যাশবোর্ড ইনিশিয়ালাইজেশন
+        function showDashboard(email) {
+            document.getElementById('admin-email').innerText = email;
+            document.getElementById('admin-login-card').classList.add('hidden');
+            document.getElementById('admin-dashboard').classList.remove('hidden');
+            
+            // রিয়েলটাইম ডাটা লিসেনার রান করা
+            syncRealtimeStats();
+            loadPendingJobs();
+            loadUsersManager();
+            loadWithdrawRequests();
+            loadDepositRequests();
+        }
+
+        // ==========================================
+        // 📊 সিস্টেম ১: কাউন্টার স্ট্যাটস রিয়েল-টাইম সিঙ্ক
+        // ==========================================
+        function syncRealtimeStats() {
+            onSnapshot(collection(db, "users"), snap => document.getElementById('stat-users').innerText = snap.size);
+            onSnapshot(collection(db, "jobs"), snap => {
+                let pJobs = 0; snap.forEach(d => { if(d.data().status === 'pending') pJobs++ });
+                document.getElementById('stat-jobs').innerText = pJobs;
+            });
+            onSnapshot(collection(db, "withdraws"), snap => {
+                let pWith = 0; snap.forEach(d => { if(d.data().status === 'pending') pWith++ });
+                document.getElementById('stat-withdraws').innerText = pWith;
+            });
+            onSnapshot(collection(db, "deposits"), snap => {
+                let pDep = 0; snap.forEach(d => { if(d.data().status === 'pending') pDep++ });
+                document.getElementById('stat-deposits').innerText = pDep;
+            });
+        }
+
+        // ==========================================
+        // 📝 সিস্টেম ২: জব অ্যাপ্রুভ এবং রিজেক্ট মডিউল
+        // ==========================================
+        function loadPendingJobs() {
             onSnapshot(collection(db, "jobs"), (snap) => {
                 const container = document.getElementById('admin-job-list');
                 container.innerHTML = "";
@@ -155,26 +247,173 @@
                                     <p>মোট খরচ: <b class="text-white">৳${job.totalCost}</b></p>
                                 </div>
                                 <div class="flex gap-2 pt-2">
-                                    <button onclick="window.approveJob('${d.id}')" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl text-xs font-bold transition">অ্যাপ্রুভ করুন (Live)</button>
+                                    <button onclick="window.approveJob('${d.id}')" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl text-xs font-bold transition">অ্যাপ্রুভ (Live)</button>
+                                    <button onclick="window.rejectJob('${d.id}')" class="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white px-4 rounded-xl text-xs font-bold border border-red-500/20 transition">বাতিল</button>
                                 </div>
                             </div>`;
                     }
                 });
-
-                if (!hasPending) {
-                    container.innerHTML = `<p class="text-gray-500 text-sm p-8 bg-slate-900 rounded-2xl border border-slate-800 text-center w-full">কোনো পেন্ডিং কাজ জমা নেই।</p>`;
-                }
+                if (!hasPending) container.innerHTML = `<p class="text-gray-500 text-sm text-center bg-slate-900 p-8 rounded-2xl border border-slate-800">কোনো পেন্ডিং কাজ জমা নেই।</p>`;
             });
+        }
+
+        window.approveJob = async (id) => {
+            if (confirm("কাজটি লাইভ করতে চান?")) {
+                await updateDoc(doc(db, "jobs", id), { status: "active" }).catch(() => alert("ত্রুটি হয়েছে"));
+            }
         };
 
-        // কাজ লাইভ বা একটিভ করার ফাংশন
-        window.approveJob = async (id) => {
-            if (confirm("আপনি কি নিশ্চিত এই কাজটি লাইভ করতে চান?")) {
-                try {
-                    await updateDoc(doc(db, "jobs", id), { status: "active" });
-                    alert("কাজটি সফলভাবে লাইভ করা হয়েছে!");
-                } catch(e) { alert("অ্যাপ্রুভ করা যায়নি।"); }
+        window.rejectJob = async (id) => {
+            if (confirm("কাজটি কি রিজেক্ট করতে চান?")) {
+                await updateDoc(doc(db, "jobs", id), { status: "rejected" }).catch(() => alert("ত্রুটি হয়েছে"));
             }
+        };
+
+        // ==========================================
+        // 👥 সিস্টেম ৩: ইউজার কন্ট্রোল প্যানেল (ব্যালেন্স ও স্ট্যাটাস)
+        // ==========================================
+        function loadUsersManager() {
+            onSnapshot(collection(db, "users"), snap => {
+                const tbody = document.getElementById('admin-user-list');
+                tbody.innerHTML = "";
+                snap.forEach(d => {
+                    const u = d.data();
+                    const isBanned = u.status === 'banned';
+                    tbody.innerHTML += `
+                        <tr class="border-b border-slate-800/60 hover:bg-slate-800/20 transition">
+                            <td class="p-4 font-medium text-slate-300">${u.email || d.id}</td>
+                            <td class="p-4 text-green-400 font-bold">৳${u.balance || 0}</td>
+                            <td class="p-4">
+                                <span class="px-2 py-0.5 text-[10px] font-bold rounded-full ${isBanned ? 'bg-red-500/10 text-red-400':'bg-green-500/10 text-green-400'}">
+                                    ${isBanned ? 'BANNED' : 'ACTIVE'}
+                                </span>
+                            </td>
+                            <td class="p-4 flex justify-center gap-2">
+                                <button onclick="window.editUserBalance('${d.id}', ${u.balance || 0})" class="bg-blue-600/10 text-blue-400 border border-blue-500/20 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition"><i class="fas fa-edit"></i> ব্যালেন্স</button>
+                                <button onclick="window.toggleUserStatus('${d.id}', '${u.status || 'active'}')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition ${isBanned ? 'bg-green-600 text-white hover:bg-green-700':'bg-red-600/10 text-red-400 border border-red-500/20 hover:bg-red-600 hover:text-white'}">
+                                    ${isBanned ? 'আনব্যান' : 'ব্যান'}
+                                </button>
+                            </td>
+                        </tr>`;
+                });
+            });
+        }
+
+        window.editUserBalance = async (uid, currentBal) => {
+            const newBal = prompt(`ইউজারের নতুন ব্যালেন্স ইনপুট দিন (বর্তমান ব্যালেন্স: ৳${currentBal})`, currentBal);
+            if(newBal !== null && !isNaN(newBal)) {
+                await updateDoc(doc(db, "users", uid), { balance: Number(newBal) });
+                alert("ব্যালেন্স আপডেট সফল!");
+            }
+        };
+
+        window.toggleUserStatus = async (uid, currentStatus) => {
+            const nextStatus = currentStatus === 'banned' ? 'active' : 'banned';
+            if(confirm(`আপনি কি এই ইউজারকে ${nextStatus === 'banned' ? 'ব্যান':'আনব্যান'} করতে চান?`)) {
+                await updateDoc(doc(db, "users", uid), { status: nextStatus });
+            }
+        };
+
+        // ==========================================
+        // 💵 সিস্টেম ৪: উইথড্রয়াল প্রসেসিং সিস্টেম
+        // ==========================================
+        function loadWithdrawRequests() {
+            onSnapshot(collection(db, "withdraws"), snap => {
+                const container = document.getElementById('admin-withdraw-list');
+                container.innerHTML = "";
+                let hasData = false;
+                snap.forEach(d => {
+                    const w = d.data();
+                    if(w.status === 'pending') {
+                        hasData = true;
+                        container.innerHTML += `
+                            <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div>
+                                    <p class="text-xs text-red-400 font-bold">${w.method.toUpperCase()} REQUEST</p>
+                                    <h4 class="text-md font-bold text-slate-200 mt-1">নম্বর: ${w.number}</h4>
+                                    <p class="text-xs text-gray-400">ইউজার: ${w.email} | পরিমাণ: <b class="text-green-400">৳${w.amount}</b></p>
+                                </div>
+                                <div class="flex gap-2 w-full sm:w-auto">
+                                    <button onclick="window.processWithdraw('${d.id}', 'paid')" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs px-4 py-2 rounded-xl font-bold transition">Paid (সফল)</button>
+                                    <button onclick="window.processWithdraw('${d.id}', 'rejected', '${w.userId}', ${w.amount})" class="bg-slate-800 text-red-400 hover:bg-red-600 hover:text-white text-xs px-3 py-2 rounded-xl font-bold transition">রিজেক্ট</button>
+                                </div>
+                            </div>`;
+                    }
+                });
+                if(!hasData) container.innerHTML = `<p class="text-gray-500 text-sm text-center p-6 bg-slate-900 rounded-2xl border border-slate-800">কোনো উইথড্র রিকোয়েস্ট পেন্ডিং নেই।</p>`;
+            });
+        }
+
+        window.processWithdraw = async (id, finalStatus, uid = null, amount = 0) => {
+            if(confirm(`রিকোয়েস্টটি কি ${finalStatus === 'paid' ? 'Paid':'Reject'} করতে চান?`)) {
+                await updateDoc(doc(db, "withdraws", id), { status: finalStatus });
+                // রিজেক্ট করলে টাকা ইউজারের ওয়ালেটে ফেরত পাঠানো
+                if(finalStatus === 'rejected' && uid) {
+                    const uRef = doc(db, "users", uid);
+                    const uSnap = await getDoc(uRef);
+                    if(uSnap.exists()) {
+                        const currentBal = uSnap.data().balance || 0;
+                        await updateDoc(uRef, { balance: currentBal + amount });
+                    }
+                }
+                alert("উইথড্র রিকোয়েস্ট প্রসেসড!");
+            }
+        };
+
+        // ==========================================
+        // 🏦 সিস্টেম ৫: ডিপোজিট ভেরিফিকেশন সিস্টেম
+        // ==========================================
+        function loadDepositRequests() {
+            onSnapshot(collection(db, "deposits"), snap => {
+                const container = document.getElementById('admin-deposit-list');
+                container.innerHTML = "";
+                let hasData = false;
+                snap.forEach(d => {
+                    const dp = d.data();
+                    if(dp.status === 'pending') {
+                        hasData = true;
+                        container.innerHTML += `
+                            <div class="bg-slate-900 p-5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div>
+                                    <p class="text-xs text-green-400 font-bold">${dp.method.toUpperCase()} DEPOSIT</p>
+                                    <h4 class="text-md font-bold text-slate-200 mt-1">TxID: ${dp.trxId}</h4>
+                                    <p class="text-xs text-gray-400">ইউজার: ${dp.email} | প্রেরক নং: ${dp.senderNumber}</p>
+                                    <p class="text-xs text-gray-400 mt-1">টাকার পরিমাণ: <b class="text-white">৳${dp.amount}</b></p>
+                                </div>
+                                <div class="flex gap-2 w-full sm:w-auto">
+                                    <button onclick="window.processDeposit('${d.id}', 'approved', '${dp.userId}', ${dp.amount})" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-2 rounded-xl font-bold transition">কনফার্ম করুন</button>
+                                    <button onclick="window.processDeposit('${d.id}', 'rejected')" class="bg-slate-800 text-red-400 hover:bg-red-600 hover:text-white text-xs px-3 py-2 rounded-xl font-bold transition">ভুয়া/বাতিল</button>
+                                </div>
+                            </div>`;
+                    }
+                });
+                if(!hasData) container.innerHTML = `<p class="text-gray-500 text-sm text-center p-6 bg-slate-900 rounded-2xl border border-slate-800">কোনো ডিপোজিট রিকোয়েস্ট পেন্ডিং নেই।</p>`;
+            });
+        }
+
+        window.processDeposit = async (id, finalStatus, uid = null, amount = 0) => {
+            if(confirm(`ডিপোজিটটি কি ${finalStatus === 'approved' ? 'অনুমোদন':'বাতিল'} করতে চান?`)) {
+                await updateDoc(doc(db, "deposits", id), { status: finalStatus });
+                // অনুমোদন করলে টাকা সরাসরি ইউজারের মূল ব্যালেন্সে স্বয়ংক্রিয়ভাবে যোগ হবে
+                if(finalStatus === 'approved' && uid) {
+                    const uRef = doc(db, "users", uid);
+                    const uSnap = await getDoc(uRef);
+                    if(uSnap.exists()) {
+                        const currentBal = uSnap.data().balance || 0;
+                        await updateDoc(uRef, { balance: currentBal + amount });
+                    }
+                }
+                alert("ডিপোজিট আপডেট সম্পন্ন!");
+            }
+        };
+
+        // ট্যাব পরিবর্তনের জন্য ন্যাভিগেশন লজিক
+        window.switchTab = (tabId, btn) => {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.sidebar-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            btn.classList.add('active');
         };
     </script>
 </body>
