@@ -28,7 +28,6 @@
 </head>
 <body class="pb-24">
 
-    <!-- Header Section -->
     <header class="bg-blue-600 text-white p-4 shadow-lg sticky top-0 z-50 flex justify-between items-center">
         <div class="flex items-center gap-3">
             <button onclick="window.toggleMenu()" class="text-xl active:scale-90 transition"><i class="fas fa-bars"></i></button>
@@ -45,7 +44,6 @@
         </div>
     </header>
 
-    <!-- Sidebar Menu -->
     <div id="menu-overlay" onclick="window.toggleMenu()" class="fixed inset-0 bg-black/50 hidden z-[55]"></div>
     <div id="side-menu" class="fixed inset-y-0 left-0 w-72 bg-white shadow-2xl z-[60] transform -translate-x-full overflow-y-auto">
         <div class="p-6 bg-blue-600 text-white">
@@ -75,10 +73,8 @@
         </nav>
     </div>
 
-    <!-- Main Content Area -->
     <main class="max-w-md mx-auto p-4 mt-2">
         
-        <!-- Home Tab -->
         <div id="home-tab" class="tab-content active space-y-5">
             <div class="bg-gradient-to-br from-blue-600 to-blue-800 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
                 <div class="relative z-10">
@@ -88,7 +84,6 @@
                 <div class="absolute -right-4 -bottom-4 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
             </div>
 
-            <!-- 📢 ব্যানার অ্যাড বিজ্ঞাপন -->
             <div class="ad-container rounded-2xl shadow-sm bg-white p-2 border border-gray-100">
                 <script>
                     atOptions = {
@@ -102,13 +97,11 @@
                 <script src="https://researchingsweatexit.com/61a6dd9464e05093404bdc74b6f80ff1/invoke.js"></script>
             </div>
 
-            <!-- 📌 কাজের ক্যাটাগরি হেডলাইন সেকশন -->
             <div class="space-y-3">
                 <h3 class="font-bold text-gray-800 px-1 flex items-center gap-2">
                     <span class="w-2 h-6 bg-blue-600 rounded-full"></span> আপনার জন্য কাজ:
                 </h3>
                 
-                <!-- 🗂️ অনুভূমিক স্ক্রোলযোগ্য ক্যাটাগরি ফিল্টার বার -->
                 <div class="flex gap-2 overflow-x-auto no-scrollbar py-1 px-1">
                     <button onclick="window.filterJobs('all', this)" class="category-btn active-cat px-5 py-2 bg-white border border-gray-200 text-gray-600 font-semibold text-xs rounded-full transition whitespace-nowrap active:scale-95">🔥 All</button>
                     <button onclick="window.filterJobs('youtube', this)" class="category-btn px-5 py-2 bg-white border border-gray-200 text-gray-600 font-semibold text-xs rounded-full transition whitespace-nowrap active:scale-95">📹 YouTube</button>
@@ -121,7 +114,6 @@
             <div id="job-list" class="space-y-4"></div>
         </div>
 
-        <!-- Post Job Tab -->
         <div id="postjob-tab" class="tab-content space-y-6">
             <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
                 <h2 class="font-bold text-blue-600 flex items-center gap-2 mb-2 uppercase text-xs tracking-wider"><i class="fas fa-bullhorn"></i> নতুন জব পোস্ট করুন</h2>
@@ -132,7 +124,6 @@
                         <label class="text-xs font-bold text-gray-600 ml-1">জবের শিরোনাম (Title)</label>
                         <input id="j-title" type="text" placeholder="উদা: Youtube Channel Subscribe" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none text-sm mt-1">
                     </div>
-                    <!-- 🗃️ ক্যাটাগরি ড্রপডাউন মেনু -->
                     <div>
                         <label class="text-xs font-bold text-gray-600 ml-1">কাজের ক্যাটাগরি সিলেক্ট করুন</label>
                         <select id="j-category" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none text-sm mt-1 text-gray-700 font-medium">
@@ -173,7 +164,6 @@
             </div>
         </div>
 
-        <!-- Wallet Tab -->
         <div id="wallet-tab" class="tab-content space-y-6">
             <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
                 <h2 class="font-bold text-blue-600 flex items-center gap-2 mb-4 uppercase text-xs tracking-wider"><i class="fas fa-plus-circle"></i> Deposit</h2>
@@ -192,7 +182,6 @@
             </div>
         </div>
 
-        <!-- Leaderboard Tab -->
         <div id="leaderboard-tab" class="tab-content">
             <div class="bg-white rounded-[2rem] shadow-sm border overflow-hidden">
                 <div class="bg-yellow-500 p-6 text-white text-center">
@@ -203,7 +192,6 @@
             </div>
         </div>
 
-        <!-- Profile Tab -->
         <div id="profile-tab" class="tab-content space-y-4 text-center">
             <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border">
                 <div class="w-24 h-24 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 border-4 border-white shadow-md overflow-hidden">
@@ -217,9 +205,21 @@
             <button onclick="window.handleLogout()" class="w-full p-5 bg-white rounded-3xl border text-red-500 font-bold shadow-sm flex items-center justify-center gap-3">
                 <i class="fas fa-sign-out-alt"></i> লগআউট
             </button>
+
+            <div class="ad-container rounded-2xl shadow-sm bg-white p-2 border border-gray-100 mt-4">
+                <script>
+                    atOptions = {
+                        'key' : '61a6dd9464e05093404bdc74b6f80ff1',
+                        'format' : 'iframe',
+                        'height' : 60,
+                        'width' : 468,
+                        'params' : {}
+                    };
+                </script>
+                <script src="https://researchingsweatexit.com/61a6dd9464e05093404bdc74b6f80ff1/invoke.js"></script>
+            </div>
         </div>
 
-        <!-- Refer Tab -->
         <div id="refer-tab" class="tab-content space-y-6">
             <div class="bg-gradient-to-br from-purple-600 to-indigo-700 p-8 rounded-[2.5rem] text-white text-center shadow-xl">
                 <i class="fas fa-gift text-3xl mb-4"></i>
@@ -228,14 +228,12 @@
             </div>
             <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 text-center">
                 <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">আপনার রেফার কোড:</p>
-                <!-- 🟢 এখানে ইউনিক ৬ সংখ্যার কোড শো করবে -->
                 <p id="refer-code-display" class="text-purple-600 font-extrabold text-2xl select-all tracking-wider mb-4">জেনারেটিং...</p>
                 <button onclick="window.copyReferCode()" class="w-full bg-purple-600 text-white py-4 rounded-2xl font-bold active:scale-95 transition">কোড কপি করুন</button>
             </div>
         </div>
     </main>
 
-    <!-- Bottom Navigation Bar -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-100 flex justify-around py-3 z-50">
         <button onclick="window.switchTab('home')" id="btn-home" class="flex flex-col items-center active-tab">
             <i class="fas fa-home text-lg"></i><span class="text-[9px] mt-1">Home</span>
@@ -251,7 +249,6 @@
         </button>
     </nav>
 
-    <!-- Firebase Script Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot, collection, query, orderBy, limit, getDoc, setDoc, updateDoc, addDoc, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -275,7 +272,6 @@
         let selectedCategory = "all"; 
         let allJobsData = []; 
 
-        // 🎲 ৬ সংখ্যার ইউনিক আলফানিউমেরিক কোড জেনারেটর ফাংশন (ব্যাকআপ সিকিউরিটির জন্য)
         function generateShortReferCode() {
             const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             let code = '';
@@ -404,7 +400,6 @@
                     document.getElementById('nav-icon').classList.add('hidden');
                 }
 
-                // 🟢 ইউজার রিয়েলটাইম ডেটা এবং ৬ সংখ্যার ছোট রেফার কোড প্রসেসিং লজিক
                 onSnapshot(doc(db, "users", user.uid), async (s) => {
                     if(s.exists()){
                         const d = s.data();
@@ -422,11 +417,9 @@
                         badge.innerText = d.isActive ? "Verified" : "Not Active";
                         badge.className = d.isActive ? "mt-3 px-6 py-2 bg-green-100 text-green-600 text-[10px] font-bold rounded-full uppercase" : "mt-3 px-6 py-2 bg-red-100 text-red-600 text-[10px] font-bold rounded-full uppercase";
                         
-                        // ✨ এখানে ড্যাশবোর্ডে UID-এর বদলে ডেটাবেজে থাকা ছোট 'referCode' শো করবে
                         if (d.referCode) {
                             document.getElementById('refer-code-display').innerText = d.referCode;
                         } else {
-                            // পুরাতন বা কোড না থাকা অ্যাকাউন্টগুলোর জন্য অটোমেটিক জেনারেট হয়ে আপডেট হবে
                             const newCode = generateShortReferCode();
                             await updateDoc(doc(db, "users", user.uid), { referCode: newCode });
                             document.getElementById('refer-code-display').innerText = newCode;
