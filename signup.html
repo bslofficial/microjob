@@ -2,33 +2,50 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Signup - MicroJobs BD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f8fafc; }
+        .swal2-popup { font-family: 'Hind Siliguri', sans-serif !important; border-radius: 2rem !important; }
+    </style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
+<body class="flex items-center justify-center min-h-screen p-4">
     <div class="max-w-md w-full bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100">
-        <div class="text-center mb-8">
-            <h2 class="text-2xl font-bold text-gray-800">নতুন একাউন্ট</h2>
-            <p class="text-gray-400 text-sm mt-1">আজই কাজ শুরু করুন</p>
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg shadow-blue-100">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800">নতুন অ্যাকাউন্ট</h2>
+            <p class="text-gray-400 text-sm mt-1">আজই জয়েন করে আয় করা শুরু করুন</p>
         </div>
 
         <div class="space-y-4">
-            <input id="email" type="email" placeholder="আপনার ইমেইল" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500 transition">
-            <input id="password" type="password" placeholder="পাসওয়ার্ড (মিনিমাম ৬ অক্ষর)" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500 transition">
-            <button id="signup-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition">সাইনআপ করুন</button>
+            <input id="name" type="text" placeholder="আপনার পুরো নাম" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500 transition text-sm">
+            <input id="email" type="email" placeholder="ইমেইল এড্রেস" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500 transition text-sm">
+            <input id="password" type="password" placeholder="পাসওয়ার্ড (মিনিমাম ৬ ডিজিট)" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500 transition text-sm">
+            
+            <!-- 🎁 রেফার কোড ইনপুট বক্স (ঐচ্ছিক) -->
+            <div class="relative">
+                <input id="refer-code" type="text" placeholder="রেফার কোড (যদি থাকে)" class="w-full p-4 bg-purple-50/50 text-purple-700 font-semibold border border-purple-100 rounded-2xl outline-none focus:border-purple-500 transition text-sm uppercase placeholder:normal-case">
+                <i class="fas fa-gift text-purple-400 absolute right-4 top-4.5"></i>
+            </div>
+
+            <button id="signup-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition mt-2">অ্যাকাউন্ট তৈরি করুন</button>
         </div>
 
-        <p class="text-center mt-8 text-gray-500 text-sm">
-            একাউন্ট আছে? <a href="login.html" class="text-blue-600 font-bold">লগইন করুন</a>
+        <p class="text-center mt-6 text-gray-500 text-sm">
+            অলরেডি অ্যাকাউন্ট আছে? <a href="login.html" class="text-blue-600 font-bold">লগইন করুন</a>
         </p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, updateDoc, collection, query, where, getDocs, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
@@ -40,38 +57,130 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
+        // অলরেডি লগইন থাকলে মেইন ড্যাশবোর্ডে রিডাইরেক্ট করবে
+        onAuthStateChanged(auth, (user) => {
+            if (user) { window.location.href = "index.html"; }
+        });
+
+        // 🎲 ৬ সংখ্যার ইউনিক কোড জেনারেটর
+        function generateShortReferCode() {
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        // 👥 ৬ লেভেল বোনাস বন্টন প্রসেস
+        async function distributeMultiLevelBonus(referredByUid) {
+            // লেভেল ডিস্ট্রিবিউশন চার্ট: 
+            // Level 1 = 10 টাকা, Level 2 = 2 টাকা, Level 3 = 1 টাকা, Level 4 = 1 টাকা, Level 5 = 0.5 টাকা, Level 6 = 0.5 টাকা
+            const levelBonuses = [10, 2, 1, 1, 0.5, 0.5]; 
+            let currentParentUid = referredByUid;
+
+            for (let i = 0; i < levelBonuses.length; i++) {
+                if (!currentParentUid) break; // আপলাইনে আর কেউ না থাকলে লুপ স্টপ হবে
+
+                const parentRef = doc(db, "users", currentParentUid);
+                const parentSnap = await getDoc(parentRef);
+
+                if (parentSnap.exists()) {
+                    const parentData = parentSnap.data();
+                    const bonusAmount = levelBonuses[i];
+
+                    // আপলাইনের ব্যালেন্স বৃদ্ধি করা
+                    await updateDoc(parentRef, {
+                        balance: increment(bonusAmount)
+                    });
+
+                    // চেইনের পরবর্তী উপরের লেভেলের প্যারেন্টকে ট্র্যাক করা
+                    currentParentUid = parentData.referredBy || null; 
+                } else {
+                    break;
+                }
+            }
+        }
+
+        // সাইনআপ বাটন ক্লিক লজিক
         document.getElementById('signup-btn').onclick = async () => {
-            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
-            const urlParams = new URLSearchParams(window.location.search);
-            const refBy = urlParams.get('ref');
+            const inputRefCode = document.getElementById('refer-code').value.trim().toUpperCase();
+
+            if(!name || !email || !pass) {
+                return Swal.fire('Warning', 'সবগুলো ঘর সঠিকভাবে পূরণ করুন!', 'warning');
+            }
+            if(pass.length < 6) {
+                return Swal.fire('Warning', 'পাসওয়ার্ড অবশ্যই কমপক্ষে ৬ ডিজিটের হতে হবে!', 'warning');
+            }
 
             try {
-                const res = await createUserWithEmailAndPassword(auth, email, pass);
-                const user = res.user;
+                // ১. যদি ইউজার কোনো রেফার কোড ইনপুট দিয়ে থাকেন, তবে আগে সেটি চেক করা হবে
+                let finalReferredByUid = null;
+                let initialBalance = 0;
 
-                await setDoc(doc(db, "users", user.uid), {
-                    email: email,
-                    balance: Number(0), // Number ফরম্যাটে ব্যালেন্স ০ করা হলো
-                    isActive: false,
-                    totalRefers: 0,
-                    referBy: refBy || null
-                });
+                if (inputRefCode !== "") {
+                    const q = query(collection(db, "users"), where("referCode", "==", inputRefCode));
+                    const querySnapshot = await getDocs(q);
 
-                if (refBy) {
-                    const refRef = doc(db, "users", refBy);
-                    await updateDoc(refRef, {
-                        totalRefers: increment(1),
-                        balance: increment(5) // ৫ টাকা রেফারেল বোনাস (সংখ্যা)
-                    });
+                    if (!querySnapshot.empty) {
+                        // কোডটি সঠিক হলে রেফারারের মেইন UID নেওয়া হলো
+                        const referrerDoc = querySnapshot.docs[0];
+                        finalReferredByUid = referrerDoc.id;
+                        
+                        // নতুন ইউজার কোড ব্যবহার করার কারণে ৫ টাকা সাইন-আপ বোনাস পেলেন
+                        initialBalance = 5;
+                    } else {
+                        // কোড ভুল হলে রেজিস্ট্রেশন প্রসেস থামিয়ে দেওয়া হবে যাতে ইউজার সঠিক কোড দিতে পারেন
+                        return Swal.fire('ভুল কোড!', 'আপনার দেওয়া রেফার কোডটি সঠিক নয়। দয়া করে সঠিক কোড দিন অথবা ঘরটি খালি রাখুন।', 'error');
+                    }
                 }
 
-                location.href = "index.html";
-            } catch (e) {
-                alert("সমস্যা হয়েছে! ইমেইল ও পাসওয়ার্ড চেক করুন।");
+                // ২. ফায়ারবেস অথেনটিকেশনে নতুন ইউজার তৈরি করা
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                const user = userCredential.user;
+
+                // ৩. যদি রেফার কোড সফলভাবে ম্যাচ করে থাকে, তবে আপলাইনের ৬ লেভেলে কমিশন পাঠানো
+                if (finalReferredByUid) {
+                    await distributeMultiLevelBonus(finalReferredByUid);
+                }
+
+                // ৪. নতুন ইউজারের জন্য নিজস্ব ৬ ডিজিটের ইউনিক কোড জেনারেট করা
+                const myNewReferCode = generateShortReferCode();
+
+                // ৫. ফায়ারবেস Firestore-এর "users" কালেকশনে ডেটা সেভ করা
+                await setDoc(doc(db, "users", user.uid), {
+                    name: name,
+                    email: email,
+                    balance: initialBalance,
+                    isActive: false,
+                    referCode: myNewReferCode,
+                    referredBy: finalReferredByUid, // ভবিষ্যৎ জেনারেশন ট্র্যাকিং এর জন্য প্যারেন্ট আইডি সেভ রাখা হলো
+                    createdAt: new Date()
+                });
+
+                Swal.fire({
+                    title: 'সফল রেজিস্ট্রেশন!',
+                    text: initialBalance > 0 ? 'আপনার অ্যাকাউন্ট তৈরি হয়েছে এবং আপনি ৫ টাকা বোনাস পেয়েছেন!' : 'আপনার অ্যাকাউন্টটি সফলভাবে তৈরি হয়েছে!',
+                    icon: 'success',
+                    confirmButtonText: 'ড্যাশবোর্ডে যান',
+                    confirmButtonColor: '#2563eb'
+                }).then(() => {
+                    window.location.href = "index.html";
+                });
+
+            } catch (error) {
+                console.error(error);
+                if (error.code === 'auth/email-already-in-use') {
+                    Swal.fire('Error', 'এই ইমেইলটি দিয়ে ইতিমধ্যে অ্যাকাউন্ট তৈরি করা আছে!', 'error');
+                } else {
+                    Swal.fire('Error', 'অ্যাকাউন্ট তৈরি করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।', 'error');
+                }
             }
         };
     </script>
