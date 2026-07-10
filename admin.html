@@ -14,6 +14,7 @@
 </head>
 <body>
 
+    <!-- 🔒 লগইন ফর্ম সেকশন -->
     <div id="admin-login-card" class="min-h-screen flex items-center justify-center p-4">
         <div class="bg-slate-900 p-8 rounded-[2rem] border border-slate-800 w-full max-w-sm shadow-2xl space-y-6">
             <div class="text-center">
@@ -31,7 +32,9 @@
         </div>
     </div>
 
+    <!-- 🖥️ ড্যাশবোর্ড সেকশন -->
     <div id="admin-dashboard" class="min-h-screen flex flex-col md:flex-row hidden">
+        <!-- Sidebar -->
         <aside class="w-full md:w-64 bg-slate-900 p-6 flex flex-col border-r border-slate-800">
             <div class="mb-8">
                 <h1 class="text-xl font-bold text-blue-500"><i class="fas fa-user-shield"></i> Admin Panel</h1>
@@ -42,7 +45,7 @@
                     <i class="fas fa-chart-pie"></i> ওভারভিউ (Overview)
                 </button>
                 <button onclick="switchTab('jobs', this)" class="sidebar-btn w-full text-left p-3 rounded-xl flex items-center gap-3 font-medium transition">
-                    <i class="fas fa-tasks"></i> জবস অ্যাপ্রুভাল
+                    <i class="fas fa-tasks"></i> জবস ম্যানেজমেন্ট
                 </button>
                 <button onclick="switchTab('users', this)" class="sidebar-btn w-full text-left p-3 rounded-xl flex items-center gap-3 font-medium transition">
                     <i class="fas fa-users"></i> ইউজার ম্যানেজমেন্ট
@@ -59,8 +62,10 @@
             </button>
         </aside>
 
+        <!-- Main Content Grid -->
         <main class="flex-1 p-6 md:p-10 space-y-8 overflow-y-auto">
             
+            <!-- 📊 TAB 1: OVERVIEW -->
             <section id="tab-overview" class="tab-content space-y-6">
                 <h2 class="text-2xl font-bold">প্ল্যাটফর্ম ওভারভিউ</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -83,13 +88,29 @@
                 </div>
             </section>
 
+            <!-- 📝 TAB 2: JOBS MANAGEMENT -->
             <section id="tab-jobs" class="tab-content hidden space-y-6">
-                <h2 class="text-2xl font-bold">পেন্ডিং জব রিকোয়েস্ট সমূহ</h2>
-                <div id="admin-job-list" class="grid gap-4 max-w-3xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h2 class="text-2xl font-bold">জবস ম্যানেজমেন্ট প্যানেল</h2>
+                    <!-- ফিল্টার সাব-মেনু -->
+                    <div class="bg-slate-900 p-1 rounded-xl border border-slate-800 flex text-xs font-semibold">
+                        <button onclick="toggleJobView('pending')" id="btn-view-pending" class="px-4 py-2 bg-blue-600 text-white rounded-lg transition">পেন্ডিং রিকোয়েস্ট</button>
+                        <button onclick="toggleJobView('active')" id="btn-view-active" class="px-4 py-2 text-gray-400 hover:text-white rounded-lg transition">পাবলিশড/লাইভ জবস</button>
+                    </div>
+                </div>
+
+                <!-- পেন্ডিং লিস্ট কন্টেইনার -->
+                <div id="admin-job-list-pending" class="grid gap-4 max-w-3xl">
+                    <p class="text-gray-500 text-sm">লোড হচ্ছে...</p>
+                </div>
+
+                <!-- পাবলিশড/লাইভ লিস্ট কন্টেইনার (ডিফল্ট হিডেন) -->
+                <div id="admin-job-list-active" class="grid gap-4 max-w-3xl hidden">
                     <p class="text-gray-500 text-sm">লোড হচ্ছে...</p>
                 </div>
             </section>
 
+            <!-- 👥 TAB 3: USER MANAGEMENT -->
             <section id="tab-users" class="tab-content hidden space-y-6">
                 <h2 class="text-2xl font-bold">ইউজার ডাটাবেজ ম্যানেজমেন্ট</h2>
                 <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-lg">
@@ -104,30 +125,36 @@
                                 </tr>
                             </thead>
                             <tbody id="admin-user-list">
-                                </tbody>
+                                <!-- ডাইনামিক ডাটা ঢুকবে -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </section>
 
+            <!-- 💵 TAB 4: WITHDRAW REQUESTS -->
             <section id="tab-withdraws" class="tab-content hidden space-y-6">
                 <h2 class="text-2xl font-bold">টাকা তোলার (Withdraw) রিকোয়েস্ট</h2>
                 <div id="admin-withdraw-list" class="grid gap-4 max-w-3xl">
-                    </div>
+                    <!-- ডাইনামিক ডাটা ঢুকবে -->
+                </div>
             </section>
 
+            <!-- 🏦 TAB 5: DEPOSIT REQUESTS -->
             <section id="tab-deposits" class="tab-content hidden space-y-6">
                 <h2 class="text-2xl font-bold">টাকা জমার (Deposit) রিকোয়েস্ট</h2>
                 <div id="admin-deposit-list" class="grid gap-4 max-w-3xl">
-                    </div>
+                    <!-- ডাইনামিক ডাটা ঢুকবে -->
+                </div>
             </section>
 
         </main>
     </div>
 
+    <!-- Firebase SDK & Core Systems -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, collection, onSnapshot, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, collection, onSnapshot, updateDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         // ফায়ারবেস কনফিগারেশন
@@ -191,9 +218,8 @@
             document.getElementById('admin-login-card').classList.add('hidden');
             document.getElementById('admin-dashboard').classList.remove('hidden');
             
-            // রিয়েলটাইম ডাটা লিসেনার রান করা
             syncRealtimeStats();
-            loadPendingJobs();
+            loadAllJobsData(); // সব জব লোড করার রিয়েলটাইম ফাংশন
             loadUsersManager();
             loadWithdrawRequests();
             loadDepositRequests();
@@ -219,19 +245,27 @@
         }
 
         // ==========================================
-        // 📝 সিস্টেম ২: জব অ্যাপ্রুভ এবং রিজেক্ট মডিউল
+        // 📝 সিস্টেম ২: জবস রিয়েল-টাইম লোড ও এডিট/ডিলিট অপশন
         // ==========================================
-        function loadPendingJobs() {
+        function loadAllJobsData() {
             onSnapshot(collection(db, "jobs"), (snap) => {
-                const container = document.getElementById('admin-job-list');
-                container.innerHTML = "";
+                const pendingContainer = document.getElementById('admin-job-list-pending');
+                const activeContainer = document.getElementById('admin-job-list-active');
+                
+                pendingContainer.innerHTML = "";
+                activeContainer.innerHTML = "";
+                
                 let hasPending = false;
+                let hasActive = false;
 
                 snap.forEach(d => {
                     const job = d.data();
+                    const jobId = d.id;
+
+                    // ১. পেন্ডিং জব ডাটা রেন্ডারিং
                     if (job.status === "pending") {
                         hasPending = true;
-                        container.innerHTML += `
+                        pendingContainer.innerHTML += `
                             <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-3 shadow-md">
                                 <div class="flex justify-between items-start">
                                     <div>
@@ -247,13 +281,40 @@
                                     <p>মোট খরচ: <b class="text-white">৳${job.totalCost}</b></p>
                                 </div>
                                 <div class="flex gap-2 pt-2">
-                                    <button onclick="window.approveJob('${d.id}')" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl text-xs font-bold transition">অ্যাপ্রুভ (Live)</button>
-                                    <button onclick="window.rejectJob('${d.id}')" class="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white px-4 rounded-xl text-xs font-bold border border-red-500/20 transition">বাতিল</button>
+                                    <button onclick="window.approveJob('${jobId}')" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl text-xs font-bold transition">অ্যাপ্রুভ (Live)</button>
+                                    <button onclick="window.rejectJob('${jobId}')" class="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white px-4 rounded-xl text-xs font-bold border border-red-500/20 transition">বাতিল</button>
+                                </div>
+                            </div>`;
+                    }
+
+                    // ২. একটিভ/লাইভ জব ডাটা রেন্ডারিং (Edit & Delete বাটন সহ)
+                    if (job.status === "active") {
+                        hasActive = true;
+                        activeContainer.innerHTML += `
+                            <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-3 shadow-md">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="text-lg font-bold text-slate-200">${job.title}</h4>
+                                        <p class="text-xs text-green-400 font-semibold mt-1">পোস্টকারী: ${job.email}</p>
+                                    </div>
+                                    <span class="px-3 py-1 bg-green-500/10 text-green-500 text-xs font-bold rounded-full">LIVE</span>
+                                </div>
+                                <p class="text-xs text-gray-400 truncate">লিঙ্ক: <a href="${job.url}" target="_blank" class="text-blue-400 underline">${job.url}</a></p>
+                                <div class="grid grid-cols-3 gap-2 text-xs bg-slate-800/40 p-3 rounded-xl border border-slate-800 text-gray-300">
+                                    <p>কর্মী: <b class="text-white">${job.workersLimit} জন</b></p>
+                                    <p>বাজেট: <b class="text-white">৳${job.budget}</b></p>
+                                    <p>মোট খরচ: <b class="text-white">৳${job.totalCost}</b></p>
+                                </div>
+                                <div class="flex gap-2 pt-2">
+                                    <button onclick="window.editPublishedJob('${jobId}', ${job.workersLimit}, ${job.budget}, ${job.totalCost})" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl text-xs font-bold transition"><i class="fas fa-edit mr-1"></i> ডাটা এডিট করুন</button>
+                                    <button onclick="window.deletePublishedJob('${jobId}')" class="bg-red-600 hover:bg-red-700 text-white px-4 rounded-xl text-xs font-bold transition"><i class="fas fa-trash-alt"></i> ডিলিট</button>
                                 </div>
                             </div>`;
                     }
                 });
-                if (!hasPending) container.innerHTML = `<p class="text-gray-500 text-sm text-center bg-slate-900 p-8 rounded-2xl border border-slate-800">কোনো পেন্ডিং কাজ জমা নেই।</p>`;
+
+                if (!hasPending) pendingContainer.innerHTML = `<p class="text-gray-500 text-sm text-center bg-slate-900 p-8 rounded-2xl border border-slate-800">কোনো পেন্ডিং কাজ জমা নেই।</p>`;
+                if (!hasActive) activeContainer.innerHTML = `<p class="text-gray-500 text-sm text-center bg-slate-900 p-8 rounded-2xl border border-slate-800">কোনো লাইভ কাজ এই মুহূর্তে নেই।</p>`;
             });
         }
 
@@ -266,6 +327,63 @@
         window.rejectJob = async (id) => {
             if (confirm("কাজটি কি রিজেক্ট করতে চান?")) {
                 await updateDoc(doc(db, "jobs", id), { status: "rejected" }).catch(() => alert("ত্রুটি হয়েছে"));
+            }
+        };
+
+        // 🛠️ ৩. লাইভ জব এডিট সিস্টেম
+        window.editPublishedJob = async (id, currentLimit, currentBudget, currentTotal) => {
+            const newLimit = prompt(`নতুন কর্মী সংখ্যা ইনপুট দিন (বর্তমান: ${currentLimit})`, currentLimit);
+            if (newLimit === null || isNaN(newLimit)) return;
+
+            const newBudget = prompt(`প্রতি কাজের বাজেট ইনপুট দিন (বর্তমান: ৳${currentBudget})`, currentBudget);
+            if (newBudget === null || isNaN(newBudget)) return;
+
+            // নতুন টোটাল কস্ট হিসাব করা
+            const newTotalCost = Number(newLimit) * Number(newBudget);
+
+            if (confirm(`নতুন মোট খরচ হবে ৳${newTotalCost}। আপনি কি আপডেট করতে নিশ্চিত?`)) {
+                try {
+                    await updateDoc(doc(db, "jobs", id), {
+                        workersLimit: Number(newLimit),
+                        budget: Number(newBudget),
+                        totalCost: newTotalCost
+                    });
+                    alert("জব ডাটা সফলভাবে আপডেট হয়েছে!");
+                } catch (e) {
+                    alert("আপডেট করা যায়নি!");
+                }
+            }
+        };
+
+        // 🗑️ ৪. লাইভ জব ফায়ারবেস থেকে সরাসরি ডিলিট সিস্টেম
+        window.deletePublishedJob = async (id) => {
+            if (confirm("আপনি কি নিশ্চিত এই জবটি সম্পূর্ণভাবে ডাটাবেজ থেকে ডিলিট করতে চান? (এটি আর ফিরিয়ে আনা যাবে না)")) {
+                try {
+                    await deleteDoc(doc(db, "jobs", id));
+                    alert("জবটি সফলভাবে ডিলিট করা হয়েছে!");
+                } catch (e) {
+                    alert("ডিলিট করার সময় সমস্যা হয়েছে।");
+                }
+            }
+        };
+
+        // ফিল্টার বোতাম টগল লজিক (Pending vs Active)
+        window.toggleJobView = (type) => {
+            const pBtn = document.getElementById('btn-view-pending');
+            const aBtn = document.getElementById('btn-view-active');
+            const pCont = document.getElementById('admin-job-list-pending');
+            const aCont = document.getElementById('admin-job-list-active');
+
+            if(type === 'pending') {
+                pBtn.className = "px-4 py-2 bg-blue-600 text-white rounded-lg transition";
+                aBtn.className = "px-4 py-2 text-gray-400 hover:text-white rounded-lg transition";
+                pCont.classList.remove('hidden');
+                aCont.classList.add('hidden');
+            } else {
+                aBtn.className = "px-4 py-2 bg-blue-600 text-white rounded-lg transition";
+                pBtn.className = "px-4 py-2 text-gray-400 hover:text-white rounded-lg transition";
+                aCont.classList.remove('hidden');
+                pCont.classList.add('hidden');
             }
         };
 
@@ -347,7 +465,6 @@
         window.processWithdraw = async (id, finalStatus, uid = null, amount = 0) => {
             if(confirm(`রিকোয়েস্টটি কি ${finalStatus === 'paid' ? 'Paid':'Reject'} করতে চান?`)) {
                 await updateDoc(doc(db, "withdraws", id), { status: finalStatus });
-                // রিজেক্ট করলে টাকা ইউজারের ওয়ালেটে ফেরত পাঠানো
                 if(finalStatus === 'rejected' && uid) {
                     const uRef = doc(db, "users", uid);
                     const uSnap = await getDoc(uRef);
@@ -394,7 +511,6 @@
         window.processDeposit = async (id, finalStatus, uid = null, amount = 0) => {
             if(confirm(`ডিপোজিটটি কি ${finalStatus === 'approved' ? 'অনুমোদন':'বাতিল'} করতে চান?`)) {
                 await updateDoc(doc(db, "deposits", id), { status: finalStatus });
-                // অনুমোদন করলে টাকা সরাসরি ইউজারের মূল ব্যালেন্সে স্বয়ংক্রিয়ভাবে যোগ হবে
                 if(finalStatus === 'approved' && uid) {
                     const uRef = doc(db, "users", uid);
                     const uSnap = await getDoc(uRef);
