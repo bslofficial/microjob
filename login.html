@@ -2,15 +2,21 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Login - MicroJobs BD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f8fafc; }
+        .swal2-popup { font-family: 'Hind Siliguri', sans-serif !important; border-radius: 2rem !important; }
+    </style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
+<body class="flex items-center justify-center min-h-screen p-4">
     <div class="max-w-md w-full bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100">
         <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg">
+            <div class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg shadow-blue-100">
                 <i class="fas fa-lock"></i>
             </div>
             <h2 class="text-2xl font-bold text-gray-800">লগইন করুন</h2>
@@ -18,8 +24,8 @@
         </div>
 
         <div class="space-y-4">
-            <input id="email" type="email" placeholder="ইমেইল" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500 transition">
-            <input id="password" type="password" placeholder="পাসওয়ার্ড" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500 transition">
+            <input id="email" type="email" placeholder="ইমেইল" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500 transition text-sm">
+            <input id="password" type="password" placeholder="পাসওয়ার্ড" class="w-full p-4 bg-gray-50 rounded-2xl border outline-none focus:border-blue-500 transition text-sm">
             <button id="login-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition">প্রবেশ করুন</button>
         </div>
 
@@ -30,7 +36,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyANRqR887AfhoW4GxInZHH9J3YYWCfnjs0",
@@ -44,14 +50,24 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+        // অলরেডি লগইন থাকলে সরাসরি ড্যাশবোর্ডে নিয়ে যাবে
+        onAuthStateChanged(auth, (user) => {
+            if (user) { window.location.href = "index.html"; }
+        });
+
         document.getElementById('login-btn').onclick = async () => {
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const pass = document.getElementById('password').value;
+
+            if(!email || !pass) {
+                return Swal.fire('Warning', 'ইমেইল এবং পাসওয়ার্ড দুটিই পূরণ করুন!', 'warning');
+            }
+
             try {
                 await signInWithEmailAndPassword(auth, email, pass);
-                location.href = "index.html";
+                window.location.href = "index.html";
             } catch (e) {
-                alert("ভুল ইমেইল বা পাসওয়ার্ড!");
+                Swal.fire('Error', 'ভুল ইমেইল বা পাসওয়ার্ড!', 'error');
             }
         };
     </script>
